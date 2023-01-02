@@ -4,9 +4,8 @@ import Navbar from "../components/Navbar";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Sidebar, Menu, MenuItem, SubMenu, useProSidebar } from 'react-pro-sidebar';
+import { Sidebar, Menu, MenuItem, useProSidebar } from 'react-pro-sidebar';
 import { getToken } from "../services/LocalStorageService";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -34,12 +33,12 @@ const Layout = () => {
 
     {
       loggedIn ? (
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', height: '100%', marginTop: "64px"}}>
           <Sidebar 
             backgroundColor="#E0E0E0"
             rootStyles={{
               height: "100vh",
-              marginRight: "20px"
+              marginRight: "20px",
             }}
           >
             <Menu>
@@ -80,6 +79,7 @@ const Layout = () => {
               </MenuItem>
             </Menu>
           </Sidebar>
+          
           <main style={{width: "100%"}}>
             <Outlet />
           </main>

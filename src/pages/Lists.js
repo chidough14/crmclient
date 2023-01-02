@@ -33,19 +33,19 @@ export default function Lists() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
 
-  React.useEffect(() => {
+  // React.useEffect(() => {
 
-    const getListsResult = async () => {
+  //   const getListsResult = async () => {
 
-      await instance.get(`mylists`)
-      .then((res)=> {
-        console.log(res);
-        dispatch(setLists({lists: res.data.lists}))
-      })
-    }
+  //     await instance.get(`mylists`)
+  //     .then((res)=> {
+  //       console.log(res);
+  //       dispatch(setLists({lists: res.data.lists}))
+  //     })
+  //   }
 
-    getListsResult()
-  }, [])
+  //   getListsResult()
+  // }, [])
 
   React.useEffect(() => {
     if (!token) {

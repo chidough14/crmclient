@@ -17,6 +17,8 @@ import Activities from "./pages/Activities";
 import SingleList from "./pages/SingleList";
 import CalendarEvents from "./pages/CalendarEvents";
 import Company from "./pages/Company";
+import instance from "./services/fetchApi";
+import { setLists } from "./features/listSlice";
 
 function App() {
   const token =  getToken()
@@ -33,6 +35,20 @@ function App() {
       }))
     }
   }, [data, isSuccess, dispatch])
+
+  useEffect(() => {
+
+    const getListsResult = async () => {
+
+      await instance.get(`mylists`)
+      .then((res)=> {
+        console.log(res);
+        dispatch(setLists({lists: res.data.lists}))
+      })
+    }
+
+    getListsResult()
+  }, [])
 
   return (
     <>

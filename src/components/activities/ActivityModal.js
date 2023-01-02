@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addActivity } from '../../features/ActivitySlice';
-import { setCompany } from '../../features/companySlice';
+import { addActivityToCompany, setCompany } from '../../features/companySlice';
 import instance from '../../services/fetchApi';
 import SearchBar from '../SearchBar';
 
@@ -43,7 +43,7 @@ const validationSchema = yup.object({
     .required('Type is required'),
 });
 
-const ActivityModal = ({open, setOpen}) => {
+const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,8 +63,11 @@ const ActivityModal = ({open, setOpen}) => {
   };
 
   useEffect(() => {
+    if (companyObject) {
+      populateFields(companyObject)
+    }
    
-  }, [open])
+  }, [openActivityModal])
 
   useEffect(()=> {
     const getSearchResult = async () => {
@@ -114,6 +117,10 @@ const ActivityModal = ({open, setOpen}) => {
         setAlertMessage("Activity created successfully")
 
         dispatch(addActivity({activity: res.data.activity}))
+
+        if (companyObject) {
+          dispatch(addActivityToCompany({activity: res.data.activity}))
+        }
         handleClose()
         resetForm();
       });
@@ -124,7 +131,7 @@ const ActivityModal = ({open, setOpen}) => {
   return (
     <>
       <Modal
-        open={open}
+        open={open || openActivityModal}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -134,13 +141,22 @@ const ActivityModal = ({open, setOpen}) => {
             <Typography variant='h6' style={{marginBottom: "10px"}}>
               Add Activity
             </Typography>
+            
+            {
+              openActivityModal ? (
+                <></>
 
-            <SearchBar 
-              activityModal={true} 
-              populateFields={populateFields}  
-              data={company.companies} 
-              setSearchQuery={setSearchQuery} 
-            />
+              ) : (
+                <SearchBar 
+                  activityModal={true} 
+                  populateFields={populateFields}  
+                  data={company.companies} 
+                  setSearchQuery={setSearchQuery} 
+                />
+              )
+            }
+
+            
 
             <TextField
               required
