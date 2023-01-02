@@ -19,6 +19,7 @@ import CalendarEvents from "./pages/CalendarEvents";
 import Company from "./pages/Company";
 import instance from "./services/fetchApi";
 import { setLists } from "./features/listSlice";
+import { setActivities } from "./features/ActivitySlice";
 
 function App() {
   const token =  getToken()
@@ -42,11 +43,19 @@ function App() {
 
       await instance.get(`mylists`)
       .then((res)=> {
-        console.log(res);
         dispatch(setLists({lists: res.data.lists}))
       })
     }
 
+    const getActivitiesResult = async () => {
+
+      await instance.get(`activities`)
+      .then((res)=> {
+        dispatch(setActivities({activities: res.data.activities}))
+      })
+    }
+
+    getActivitiesResult()
     getListsResult()
   }, [])
 

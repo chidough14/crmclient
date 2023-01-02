@@ -15,16 +15,16 @@ const Activities = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
 
-  useEffect(() => {
-    const fetchActivities = async () => {
-      await instance.get(`/activities`)
-      .then((res) => {
-        dispatch(setActivities({activities: res.data.activities}))
-      })
-    }
+  // useEffect(() => {
+  //   const fetchActivities = async () => {
+  //     await instance.get(`/activities`)
+  //     .then((res) => {
+  //       dispatch(setActivities({activities: res.data.activities}))
+  //     })
+  //   }
 
-    fetchActivities()
-  }, [])
+  //   fetchActivities()
+  // }, [])
 
   useEffect(() => {
     let cols  = {

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  events: []
+  events: [],
 }
 
 export const EventSlice = createSlice({
@@ -11,14 +11,25 @@ export const EventSlice = createSlice({
     setEvents: (state, action) => {
       state.events = action.payload.events
     },
-    // addActivity: (state, action) => {
-    //   state.activities = [...state.activities, action.payload.activity]
-    // },
+    addEvent: (state, action) => {
+      state.events = [...state.events, action.payload.event]
+    },
+    updateEvent: (state, action) => {
+      let idx
+      idx = state.events.findIndex((a) => a.id === action.payload.event.id)
+      state.events[idx] = action.payload.event
+    },
+    deleteEvent: (state, action) => {
+      state.events = state.events.filter((a) => a.id !== action.payload.eventId)
+    },
   },
 })
 
 export const { 
-  setEvents
+  setEvents,
+  addEvent,
+  updateEvent,
+  deleteEvent
 } = EventSlice.actions
 
 export default EventSlice.reducer

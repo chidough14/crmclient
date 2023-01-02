@@ -6,10 +6,12 @@ import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Grid } from '@mui/material';
+import { Alert, Grid, Snackbar } from '@mui/material';
 import instance from '../services/fetchApi.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEvents } from '../features/EventSlice.js';
+import { setEvents, updateEvent } from '../features/EventSlice.js';
+import EventModal from '../components/events/EventModal.js';
+import ViewEventModal from '../components/events/ViewEventModal.js';
 
 
 const DnDCalendar = withDragAndDrop(Calendar)
@@ -20,16 +22,34 @@ const localizer = momentLocalizer(moment);
 const CalendarEvents = () => {
   const {events} = useSelector(state => state.event)
   const [myEvents, setMyEvents] = useState([])
+  const [open, setOpen] = useState(false);
+  const [openViewEventModal, setOpenViewEventModal] = useState(false);
+  const [eventObj, setEventObj] = useState(undefined);
+  const [startTime, setStartTime] = useState()
+  const [endTime, setEndTime] = useState()
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
   const dispatch = useDispatch()
+  const { activities } = useSelector((state) => state.activity) 
+  const user = useSelector((state) => state.user)
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
-      const title = window.prompt('New Event name')
-      if (title) {
-        setMyEvents((prev) => [...prev, { start, end, title }])
-      }
+
+      setOpen(true)
+      setStartTime(start)
+      setEndTime(end)
     },
-    [setEvents]
+    [setStartTime, setEndTime, setOpen]
   )
 
   useEffect(()=> {
@@ -47,7 +67,7 @@ const CalendarEvents = () => {
 
   
   useEffect(()=> {
-    let xx = events.map((a) => {
+    let eventItems = events.map((a) => {
       return {
         ...a,
         start : moment(a.start).toDate(),
@@ -55,14 +75,14 @@ const CalendarEvents = () => {
       }
     })
 
-    console.log(xx);
-
-    setMyEvents(xx)
+    setMyEvents(eventItems)
   }, [events])
 
   const handleSelectEvent = useCallback(
-    (event) => window.alert(event.title),
-    []
+    (event) => {
+     setOpenViewEventModal(true)
+     setEventObj(event)
+    }, [setOpenViewEventModal, setEventObj]
   )
 
   const { defaultDate, scrollToTime } = useMemo(
@@ -72,6 +92,31 @@ const CalendarEvents = () => {
     }),
     []
   )
+
+  const updateCalendarEvent = async (e) => {
+    const body = {
+      start: e.start,
+      end: e.end
+    }
+
+    dispatch(updateEvent({event: {
+      ...e.event,
+      start: e.start,
+      end: e.end
+    }}))
+
+    await instance.patch(`events/${e.event.id}`, body)
+    .then(() => {
+       setOpenAlert(true)
+       setAlertMessage("Event updated successfully")
+       setSeverity("success")
+    })
+    .catch((err)=> {
+      setOpenAlert(true)
+      setAlertMessage("An error was encountered")
+      setSeverity("warning")
+    })
+  }
 
   return (
     <div style={{width: "100%", height: "100%"}}>
@@ -104,10 +149,32 @@ const CalendarEvents = () => {
           }
         }
         draggableAccessor={(event) => true}
-        onDragStart={()=> console.log("drag")}
-        onEventDrop={()=> console.log("drop")}
-        onEventResize={()=> console.log("resize")}
+        onDragStart={(e)=> console.log("drag", e)}
+        onEventDrop={(e)=> updateCalendarEvent(e)}
+        onEventResize={(e)=> updateCalendarEvent(e)}
       />
+
+      <EventModal
+        open={open}
+        setOpen={setOpen}
+        startTime={startTime}
+        endTime={endTime}
+        activities={activities.filter((a) => a.user_id === user.id)}
+        user={user}
+      />
+
+      <ViewEventModal
+        open={openViewEventModal}
+        setOpen={setOpenViewEventModal}
+        event={eventObj}
+        relatedActivity={activities.find((a) => a.id === eventObj?.activity_id)}
+      />
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
        
   )

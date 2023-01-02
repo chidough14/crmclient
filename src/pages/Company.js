@@ -73,7 +73,6 @@ const Company = () => {
         <Typography variant='h6'><b>Activities</b></Typography>
       </Divider>
       <div>
-        {/* <Typography variant='h6'><b>Activities</b></Typography> */}
         <ComanyActivitiesTable rows={company?.activities} />
       </div>
 
