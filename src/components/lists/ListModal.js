@@ -4,8 +4,8 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
-import { addList, updateList } from '../features/listSlice';
-import instance from '../services/fetchApi';
+import { addList, updateList } from '../../features/listSlice';
+import instance from '../../services/fetchApi';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;

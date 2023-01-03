@@ -2,7 +2,8 @@ import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import ActivityItem from './ActivityItem'
 
-const ActivityColumn = ({ col: { list, id } }) => {
+const ActivityColumn = ({ col: { list, id, total } }) => {
+
   return (
     <Droppable droppableId={id}>
       {provided => (
@@ -12,7 +13,9 @@ const ActivityColumn = ({ col: { list, id } }) => {
             flexDirection: 'column',
           }}
         >
-          <h3 style={{textAlign: "center"}}>{id}</h3>
+          <p style={{textAlign: "center", fontSize: "14px"}}>
+            <b>{id}</b> <br></br> ${total}
+          </p>
           <div
             style={{
               display: 'flex',

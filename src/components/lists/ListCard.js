@@ -10,11 +10,11 @@ import { CardHeader, Dialog, DialogActions, DialogContent, DialogContentText, Di
 import MuiAlert from '@mui/material/Alert';
 import { MoreVert } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { getToken } from '../services/LocalStorageService';
+import { getToken } from '../../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
 import ListModal from './ListModal';
-import { closeAlert, removeList, showAlert } from '../features/listSlice';
-import instance from '../services/fetchApi';
+import { closeAlert, removeList, showAlert } from '../../features/listSlice';
+import instance from '../../services/fetchApi';
 
 const bull = (
   <Box

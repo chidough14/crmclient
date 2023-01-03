@@ -9,8 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
 import { AppBar, Button, Toolbar, Typography } from '@mui/material';
-import ListCard from '../components/ListCard';
-import ListModal from '../components/ListModal';
+import ListCard from '../components/lists/ListCard';
+import ListModal from '../components/lists/ListModal';
 import "./list.css"
 
 

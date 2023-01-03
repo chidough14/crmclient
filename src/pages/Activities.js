@@ -30,19 +30,23 @@ const Activities = () => {
     let cols  = {
       Low: {
         id: 'Low',
-        list: activities.filter((a) => a.probability === "Low")
+        list: activities.filter((a) => a.probability === "Low"),
+        total: activities.filter((a) => a.probability === "Low").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.2,
       },
       Medium: {
         id: 'Medium',
-        list: activities.filter((a) => a.probability === "Medium")
+        list: activities.filter((a) => a.probability === "Medium"),
+        total: activities.filter((a) => a.probability === "Medium").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.4,
       },
       High: {
         id: 'High',
-        list: activities.filter((a) => a.probability === "High")
+        list: activities.filter((a) => a.probability === "High"),
+        total: activities.filter((a) => a.probability === "High").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.8,
       },
       Closed: {
         id: 'Closed',
-        list: activities.filter((a) => a.probability === "Closed")
+        list: activities.filter((a) => a.probability === "Closed"),
+        total: activities.filter((a) => a.probability === "Closed").reduce((n, {earningEstimate}) => n + earningEstimate, 0),
       },
     
     }
@@ -149,7 +153,11 @@ const Activities = () => {
   return (
     <div>
       <Toolbar>
-        <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }} >My Activities</Typography>
+        <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >My Activities</Typography>
+
+        <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >
+          Total : ${columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
+        </Typography>
 
         <Button variant="contained" size='small' className="addButton" onClick={handleOpen}>Add Activity</Button>
       </Toolbar>
