@@ -20,6 +20,7 @@ import Company from "./pages/Company";
 import instance from "./services/fetchApi";
 import { setLists } from "./features/listSlice";
 import { setActivities } from "./features/ActivitySlice";
+import ActivityDetails from "./pages/activities/ActivityDetails";
 
 function App() {
   const token =  getToken()
@@ -74,6 +75,7 @@ function App() {
             <Route path="/lists/:id" element={<SingleList />} />
             <Route path="/companies/:id" element={<Company />} />
             <Route path="/activities" element={<Activities />} />
+            <Route path="/activities/:id" element={<ActivityDetails />} />
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/events" element={<CalendarEvents />} />
           </Route>

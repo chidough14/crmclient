@@ -10,6 +10,7 @@ import moment from 'moment';
 import instance from '../../services/fetchApi';
 import { deleteEvent, updateEvent } from '../../features/EventSlice';
 import { CloseOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
+import { updateActivityEvent } from '../../features/ActivitySlice';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -42,7 +43,7 @@ const validationSchema = yup.object({
     .required('End time is required'),
 });
 
-const ViewEventModal = ({ open, setOpen, event, relatedActivity }) => {
+const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm }) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
@@ -58,8 +59,11 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity }) => {
     setOpenAlert(false);
   };
   useEffect(() => {
+    if (showForm && event) {
+      editEvent(event)
+    }
  
-  }, [open])
+  }, [open, event])
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -74,7 +78,6 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
-      console.log(values);
       let body = {
         ...values,
         start: moment(values.start).format(),
@@ -83,6 +86,9 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity }) => {
 
       await instance.patch(`events/${event.id}`, body)
       .then((res) => {
+        if (showForm) {
+          dispatch(updateActivityEvent({event: res.data.event}))
+        }
         setOpenAlert(true)
         setAlertMessage("Event updated successfully")
         dispatch(updateEvent({event: res.data.event}))

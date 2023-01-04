@@ -10,6 +10,7 @@ import moment from 'moment';
 import instance from '../../services/fetchApi';
 import { addEvent } from '../../features/EventSlice';
 import { CloseOutlined } from '@mui/icons-material';
+import { addEventToActivity } from '../../features/ActivitySlice';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -42,7 +43,7 @@ const validationSchema = yup.object({
     .required('End time is required'),
 });
 
-const EventModal = ({ open, setOpen, startTime, endTime, activities, user}) => {
+const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activityId}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("Event created successfully");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
@@ -64,6 +65,14 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user}) => {
    }
   }, [open,startTime, endTime])
 
+  useEffect(() => {
+    if (activityId) {
+      formik.setFieldValue('activity', activityId)
+      formik.setFieldValue('start', "")
+      formik.setFieldValue('end', "")
+    }
+   }, [open, activityId])
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -74,7 +83,6 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user}) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
-      console.log(moment(values.start).format(), moment(values.end).format());
       let body = {
         ...values,
         user_id: user.id,
@@ -85,6 +93,9 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user}) => {
 
       await instance.post(`events`, body)
       .then((res) => {
+        if (activityId) {
+          dispatch(addEventToActivity({event: res.data.event}))
+        }
         setOpenAlert(true);
         dispatch(addEvent({event: res.data.event}))
         handleClose()
@@ -187,7 +198,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user}) => {
               showActivitySelect ? (
                 <Button variant="text" onClick={() => setShowActivitySelect(false)}>Hide</Button>
               ) : (
-                <Button variant="text" onClick={() => setShowActivitySelect(true)}>Link to Activity</Button>
+                <Button variant="text" disabled={activityId} onClick={() => setShowActivitySelect(true)}>Link to Activity</Button>
               )
             }
 

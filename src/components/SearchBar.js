@@ -5,9 +5,15 @@ import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
 import { Autocomplete } from '@mui/material';
 
+const style = {
+  backgroundColor: "white",
+  borderRadius: "20px",
+  width: "300px",
+}
+
 const SearchBar = ({setSearchQuery, data, activityModal, populateFields, navigate}) => (
   <Autocomplete
-  size='small'
+    size='small'
     freeSolo
     id="free-solo-2-demo"
     disableClearable
@@ -15,6 +21,7 @@ const SearchBar = ({setSearchQuery, data, activityModal, populateFields, navigat
     getOptionLabel={(option) => option.name || ""}
     renderInput={(params) => (
       <TextField
+        fullWidth={activityModal}
         size="small"
         {...params}
         label="Search companies"
@@ -22,12 +29,7 @@ const SearchBar = ({setSearchQuery, data, activityModal, populateFields, navigat
           ...params.InputProps,
           type: 'search',
         }}
-        style={{
-          backgroundColor: "white",
-          borderRadius: "20px",
-          width: "300px",
-          //height: "30px"
-        }}
+        style={activityModal ? null : style}
       />
     )}
     onInputChange={(e)=> setSearchQuery(e.target.value)}
@@ -46,7 +48,7 @@ const SearchBar = ({setSearchQuery, data, activityModal, populateFields, navigat
       alignSelf: "center",
       justifyContent: "center",
       flexDirection: "column",
-      padding: 10,
+      //padding: 10,
     }}
   />
 );

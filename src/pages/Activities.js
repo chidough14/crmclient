@@ -4,7 +4,7 @@ import {DragDropContext} from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import ActivityColumn from '../components/activities/ActivityColumn'
 import ActivityModal from '../components/activities/ActivityModal'
-import { setActivities, updateActivityProbability } from '../features/ActivitySlice'
+import { editActivity, setActivities } from '../features/ActivitySlice'
 import instance from '../services/fetchApi'
 
 const Activities = () => {
@@ -69,7 +69,7 @@ const Activities = () => {
     await instance.patch(`activities/${activityId}`, body)
     .then((res) => {
       console.log(res);
-      dispatch(updateActivityProbability({activity: res.data.activity}))
+      dispatch(editActivity({activity: res.data.activity}))
     })
   }
 

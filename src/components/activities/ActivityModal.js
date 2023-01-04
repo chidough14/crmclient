@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
-import { addActivity } from '../../features/ActivitySlice';
+import { addActivity, editActivity, setSingleActivity } from '../../features/ActivitySlice';
 import { addActivityToCompany, setCompany } from '../../features/companySlice';
 import instance from '../../services/fetchApi';
 import SearchBar from '../SearchBar';
@@ -43,7 +43,8 @@ const validationSchema = yup.object({
     .required('Type is required'),
 });
 
-const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
+const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activity, editMode}) => {
+ 
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,11 +64,19 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
   };
 
   useEffect(() => {
+    
     if (companyObject) {
       populateFields(companyObject)
     }
    
   }, [openActivityModal])
+
+  useEffect(() => {
+    if (editMode && activity) {
+      formik.setValues(activity)
+    }
+   
+  }, [open, activity])
 
   useEffect(()=> {
     const getSearchResult = async () => {
@@ -104,26 +113,41 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
-      values.company_id = companyId
-      values.user_id = user.id
-      values.earningEstimate = parseInt(values.earningEstimate)
+      if (editMode) {
+        values.earningEstimate = parseInt(values.earningEstimate)
+        
+        await instance.patch(`activities/${activity.id}`, values)
+        .then((res) => {
+          setOpenAlert(true);
+          setAlertMessage("Activity updated successfully")
+  
+          dispatch(editActivity({activity: res.data.activity}))
+
+          dispatch(setSingleActivity({activity: res.data.activity}))
+  
+          handleClose()
+          resetForm();
+        });
+      } else {
+        values.company_id = companyId
+        values.user_id = user.id
+        values.earningEstimate = parseInt(values.earningEstimate)
+        
+        await instance.post(`activities`, values)
+        .then((res) => {
+          setOpenAlert(true);
+          setAlertMessage("Activity created successfully")
+  
+          dispatch(addActivity({activity: res.data.activity}))
+  
+          if (companyObject) {
+            dispatch(addActivityToCompany({activity: res.data.activity}))
+          }
+          handleClose()
+          resetForm();
+        });
+      }
       
-      
-
-      await instance.post(`activities`, values)
-      .then((res) => {
-        console.log(res);
-        setOpenAlert(true);
-        setAlertMessage("Activity created successfully")
-
-        dispatch(addActivity({activity: res.data.activity}))
-
-        if (companyObject) {
-          dispatch(addActivityToCompany({activity: res.data.activity}))
-        }
-        handleClose()
-        resetForm();
-      });
       
     },
   });
@@ -139,11 +163,11 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             <Typography variant='h6' style={{marginBottom: "10px"}}>
-              Add Activity
+              {editMode ? "Edit Activity" : "Add Activity"}
             </Typography>
             
             {
-              openActivityModal ? (
+              (openActivityModal || editMode) ? (
                 <></>
 
               ) : (
@@ -156,7 +180,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
               )
             }
 
-            
+            <p></p>
 
             <TextField
               required
@@ -247,7 +271,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal}) => {
             <p></p>
             <div style={{display: "flex", justifyContent: "space-between"}}>
               <Button size='small' color="primary" variant="contained"  type="submit">
-                Add
+                {editMode ? "Save" : "Add"}
               </Button>
 
               <Button 

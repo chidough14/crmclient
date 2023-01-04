@@ -26,7 +26,7 @@ const ActivityColumn = ({ col: { list, id, total } }) => {
             ref={provided.innerRef}
           >
             {list.map((item, index) => (
-                <ActivityItem  item={item} index={index} />
+                <ActivityItem  activity={item} index={index} />
             ))}
             {provided.placeholder}
           </div>

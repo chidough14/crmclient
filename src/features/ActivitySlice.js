@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  activities: []
+  activities: [],
+  activity: undefined
 }
 
 export const ActivitySlice = createSlice({
@@ -14,10 +15,36 @@ export const ActivitySlice = createSlice({
     addActivity: (state, action) => {
       state.activities = [...state.activities, action.payload.activity]
     },
-    updateActivityProbability: (state, action) => {
+    editActivity: (state, action) => {
       let idx
       idx = state.activities.findIndex((a) => a.id === action.payload.activity.id)
       state.activities[idx] = action.payload.activity
+    },
+    removeActivity: (state, action) => {
+      state.activities = state.activities.filter((a) => a.id !== action.payload.activityId)
+    },
+    setSingleActivity: (state, action) => {
+      state.activity = action.payload.activity
+    },
+    addEventToActivity: (state, action) => {
+      state.activity.events = [...state.activity.events, action.payload.event]
+    },
+    updateActivityEvent: (state, action) => {
+      let idx = state.activity.events.findIndex((a) => a.id === action.payload.event.id)
+      state.activity.events[idx] = action.payload.event
+    },
+    deleteActivityEvent: (state, action) => {
+      state.activity.events = state.activity.events.filter((a) => a.id !== action.payload.id)
+    },
+    addProductItemToActivity: (state, action) => {
+      state.activity.products = [...state.activity.products, action.payload.product]
+    },
+    updateProductItem: (state, action) => {
+      let idx = state.activity.products.findIndex((a) => a.id === action.payload.product.id)
+      state.activity.products[idx] = action.payload.product
+    },
+    removeProductItem: (state, action) => {
+      state.activity.products = state.activity.products.filter((a) => a.id !== action.payload.id)
     },
   },
 })
@@ -25,7 +52,15 @@ export const ActivitySlice = createSlice({
 export const { 
   setActivities,
   addActivity,
-  updateActivityProbability
+  editActivity,
+  removeActivity,
+  setSingleActivity,
+  addProductItemToActivity,
+  updateProductItem,
+  removeProductItem,
+  addEventToActivity,
+  updateActivityEvent,
+  deleteActivityEvent
 } = ActivitySlice.actions
 
 export default ActivitySlice.reducer
