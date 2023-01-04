@@ -43,7 +43,7 @@ const validationSchema = yup.object({
     .required('End time is required'),
 });
 
-const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm }) => {
+const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashboard }) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
@@ -239,21 +239,26 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm }) => 
               </form>
             ) : (
               <>
-              <div style={{display: "flex", float: "right"}}>
-              <Tooltip title="Edit" placement="top">
-                  <EditOutlined
-                    onClick={() => editEvent(event)}
-                    style={{cursor: "pointer"}}
-                  />
-                </Tooltip>
-
-                <Tooltip title="Delete" placement="top">
-                  <DeleteOutlined
-                    onClick={() => setOpenDialog(true)}
-                    style={{cursor: "pointer"}}
-                  />
-                </Tooltip>
-              </div>
+              {
+                !dashboard && (
+                  <div style={{display: "flex", float: "right"}}>
+                    <Tooltip title="Edit" placement="top">
+                      <EditOutlined
+                        onClick={() => editEvent(event)}
+                        style={{cursor: "pointer"}}
+                      />
+                    </Tooltip>
+    
+                    <Tooltip title="Delete" placement="top">
+                      <DeleteOutlined
+                        onClick={() => setOpenDialog(true)}
+                        style={{cursor: "pointer"}}
+                      />
+                    </Tooltip>
+                  </div>
+                )
+              }
+             
               <Typography variant="h7" display="block"  gutterBottom>
                 <b>Title</b> : {event?.title}
               </Typography>

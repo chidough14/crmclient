@@ -21,6 +21,7 @@ import instance from "./services/fetchApi";
 import { setLists } from "./features/listSlice";
 import { setActivities } from "./features/ActivitySlice";
 import ActivityDetails from "./pages/activities/ActivityDetails";
+import { setEvents } from "./features/EventSlice";
 
 function App() {
   const token =  getToken()
@@ -56,6 +57,15 @@ function App() {
       })
     }
 
+    const getEventsResult = async () => {
+
+      await instance.get(`events`)
+      .then((res)=> {
+        dispatch(setEvents({events: res.data.events}))
+      })
+    }
+
+    getEventsResult()
     getActivitiesResult()
     getListsResult()
   }, [])

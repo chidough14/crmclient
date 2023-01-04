@@ -52,18 +52,17 @@ const CalendarEvents = () => {
     [setStartTime, setEndTime, setOpen]
   )
 
-  useEffect(()=> {
-    const getEventsResult = async () => {
+  // useEffect(()=> {
+  //   const getEventsResult = async () => {
 
-      await instance.get(`events`)
-      .then((res)=> {
-        console.log(res);
-        dispatch(setEvents({events: res.data.events}))
-      })
-    }
+  //     await instance.get(`events`)
+  //     .then((res)=> {
+  //       dispatch(setEvents({events: res.data.events}))
+  //     })
+  //   }
 
-    getEventsResult()
-  }, [])
+  //   getEventsResult()
+  // }, [])
 
   
   useEffect(()=> {
