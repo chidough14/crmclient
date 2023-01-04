@@ -59,7 +59,7 @@ export default function Lists() {
       <Toolbar>
         <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }} >My Lists</Typography>
 
-        <Button variant="contained" onClick={handleOpen} className="addButton" size='small'>Add list</Button>
+        <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px"}}>Add list</Button>
       </Toolbar>
       <div className="cards">
         {

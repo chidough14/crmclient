@@ -135,7 +135,7 @@ const ListCard = ({list}) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={() => navigate(`/lists/${list.id}`)}>Learn More</Button>
+          <Button size="small" onClick={() => navigate(`/listsview/${list.id}`)}>Learn More</Button>
         </CardActions>
       </Card>
 

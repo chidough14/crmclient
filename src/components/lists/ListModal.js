@@ -187,7 +187,7 @@ const ListModal = ({list, open, setOpen}) => {
             </Select>
             <p></p>
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' color="primary" variant="contained"  type="submit">
+              <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>
                 {
                   list ? "Save" : "Add"
                 }
@@ -201,6 +201,7 @@ const ListModal = ({list, open, setOpen}) => {
                   handleClose()
                   formik.resetForm()
                 }}
+                style={{borderRadius: "30px"}}
               >
                 Cancel
               </Button>

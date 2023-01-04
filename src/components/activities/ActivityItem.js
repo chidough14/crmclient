@@ -14,6 +14,7 @@ import instance from '../../services/fetchApi';
 import { removeActivity } from '../../features/ActivitySlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { deleteEvent } from '../../features/EventSlice';
 
 const showIcon = (type) => {
   if (type === "Call") {
@@ -123,6 +124,7 @@ const ActivityItem = ({activity, index}) => {
       setOpenAlert(true)
       handleCloseDialog()
       dispatch(removeActivity({activityId: id}))
+      dispatch(deleteEvent({activityId: id}))
     }
   };
 

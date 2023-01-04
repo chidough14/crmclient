@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   lists: [],
   openAlert: false,
-  list: undefined
+  list: undefined,
+  selectedCompanyId: undefined
 }
 
 export const listSlice = createSlice({
@@ -36,6 +37,9 @@ export const listSlice = createSlice({
     closeAlert: (state, action) => {
       state.openAlert = false
     },
+    setSelectedCompanyId: (state, action) => {
+      state.selectedCompanyId = action.payload.id
+    },
   },
 })
 
@@ -47,7 +51,8 @@ export const {
   showAlert, 
   closeAlert, 
   getSingleList, 
-  setSingleList 
+  setSingleList,
+  setSelectedCompanyId 
 } = listSlice.actions
 
 export default listSlice.reducer

@@ -219,7 +219,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
                 </MuiPickersUtilsProvider>
                 
                 <div style={{display: "flex", justifyContent: "space-between"}}>
-                  <Button size='small' color="primary" variant="contained"  type="submit">
+                  <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>
                   Save
                   </Button>
     
@@ -231,6 +231,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
                       handleClose()
                       formik.resetForm()
                     }}
+                    style={{borderRadius: "30px"}}
                   >
                     Cancel
                   </Button>
@@ -292,6 +293,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
                   onClick={() => {
                     handleClose()
                   }}
+                  style={{borderRadius: "30px"}}
                 >
                   Close
                 </Button>

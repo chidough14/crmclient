@@ -68,7 +68,6 @@ const Activities = () => {
 
     await instance.patch(`activities/${activityId}`, body)
     .then((res) => {
-      console.log(res);
       dispatch(editActivity({activity: res.data.activity}))
     })
   }
@@ -159,7 +158,7 @@ const Activities = () => {
           Total : ${columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
         </Typography>
 
-        <Button variant="contained" size='small' className="addButton" onClick={handleOpen}>Add Activity</Button>
+        <Button variant="contained" size='small' className="addButton" onClick={handleOpen} style={{borderRadius: "30px"}}>Add Activity</Button>
       </Toolbar>
       <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
         <div

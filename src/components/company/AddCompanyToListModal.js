@@ -1,4 +1,4 @@
-import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem, Snackbar, List, ListItem, ListItemButton, ListItemIcon, Paper } from '@mui/material'
+import { Box, Button,  Modal,  Typography, Snackbar, List,ListItemButton, Paper } from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import { useFormik } from 'formik';
@@ -119,7 +119,7 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
                         onClick={() => selectList(list)}
                         disabled={list.id === listId}
                       >
-                        <Item elevation={4} >
+                        <Item elevation={4} style={{border: list.id === listId ? "4px solid green" : null}}>
                           {list.name}
                         </Item>
                       </ListItemButton>
@@ -139,6 +139,7 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
                 onClick={() => {
                   addToList()
                 }}
+                style={{borderRadius: "30px"}}
               >
                 Add
               </Button>
@@ -150,6 +151,7 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
                 onClick={() => {
                   handleClose()
                 }}
+                style={{borderRadius: "30px"}}
               >
                 Cancel
               </Button>

@@ -73,7 +73,7 @@ export default function DashboardCard({type, events, lists}) {
     return  <tr>
               <td style={{textAlign: "left"}}>{td1}</td>
               <td style={{textAlign: "right"}}>
-                {`${td2.count} (${td2.amount.toFixed(1)}SEK)`}
+                {`${td2.count} ($${td2.amount.toFixed(1)})`}
               </td>
             </tr>
   }
@@ -141,11 +141,11 @@ export default function DashboardCard({type, events, lists}) {
         {
            type === "list"  && (
             <>
-              <p style={{fontWeight: "bolder"}}>{lists[0].description}</p>
+              <p style={{fontWeight: "bolder"}}>{lists[0]?.description}</p>
 
               <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Button type='default' onClick={()=> navigate(`/lists`)}>My Lists</Button>
-                <Button type='primary' onClick={()=> navigate(`/lists/${lists[0].id}`)}>Resume Work</Button>
+                <Button type='primary' onClick={()=> navigate(`/listsview/${lists[0].id}`)}>Resume Work</Button>
               </div>
           </>
           )

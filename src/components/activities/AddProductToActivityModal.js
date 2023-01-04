@@ -27,7 +27,7 @@ const style = {
 };
 
 
-const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQuantity, addProductToActivity, editMode, setEditMode}) => {
+const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQuantity, addProductToActivity, editMode, setEditMode, productsinActivity}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,22 +100,29 @@ const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQu
                     ...params.InputProps,
                     type: 'search',
                   }}
-                  // style={{
-                  //   backgroundColor: "white",
-                  //   borderRadius: "20px",
-                  //   width: "300px",
-                  //   //height: "30px"
-                  // }}
                 />
               )}
               onInputChange={(e)=> {
                 if(e.target.value.length === 3){
-                  let dt = products.filter((a) => a.name.includes(e.target.value))
+                  // filter out products that are already in the activity
+                  let ids = productsinActivity?.map((a) => a.id)
+                 
+                  let pr = products.map((a) => {
+                    if (ids.includes(a.id)) {
+
+                    } else {
+                      return a
+                    }
+                  })
+
+                  let dt = pr.filter((a) => a?.name.includes(e.target.value))
                   setData(dt)
                 }
               }}
               onChange={(e, f)=> {
-                console.log(f);
+                // remove selected product from dropdown options
+                let dt = [...data]
+                setData(dt.filter((a) => a.id !== f.id))
                 setProductId(f.id)
               }}
               style={{

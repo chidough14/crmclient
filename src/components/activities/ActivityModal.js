@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addActivity, editActivity, setSingleActivity } from '../../features/ActivitySlice';
 import { addActivityToCompany, setCompany } from '../../features/companySlice';
+import { addEvent } from '../../features/EventSlice';
 import instance from '../../services/fetchApi';
 import SearchBar from '../SearchBar';
 
@@ -135,10 +136,12 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
         
         await instance.post(`activities`, values)
         .then((res) => {
+          console.log(res);
           setOpenAlert(true);
           setAlertMessage("Activity created successfully")
   
           dispatch(addActivity({activity: res.data.activity}))
+          dispatch(addEvent({event: res.data.event}))
   
           if (companyObject) {
             dispatch(addActivityToCompany({activity: res.data.activity}))
@@ -270,7 +273,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
             </Select>
             <p></p>
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' color="primary" variant="contained"  type="submit">
+              <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>
                 {editMode ? "Save" : "Add"}
               </Button>
 
@@ -282,6 +285,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
                   handleClose()
                   formik.resetForm()
                 }}
+                style={{borderRadius: "30px"}}
               >
                 Cancel
               </Button>

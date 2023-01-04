@@ -20,7 +20,13 @@ export const EventSlice = createSlice({
       state.events[idx] = action.payload.event
     },
     deleteEvent: (state, action) => {
-      state.events = state.events.filter((a) => a.id !== action.payload.eventId)
+      if (action.payload.eventId) {
+        state.events = state.events.filter((a) => a.id !== action.payload.eventId)
+      }
+     
+      if (action.payload.activityId) {
+        state.events = state.events.filter((a) => a.activity_id !== action.payload.activityId)
+      }
     },
   },
 })

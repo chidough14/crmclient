@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 
 const activityItems = [
@@ -39,6 +41,7 @@ const activityItems = [
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate()
 
   return (
     <React.Fragment>
@@ -60,6 +63,11 @@ function Row(props) {
         <TableCell >{row.probability}</TableCell>
         <TableCell >{row.earningEstimate}</TableCell>
         <TableCell >{row.type}</TableCell>
+        <TableCell >
+          <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/activities/${row.id}`)}>
+          View Activity
+          </Button>
+        </TableCell>
       </TableRow>
       {/* Collapsible */}
       <TableRow>
@@ -125,6 +133,7 @@ const ComanyActivitiesTable = ({rows}) => {
             <TableCell>Probablity</TableCell>
             <TableCell>Estimate&nbsp;($)</TableCell>
             <TableCell>Type</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -65,6 +65,7 @@ const ActivityDetails = () => {
   const [openAddeventModal, setOpenAddEventModal] = React.useState(false);
   const [openViewEventModal, setOpenViewEventModal] = React.useState(false);
   const [eventObj, setEventObj] = React.useState();
+  const [total, setTotal] = React.useState(0);
   const navigate = useNavigate()
 
   const handleChange = (event, newValue) => {
@@ -84,6 +85,19 @@ const ActivityDetails = () => {
     getActivityDetails()
 
   }, [params.id])
+
+  useEffect(()=> {
+    let arr = []
+    activity?.products.map((a) => {
+       let total = a.price * a.pivot.quantity
+       arr.push(total)
+    })
+
+    console.log(arr.reduce((a, b) => a + b, 0));
+    setTotal(arr.reduce((a, b) => a + b, 0))
+
+
+  }, [activity])
 
   const addProductToActivity = async () => {
     let body = {
@@ -147,6 +161,7 @@ const ActivityDetails = () => {
     await instance.delete(`activities/${params.id}`)
     .then((res) => {
       dispatch(removeActivity({activityId: parseInt(params.id)}))
+      dispatch(deleteEvent({activityId: parseInt(params.id)}))
       navigate("/activities")
       setOpenDialogDeleteActivity(false)
     
@@ -172,11 +187,11 @@ const ActivityDetails = () => {
 
   return (
     <div>
-      <Toolbar>
+      {/* <Toolbar>
         <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${activity?.label}`}</Typography>
-      </Toolbar>
+      </Toolbar> */}
     
-      <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', marginTop: "30px" }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Details" {...a11yProps(0)} />
@@ -210,15 +225,22 @@ const ActivityDetails = () => {
                 <b>Probability</b> : {activity?.probability}
               </Typography>
 
-              <Button variant="contained" size='small' onClick={() => setOpenEditModal(true)}><EditOutlined /> Edit</Button>&nbsp;&nbsp;&nbsp;
+              <Typography variant="h7" display="block"  gutterBottom>
+                <b>Company</b> : 
+                <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/companies/${activity?.company?.id}`)}>
+                  {activity?.company?.name}
+                </Button>
+              </Typography>
 
-              <Button variant="contained" size='small' onClick={()=> setOpenDialogDeleteActivity(true)}><DeleteOutlined /> Delete</Button>
+              <Button variant="contained" size='small' onClick={() => setOpenEditModal(true)} style={{borderRadius: "30px"}}><EditOutlined /></Button>&nbsp;&nbsp;&nbsp;
+
+              <Button variant="contained" color='error' size='small' onClick={()=> setOpenDialogDeleteActivity(true)} style={{borderRadius: "30px"}}><DeleteOutlined /> </Button>
             </div>
 
             <div style={{margin: "auto", width: "60%"}}>
               <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }}><b>Upcoming Events</b></Typography>
-                <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)}>
+                <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)} style={{borderRadius: "30px"}}>
                   <AddOutlined />
                 </Button>
               </div>
@@ -236,7 +258,7 @@ const ActivityDetails = () => {
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <Typography variant='h6'><b>Products</b></Typography>
 
-            <Button variant="contained" size='small' onClick={() => setOpenAddModal(true)}>Add Product</Button>
+            <Button variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
           </div>
          
           <div>
@@ -245,6 +267,27 @@ const ActivityDetails = () => {
               editItem={editItem} 
               deleteItem={deleteItem}
             />
+
+
+            <div style={{display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
+              <Typography variant='h5'  component="div" sx={{ flexGrow: 2}}>
+                <b>Total:</b> ${total}
+              </Typography>
+              
+              <Tooltip title={activity?.probability !== "Closed" ? "Close the deal to create an invoice" : ""}>
+                <div>
+                <Button 
+                  variant="contained" 
+                  disableElevation 
+                  style={{borderRadius: "30px"}} 
+                  disabled={activity?.probability !== "Closed"} 
+                >
+                  Create Invoice
+                </Button>
+                </div>
+              </Tooltip>
+            </div>
+           
           </div>
         </TabPanel>
       </Box>
@@ -258,6 +301,7 @@ const ActivityDetails = () => {
         addProductToActivity={addProductToActivity}
         editMode={editMode}
         setEditMode={setEditMode}
+        productsinActivity={activity?.products}
       />
 
       <Dialog

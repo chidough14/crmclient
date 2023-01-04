@@ -1,5 +1,5 @@
-import { CssBaseline } from "@mui/material";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { CssBaseline, Typography } from "@mui/material";
+import { Link, matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ListIcon from '@mui/icons-material/List';
@@ -8,15 +8,23 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import { Sidebar, Menu, MenuItem, useProSidebar } from 'react-pro-sidebar';
 import { getToken } from "../services/LocalStorageService";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCompanyId, setSingleList } from "../features/listSlice";
+import { setSingleCompany } from "../features/companySlice";
 
 
 const Layout = () => {
   const { collapseSidebar } = useProSidebar();
   const token = getToken()
   const {name} = useSelector(state => state.user)
+  const {list} = useSelector(state => state.list)
   const [loggedIn, setLoggedIn] = useState([])
+  const dispatch = useDispatch()
   const {pathname} = useLocation()
+  const {selectedCompanyId} = useSelector(state => state.list)
+  const navigate = useNavigate()
+
+  const isListPage = matchPath("/listsview/*", pathname)
 
 
  
@@ -41,43 +49,70 @@ const Layout = () => {
               marginRight: "20px",
             }}
           >
-            <Menu>
-              <MenuItem 
-                routerLink={<Link to="/dashboard" />}
-                rootStyles={{
-                  backgroundColor: pathname === "/dashboard" ? "#DDA0DD" : ""
-                }}
-              >
-                <DashboardIcon />&nbsp;&nbsp;&nbsp;Dashboard
-              </MenuItem>
+            {
+              isListPage ? (
+                  <Menu>
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                      <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
 
-              <MenuItem 
-                routerLink={<Link to="/lists" />}
-                rootStyles={{
-                  backgroundColor: pathname === "/lists" ? "#DDA0DD" : ""
-                }}
-              >
-                  <ListIcon />&nbsp;&nbsp;&nbsp;Lists
-              </MenuItem>
 
-              <MenuItem 
-                routerLink={<Link to="/activities" />}
-                rootStyles={{
-                  backgroundColor: pathname === "/activities" ? "#DDA0DD" : ""
-                }}
-              >
-                <PointOfSaleIcon />&nbsp;&nbsp;&nbsp; Activities
-              </MenuItem>
+                      <ListIcon style={{cursor: "pointer"}} onClick={() => navigate("/lists")} />
 
-              <MenuItem 
-                routerLink={<Link to="/events" />}
-                rootStyles={{
-                  backgroundColor: pathname === "/events" ? "#DDA0DD" : ""
-                }}
-              >
-                <CalendarMonthIcon />&nbsp;&nbsp;&nbsp; Calendar
-              </MenuItem>
-            </Menu>
+                    </div>
+                    {
+                      list?.companies.map((a) => (
+                        <MenuItem 
+                          rootStyles={{
+                            backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : ""
+                          }}
+                          onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
+                        >
+                          {a.name}
+                        </MenuItem>
+                      ))
+                    }
+                  </Menu>
+              ) : (
+                <Menu>
+                  <MenuItem 
+                    routerLink={<Link to="/dashboard" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/dashboard" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <DashboardIcon />&nbsp;&nbsp;&nbsp;Dashboard
+                  </MenuItem>
+    
+                  <MenuItem 
+                    routerLink={<Link to="/lists" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/lists" ? "#DDA0DD" : ""
+                    }}
+                  >
+                      <ListIcon />&nbsp;&nbsp;&nbsp;Lists
+                  </MenuItem>
+    
+                  <MenuItem 
+                    routerLink={<Link to="/activities" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/activities" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <PointOfSaleIcon />&nbsp;&nbsp;&nbsp; Activities
+                  </MenuItem>
+    
+                  <MenuItem 
+                    routerLink={<Link to="/events" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/events" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <CalendarMonthIcon />&nbsp;&nbsp;&nbsp; Calendar
+                  </MenuItem>
+                </Menu>
+              )
+            }
+           
           </Sidebar>
           
           <main style={{width: "100%"}}>

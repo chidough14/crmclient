@@ -227,7 +227,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
             }
             
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' color="primary" variant="contained"  type="submit">
+              <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>
                Add
               </Button>
 
@@ -239,6 +239,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
                   handleClose()
                   formik.resetForm()
                 }}
+                style={{borderRadius: "30px"}}
               >
                 Cancel
               </Button>

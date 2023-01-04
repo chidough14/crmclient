@@ -1,7 +1,7 @@
 import { Button, Divider, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useLocation, useMatch, useParams } from 'react-router-dom'
 import ActivityModal from '../components/activities/ActivityModal'
 import AddCompanyToListModal from '../components/company/AddCompanyToListModal'
 import ComanyActivitiesTable from '../components/company/CompanyActivitiesTable'
@@ -10,7 +10,7 @@ import Map from '../components/company/Map'
 import { setSingleCompany } from '../features/companySlice'
 import instance from '../services/fetchApi'
 
-const Company = () => {
+const Company = ({companyObj}) => {
   const params = useParams()
   const dispatch = useDispatch()
   const {company} = useSelector(state => state.company)
@@ -18,27 +18,42 @@ const Company = () => {
   const [openActivityModal, setOpenActivityModal] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleOpenActivityModal = () => setOpenActivityModal(true);
+  const {pathname} = useLocation()
+  const {selectedCompanyId} = useSelector(state => state.list)
+  const {list} = useSelector(state => state.list)
+
+  const isListPage = useMatch("/listsview/*", pathname)
   
   useEffect(() => {
-    const fetchCompany = async () => {
-      await instance.get(`companies/${params.id}`)
+    const fetchCompany = async (id) => {
+      await instance.get(`companies/${id}`)
       .then((res)=> {
-        console.log(res);
         dispatch(setSingleCompany({company: res.data.company}))
       })
     }
 
-    fetchCompany()
-  }, [params.id])
+    if (isListPage && selectedCompanyId) {
+      console.log(selectedCompanyId);
+      fetchCompany(selectedCompanyId)
+    } else {
+      fetchCompany(params.id)
+    }
+  }, [params.id, isListPage, selectedCompanyId])
 
   return (
     <div>
       <Toolbar>
-        <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${company?.name}'s Details`}</Typography>
+        {
+          (isListPage && !list?.companies.length) ? (
+            <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>No companies in list</Typography>
+          ) : (
+            <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${company?.name}'s Details`}</Typography>
+          )
+        }
 
-        <Button variant="contained" size='small' onClick={handleOpen}>Add to list</Button>&nbsp;&nbsp;&nbsp;
+        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpen} disabled={isListPage && !list?.companies.length}>Add to list</Button>&nbsp;&nbsp;&nbsp;
 
-        <Button variant="contained" size='small' onClick={handleOpenActivityModal}>Start Activity</Button>
+        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenActivityModal} disabled={isListPage && !list?.companies.length}>Start Activity</Button>
       </Toolbar>
      
 
@@ -83,7 +98,7 @@ const Company = () => {
       <AddCompanyToListModal
         open={open}
         setOpen={setOpen} 
-        companyId={params.id}
+        companyId={company?.id}
       />
 
       <ActivityModal

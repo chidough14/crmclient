@@ -82,7 +82,7 @@ function App() {
             <Route path="api/user/reset/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/lists" element={<Lists />} />
-            <Route path="/lists/:id" element={<SingleList />} />
+            <Route path="/listsview/:id" element={<SingleList />} />
             <Route path="/companies/:id" element={<Company />} />
             <Route path="/activities" element={<Activities />} />
             <Route path="/activities/:id" element={<ActivityDetails />} />

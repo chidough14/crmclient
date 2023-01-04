@@ -17,10 +17,13 @@ export const companySlice = createSlice({
     },
     addActivityToCompany: (state, action) => {
       state.company.activities = [...state.company.activities, action.payload.activity]
-    }
+    },
+    emptyCompanyObject: (state, action) => {
+      state.company = undefined
+    },
   },
 })
 
-export const { setCompany, setSingleCompany, addActivityToCompany } = companySlice.actions
+export const { setCompany, setSingleCompany, addActivityToCompany, emptyCompanyObject } = companySlice.actions
 
 export default companySlice.reducer
