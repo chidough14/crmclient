@@ -2,9 +2,10 @@ import { Button, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import {DragDropContext} from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import ActivityColumn from '../components/activities/ActivityColumn'
 import ActivityModal from '../components/activities/ActivityModal'
-import { editActivity, setActivities } from '../features/ActivitySlice'
+import { editActivity, setActivities, setOpenPrompt } from '../features/ActivitySlice'
 import instance from '../services/fetchApi'
 
 const Activities = () => {
@@ -14,6 +15,7 @@ const Activities = () => {
   const { activities } = useSelector((state) => state.activity) 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
+  const navigate = useNavigate()
 
   // useEffect(() => {
   //   const fetchActivities = async () => {
@@ -91,7 +93,6 @@ const Activities = () => {
 
     // If start is the same as end, we're in the same column
     if (start === end) {
-      console.log("1111");
       // Move the item within the list
       // Start by making a new list without the dragged item
       const newList = start.list.filter(
@@ -144,6 +145,11 @@ const Activities = () => {
       }))
 
       updateActivity(destination.droppableId)
+
+      if (destination.droppableId === "Closed") {
+        dispatch(setOpenPrompt({value: true}))
+        navigate(`/activities/${activityId}`)
+      }
 
       return null
     }

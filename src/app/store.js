@@ -8,6 +8,7 @@ import listReducer from '../features/listSlice'
 import activityReducer from '../features/ActivitySlice'
 import eventReducer from '../features/EventSlice'
 import productReducer from '../features/ProductSlice'
+import invoiceReducer from '../features/InvoiceSlice'
 
 export const store = configureStore({
   reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
     list: listReducer,
     activity: activityReducer,
     event: eventReducer,
-    product: productReducer
+    product: productReducer,
+    invoice: invoiceReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(userAuthApi.middleware),

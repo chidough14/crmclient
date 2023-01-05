@@ -27,7 +27,7 @@ const style = {
 };
 
 
-const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQuantity, addProductToActivity, editMode, setEditMode, productsinActivity}) => {
+const AddProductToInvoiceModal = ({open, setOpen, setProductId, quantity, setQuantity, addProductToInvoice, editMode, setEditMode, productsinInvoice}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,7 +105,7 @@ const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQu
               onInputChange={(e)=> {
                 if(e.target.value.length === 3){
                   // filter out products that are already in the activity
-                  let ids = productsinActivity?.map((a) => a.id)
+                  let ids = productsinInvoice?.map((a) => a.id)
                  
                   let pr = products.map((a) => {
                     if (ids.includes(a.id)) {
@@ -151,7 +151,7 @@ const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQu
 
           <p></p>
           <div style={{display: "flex", justifyContent: "space-between"}}>
-            <Button size='small' color="primary" variant="contained"  onClick={() => addProductToActivity()} style={{borderRadius: "30px"}}>
+            <Button size='small' color="primary" variant="contained"  onClick={() => addProductToInvoice()} style={{borderRadius: "30px"}}>
               {editMode ?  "Save" : "Add"}
             </Button>
 
@@ -181,4 +181,4 @@ const AddProductToActivityModal = ({open, setOpen, setProductId, quantity, setQu
   )
 }
 
-export default AddProductToActivityModal
+export default AddProductToInvoiceModal

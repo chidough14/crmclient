@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   activities: [],
-  activity: undefined
+  activity: undefined,
+  openPrompt: false
 }
 
 export const ActivitySlice = createSlice({
@@ -46,6 +47,18 @@ export const ActivitySlice = createSlice({
     removeProductItem: (state, action) => {
       state.activity.products = state.activity.products.filter((a) => a.id !== action.payload.id)
     },
+    setOpenPrompt: (state, action) => {
+      state.openPrompt = action.payload.value
+    },
+    setClosePrompt: (state, action) => {
+      state.openPrompt = action.payload.value
+    },
+    addInvoiceToActivity: (state, action) => {
+      state.activity.invoices = [...state.activity.invoices, action.payload.invoice]
+    },
+    removeInvoiceFromActivity: (state, action) => {
+      state.activity.invoices = state.activity.invoices.filter((a) => a.id !== action.payload.invoiceId)
+    },
   },
 })
 
@@ -60,7 +73,11 @@ export const {
   removeProductItem,
   addEventToActivity,
   updateActivityEvent,
-  deleteActivityEvent
+  deleteActivityEvent,
+  setOpenPrompt,
+  setClosePrompt,
+  addInvoiceToActivity,
+  removeInvoiceFromActivity
 } = ActivitySlice.actions
 
 export default ActivitySlice.reducer

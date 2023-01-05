@@ -6,50 +6,45 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
+import { DeleteOutlined, EditOutlined, OpenInFullOutlined, ViewAgendaOutlined } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 
 
-const ActivityProductsTable = ({products, editItem, deleteItem}) => {
+const ActivityInvoiceTable = ({invoices, showInvoice, showDeleteDialog}) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Price ($)</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell>Tax %</TableCell>
-            <TableCell>Active</TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell>Invoice No</TableCell>
+            <TableCell>Reference</TableCell>
+            <TableCell>status</TableCell>
+            <TableCell>Type</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {products?.map((row) => (
+          {invoices?.map((row) => (
             <TableRow
-              key={row.name}
+              key={row.invoice_no}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.name}
+              {row.invoice_no}
               </TableCell>
-              <TableCell>{row.description}</TableCell>
-              <TableCell>{row.price}</TableCell>
-              <TableCell>{row.pivot.quantity}</TableCell>
-              <TableCell>{row.tax_percentage}</TableCell>
-              <TableCell>{row.active}</TableCell>
+              <TableCell>{row.reference}</TableCell>
+              <TableCell>{row.status}</TableCell>
+              <TableCell>{row.type}</TableCell>
               <TableCell>
-                <Tooltip title="Edit Quantity" placement="top">
-                  <EditOutlined
+                <Tooltip title="View Invoice" placement="top">
+                  <OpenInFullOutlined 
                     style={{cursor: "pointer"}}
-                    onClick={() => editItem(row)}
+                    onClick={() => showInvoice(row)}
                   />
                 </Tooltip>
                 <Tooltip title="Delete" placement="top">
                   <DeleteOutlined
                     style={{cursor: "pointer"}}
-                    onClick={() => deleteItem(row)}
+                    onClick={() => showDeleteDialog(row)}
                   />
                 </Tooltip>
               </TableCell>
@@ -61,4 +56,4 @@ const ActivityProductsTable = ({products, editItem, deleteItem}) => {
   );
 }
 
-export default ActivityProductsTable
+export default ActivityInvoiceTable

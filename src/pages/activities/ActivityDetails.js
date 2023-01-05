@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types';
 import { useNavigate, useParams } from 'react-router-dom'
-import { addProductItemToActivity, deleteActivityEvent, removeActivity, removeProductItem, setSingleActivity, updateProductItem } from '../../features/ActivitySlice'
+import { addProductItemToActivity, deleteActivityEvent, removeActivity, removeInvoiceFromActivity, removeProductItem, setClosePrompt, setSingleActivity, updateProductItem } from '../../features/ActivitySlice'
 import instance from '../../services/fetchApi'
 import { AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import ActivityProductsTable from './ActivityProductsTable';
@@ -14,6 +14,11 @@ import ActivityEventsTable from './ActivityEventsTable';
 import EventModal from '../../components/events/EventModal';
 import ViewEventModal from '../../components/events/ViewEventModal';
 import { deleteEvent } from '../../features/EventSlice';
+import PromptDialog from './PromptDialog';
+import InvoiceForm from './InvoiceForm';
+import ActivityInvoiceTable from './ActivityInvoiceTable';
+import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal';
+import { setOpenViewInvoiceModal } from '../../features/InvoiceSlice';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -52,6 +57,7 @@ const ActivityDetails = () => {
   const params = useParams()
   const dispatch = useDispatch()
   const {activity} = useSelector((state) => state.activity)
+  const {openPrompt} = useSelector((state) => state.activity)
   const user = useSelector((state) => state.user)
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
@@ -64,8 +70,11 @@ const ActivityDetails = () => {
   const [openDialogDeleteActivity, setOpenDialogDeleteActivity] = React.useState(false);
   const [openAddeventModal, setOpenAddEventModal] = React.useState(false);
   const [openViewEventModal, setOpenViewEventModal] = React.useState(false);
+  const [openForm, setOpenForm] = React.useState(false);
   const [eventObj, setEventObj] = React.useState();
+  const [invoiceDetails, setInvoiceDetails] = React.useState();
   const [total, setTotal] = React.useState(0);
+  const [editingInvoice, setEditingInvoice] = React.useState(false);
   const navigate = useNavigate()
 
   const handleChange = (event, newValue) => {
@@ -77,7 +86,6 @@ const ActivityDetails = () => {
     const getActivityDetails = async () => {
       await instance.get(`activities/${params.id}`)
       .then((res) => {
-        console.log(res);
         dispatch(setSingleActivity({activity: res.data.activity}))
       })
     }
@@ -87,13 +95,17 @@ const ActivityDetails = () => {
   }, [params.id])
 
   useEffect(()=> {
+    if (openPrompt) {
+      setValue(1)
+    }
+  }, [openPrompt])
+
+  useEffect(()=> {
     let arr = []
     activity?.products.map((a) => {
        let total = a.price * a.pivot.quantity
        arr.push(total)
     })
-
-    console.log(arr.reduce((a, b) => a + b, 0));
     setTotal(arr.reduce((a, b) => a + b, 0))
 
 
@@ -158,14 +170,25 @@ const ActivityDetails = () => {
   }
 
   const deleteRecord = async () => {
-    await instance.delete(`activities/${params.id}`)
-    .then((res) => {
-      dispatch(removeActivity({activityId: parseInt(params.id)}))
-      dispatch(deleteEvent({activityId: parseInt(params.id)}))
-      navigate("/activities")
-      setOpenDialogDeleteActivity(false)
-    
-    })
+    if (editingInvoice) {
+      await instance.delete(`invoices/${invoiceDetails.id}`)
+      .then((res) => {
+        dispatch(removeInvoiceFromActivity({invoiceId: invoiceDetails.id}))
+      
+        setOpenDialogDeleteActivity(false)
+      
+      })
+    } else {
+      await instance.delete(`activities/${params.id}`)
+      .then((res) => {
+        dispatch(removeActivity({activityId: parseInt(params.id)}))
+        dispatch(deleteEvent({activityId: parseInt(params.id)}))
+        navigate("/activities")
+        setOpenDialogDeleteActivity(false)
+      
+      })
+    }
+   
   }
 
   const handleCloseDialog = () => {
@@ -185,6 +208,26 @@ const ActivityDetails = () => {
     setEventObj(event)
   }
 
+  const closePrompt = () => {
+    dispatch(setClosePrompt({value: false}))
+  }
+
+  const agree = () => {
+    setOpenForm(true)
+    dispatch(setClosePrompt({value: false}))
+  }
+
+  const showInvoice = (row) => {
+    setInvoiceDetails(row)
+    dispatch(setOpenViewInvoiceModal({value: true}))
+  }
+
+  const showDeleteDialog = (row) => {
+    setInvoiceDetails(row)
+    setOpenDialogDeleteActivity(true)
+    setEditingInvoice(true)
+  }
+
   return (
     <div>
       {/* <Toolbar>
@@ -196,6 +239,7 @@ const ActivityDetails = () => {
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Details" {...a11yProps(0)} />
             <Tab label="Products" {...a11yProps(1)} />
+            <Tab label="Invoices" {...a11yProps(2)} />
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
@@ -274,21 +318,54 @@ const ActivityDetails = () => {
                 <b>Total:</b> ${total}
               </Typography>
               
-              <Tooltip title={activity?.probability !== "Closed" ? "Close the deal to create an invoice" : ""}>
-                <div>
-                <Button 
-                  variant="contained" 
-                  disableElevation 
-                  style={{borderRadius: "30px"}} 
-                  disabled={activity?.probability !== "Closed"} 
-                >
-                  Create Invoice
-                </Button>
-                </div>
-              </Tooltip>
+              {
+                activity?.probability !== "Closed" ? (
+                  <Tooltip title="Close the deal to create an invoice">
+                    <div>
+                    <Button 
+                      variant="contained" 
+                      disableElevation 
+                      style={{borderRadius: "30px"}} 
+                      disabled
+                    >
+                      Create Invoice
+                    </Button>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  <div hidden={openForm}>
+                    <Button 
+                      variant="contained" 
+                      disableElevation 
+                      style={{borderRadius: "30px"}} 
+                      onClick={() => setOpenForm(true)}
+                    >
+                      Create Invoice
+                    </Button>
+                  </div>
+                )
+              }
+              
             </div>
+            
+            {
+              openForm && (
+                <div>
+                  <InvoiceForm activityId={activity?.id} />
+                </div>
+              )
+            }
+           
            
           </div>
+        </TabPanel>
+
+        <TabPanel  value={value} index={2}>
+          <ActivityInvoiceTable 
+            invoices={activity?.invoices} 
+            showInvoice={showInvoice} 
+            showDeleteDialog={showDeleteDialog}
+          />
         </TabPanel>
       </Box>
 
@@ -333,11 +410,11 @@ const ActivityDetails = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete Activity
+          Delete {editingInvoice ? "Invoice" : "Activity"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this activity ?
+            Are you sure you want to delete this {editingInvoice ? "invoice" : "activity"} ?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -368,6 +445,17 @@ const ActivityDetails = () => {
         event={eventObj}
         showForm={true}
         //relatedActivity={activities.find((a) => a.id === eventObj?.activity_id)}
+      />
+
+      <PromptDialog
+        open={openPrompt}
+        closePrompt={closePrompt}
+        agree={agree}
+      />
+
+      <ViewInvoiceModal
+        invoice={invoiceDetails}
+        companyName={activity?.company?.name}
       />
     </div>
   )

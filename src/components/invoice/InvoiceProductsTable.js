@@ -10,7 +10,7 @@ import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 
 
-const ActivityProductsTable = ({products, editItem, deleteItem}) => {
+const InvoiceProductsTable = ({products, editItem, deleteItem}) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -61,4 +61,4 @@ const ActivityProductsTable = ({products, editItem, deleteItem}) => {
   );
 }
 
-export default ActivityProductsTable
+export default InvoiceProductsTable
