@@ -133,6 +133,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
         values.company_id = companyId
         values.user_id = user.id
         values.earningEstimate = parseInt(values.earningEstimate)
+        values.status = "private"
         
         await instance.post(`activities`, values)
         .then((res) => {

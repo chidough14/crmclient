@@ -14,7 +14,7 @@ const style = {
   // top: '50%',
   // left: '50%',
   // transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: 600,
   bgcolor: 'background.paper',
   //border: '2px solid #000',
   //boxShadow: 24,
@@ -67,7 +67,9 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
       billing_address: '',
       reference: '',
       status: '',
-      type: ''
+      type: '',
+      payment_term: 30,
+      email: ''
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
@@ -141,6 +143,38 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
             error={formik.touched.reference && Boolean(formik.errors.reference)}
             helpertext={formik.touched.reference && formik.errors.reference}
           />
+          <p></p>
+          <TextField
+            required
+            size='small'
+            fullWidth
+            id="email"
+            name="email"
+            label="Email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helpertext={formik.touched.email && formik.errors.email}
+          />
+          <p></p>
+          <InputLabel id="demo-select-small">Payment Term</InputLabel>
+          <Select
+            //required
+            id='payment_term'
+            name="payment_term"
+            label="Payment Term"
+            size='small'
+            fullWidth
+            value={formik.values.payment_term}
+            onChange={formik.handleChange}
+            error={formik.touched.payment_term && Boolean(formik.errors.payment_term)}
+            helpertext={formik.touched.payment_term && formik.errors.payment_term}
+          >
+            <MenuItem value={30}>30</MenuItem>
+            <MenuItem value={60}>60</MenuItem>
+            <MenuItem value={90}>90</MenuItem>
+            
+          </Select>
           <p></p>
           <InputLabel id="demo-select-small">Status</InputLabel>
           <Select

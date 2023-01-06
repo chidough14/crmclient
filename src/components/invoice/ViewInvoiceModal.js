@@ -22,6 +22,8 @@ import InvoiceForm from '../../pages/activities/InvoiceForm';
 import InvoiceProductsTable from './InvoiceProductsTable';
 import AddProductToInvoiceModal from './AddProductToInvoiceModal';
 import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -124,6 +126,20 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
     })
   };
 
+  const printDocument = () =>  {
+
+    const input = document.getElementById('divToPrint');
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'JPEG', 0, 0);
+        // pdf.output('dataurlnewwindow');
+        pdf.save("download.pdf");
+      })
+    ;
+  }
+
   return (
       <Dialog
         fullScreen
@@ -147,23 +163,29 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
           showEditForm ? (
             <div className="invoice-box" style={{width: "80%", marginTop: "-30px"}}>
               <Button size='small' color="secondary" variant="contained"   style={{borderRadius: "30px"}} onClick={()=> setShowEditForm(false)}>Close Form</Button>
-              <InvoiceForm editMode={true} invoice={singleInvoice}/>
-              
-              <div style={{display: "flex", justifyContent: "space-between"}}>
-                <Typography variant='h6'><b>Products</b></Typography>
+              <div style={{display: "flex", justifyContent: "space between"}}>
+                <InvoiceForm editMode={true} invoice={singleInvoice}/>
+                
+                <div>
+                  <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <Typography variant='h6'><b>Products</b></Typography>
 
-                <Button variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
+                    <Button variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
+                  </div>
+
+                  <InvoiceProductsTable
+                    products={singleInvoice?.products}
+                    editItem={editItem}
+                    deleteItem={deleteItem}
+                  />
+                </div>
               </div>
-
-              <InvoiceProductsTable
-                products={singleInvoice?.products}
-                editItem={editItem}
-                deleteItem={deleteItem}
-              />
              
             </div>
           ): (
-          <div className="invoice-box" style={{width: "80%", marginTop: "-30px"}}>
+            // <div id="divToPrint" className="invoice-box" style={{width: "100%", marginTop: "-30px"}}>
+          <>
+          <div id="divToPrint" className="invoice-box" style={{width: "40%", margin: "auto"}}>
             <table cellpadding="0" cellspacing="0">
               <tr className="top">
                 <td colspan="4">
@@ -176,7 +198,7 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
                       <td>
                         Invoice #: {singleInvoice?.invoice_no}<br />
                         Created: {moment(singleInvoice?.created_at).format('MMMM Do YYYY')}<br />
-                        Due: February 5, 2023
+                        Due: {moment(singleInvoice?.created_at).add(singleInvoice?.payment_term, 'days').format('MMMM Do YYYY')}
                       </td>
                     </tr>
                   </table>
@@ -195,8 +217,8 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
 
                       <td>
                         {companyName}<br />
-                        {singleInvoice?.reference}<br />
-                        john@example.com
+                        Ref:{singleInvoice?.reference}<br />
+                        Address: {singleInvoice?.billing_address}
                       </td>
                     </tr>
                   </table>
@@ -249,24 +271,27 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
                 <td style={{textAlign: "right"}}><b>Total:</b> ${total}</td>
               </tr>
             </table>
-
-            <div style={{display: "flex", justifyContent: "space-evenly", marginTop: "30px"}}>
-              <Button 
-                size='small' 
-                color="primary" 
-                variant="contained"   
-                style={{borderRadius: "30px"}}
-                onClick={()=> openForm()}
-              >
-                <EditOutlined />
-              </Button>
-
-
-              <Button size='small' color="secondary" variant="contained"   style={{borderRadius: "30px"}}>
-                <PrintOutlined />
-              </Button>
-            </div>
           </div>
+
+          <div style={{display: "flex", justifyContent: "space-evenly", marginTop: "10px"}}>
+          
+            <Button 
+              size='small' 
+              color="primary" 
+              variant="contained"   
+              style={{borderRadius: "30px"}}
+              onClick={()=> openForm()}
+            >
+              <EditOutlined />
+            </Button>
+
+
+            <Button size='small' color="secondary" variant="contained"   style={{borderRadius: "30px"}} onClick={()=> printDocument()}>
+              <PrintOutlined />
+            </Button>
+        
+          </div>
+          </>
           )
         }
 

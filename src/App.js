@@ -22,6 +22,8 @@ import { setLists } from "./features/listSlice";
 import { setActivities } from "./features/ActivitySlice";
 import ActivityDetails from "./pages/activities/ActivityDetails";
 import { setEvents } from "./features/EventSlice";
+import Messages from "./pages/messages/Messages";
+import Settings from "./pages/settings/Settings";
 
 function App() {
   const token =  getToken()
@@ -88,6 +90,8 @@ function App() {
             <Route path="/activities/:id" element={<ActivityDetails />} />
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/events" element={<CalendarEvents />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />
         </Routes>

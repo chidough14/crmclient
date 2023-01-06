@@ -7,11 +7,25 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 
 const InvoiceProductsTable = ({products, editItem, deleteItem}) => {
+  const [total, setTotal] = useState(0)
+
+  useEffect(()=> {
+    let arr = []
+    products.map((a) => {
+       let total = a.price * a.pivot.quantity
+       arr.push(total)
+    })
+    setTotal(arr.reduce((a, b) => a + b, 0))
+  }, [products])
+
   return (
+    <>
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
@@ -58,6 +72,9 @@ const InvoiceProductsTable = ({products, editItem, deleteItem}) => {
         </TableBody>
       </Table>
     </TableContainer>
+
+    <Typography variant='h6' style={{float: "right"}}><b>Total:</b> ${total}</Typography>
+    </>
   );
 }
 

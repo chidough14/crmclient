@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedCompanyId, setSingleList } from "../features/listSlice";
 import { setSingleCompany } from "../features/companySlice";
+import { MessageOutlined, SettingsOutlined } from "@mui/icons-material";
 
 
 const Layout = () => {
@@ -108,6 +109,24 @@ const Layout = () => {
                     }}
                   >
                     <CalendarMonthIcon />&nbsp;&nbsp;&nbsp; Calendar
+                  </MenuItem>
+
+                  <MenuItem 
+                    routerLink={<Link to="/messages" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/messages" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <MessageOutlined />&nbsp;&nbsp;&nbsp; Messages
+                  </MenuItem>
+
+                  <MenuItem 
+                    routerLink={<Link to="/settings" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/settings" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <SettingsOutlined />&nbsp;&nbsp;&nbsp; Settings
                   </MenuItem>
                 </Menu>
               )

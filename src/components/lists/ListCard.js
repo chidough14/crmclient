@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
 import ListModal from './ListModal';
-import { closeAlert, removeList, showAlert } from '../../features/listSlice';
+import { addList, closeAlert, removeList, showAlert } from '../../features/listSlice';
 import instance from '../../services/fetchApi';
 
 const bull = (
@@ -35,6 +35,7 @@ const ListCard = ({list}) => {
   const dispatch = useDispatch()
   const token = getToken()
   const navigate = useNavigate()
+  const user = useSelector((state) => state.user)
 
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpen = () => setOpenModal(true);
@@ -91,6 +92,20 @@ const ListCard = ({list}) => {
     }
   };
 
+  const cloneList = async (list) => {
+
+    await instance.get(`mylists/${list.id}/clone`)
+    .then((res)=> {
+       dispatch(addList({list: res.data.clonedList}))
+    })
+
+
+    // if (res.data.status === "success"){
+    //   dispatch(showAlert())
+    //   dispatch(removeList({listId: id}))
+    // }
+  };
+
   return (
     <>
       <Card 
@@ -122,8 +137,9 @@ const ListCard = ({list}) => {
                 'aria-labelledby': 'basic-button',
               }}
             >
-              <MenuItem onClick={showEditModal}>Edit</MenuItem>
-              <MenuItem onClick={handleClickOpen}>Delete</MenuItem>
+              <MenuItem onClick={showEditModal} disabled={(list.user_id !== user.id)}>Edit</MenuItem>
+              <MenuItem onClick={() => cloneList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}>Clone</MenuItem>
+              <MenuItem onClick={handleClickOpen} disabled={(list.user_id !== user.id)}>Delete</MenuItem>
             </Menu>
           </div>
           

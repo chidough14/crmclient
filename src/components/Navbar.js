@@ -1,4 +1,4 @@
-import { AppBar, Box, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button, Badge } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import DensitySmallIcon from '@mui/icons-material/DensitySmall';
 import { setCompany } from '../features/companySlice';
 import UserAccountsCircle from './UserAccountsCircle';
 import { styled } from '@mui/material/styles';
+import { Notifications, NotificationsActive } from '@mui/icons-material';
 
 const Navbar = ({collapseSidebar}) => {
 
@@ -68,6 +69,10 @@ const Navbar = ({collapseSidebar}) => {
                 />
             )
           }
+          <Badge color="primary" badgeContent={4}>
+            <Notifications style={{cursor: "pointer"}}  />
+          </Badge>
+          
 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
 

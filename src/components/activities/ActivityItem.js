@@ -7,12 +7,12 @@ import moment from 'moment';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
-import { DeleteOutlined, EditOutlined, MoreVert, ViewListOutlined } from '@mui/icons-material';
+import { ControlPointDuplicate, CopyAllOutlined, DeleteOutlined, EditOutlined, MoreVert, ViewListOutlined } from '@mui/icons-material';
 import { useState } from 'react';
 import ActivityModal from './ActivityModal';
 import instance from '../../services/fetchApi';
-import { removeActivity } from '../../features/ActivitySlice';
-import { useDispatch } from 'react-redux';
+import { addActivity, removeActivity } from '../../features/ActivitySlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteEvent } from '../../features/EventSlice';
 
@@ -82,6 +82,7 @@ const ActivityItem = ({activity, index}) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const handleOpen = () => setOpenModal(true);
+  const user = useSelector(state => state.user)
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -128,6 +129,21 @@ const ActivityItem = ({activity, index}) => {
     }
   };
 
+  const cloneActivity = async (value) => {
+
+    const res = await instance.get(`activities/${value.id}/clone`)
+    .then((res)=> {
+      dispatch(addActivity({activity: res.data.clonedActivity}))
+   })
+
+    // if (res.data.status === "success"){
+    //   setOpenAlert(true)
+    //   handleCloseDialog()
+    //   dispatch(removeActivity({activityId: id}))
+    //   dispatch(deleteEvent({activityId: id}))
+    // }
+  };
+
   return (
     <>
       <Draggable draggableId={activity.id.toString()} index={index} key={activity.id.toString()}>
@@ -166,6 +182,7 @@ const ActivityItem = ({activity, index}) => {
                     }}
                   >
                     <MenuItem onClick={showEditModal}> <EditOutlined /> Edit</MenuItem>
+                    <MenuItem onClick={()=>cloneActivity(activity)} disabled={(activity.user_id !== user.id) && (activity.status === "private") }><CopyAllOutlined /> Clone</MenuItem>
                     <MenuItem onClick={handleClickOpen}><DeleteOutlined /> Delete</MenuItem>
                     <MenuItem onClick={() => navigate(`/activities/${activity.id}`)}><ViewListOutlined /> View</MenuItem>
                   </Menu>
