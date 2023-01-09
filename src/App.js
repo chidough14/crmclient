@@ -24,10 +24,16 @@ import ActivityDetails from "./pages/activities/ActivityDetails";
 import { setEvents } from "./features/EventSlice";
 import Messages from "./pages/messages/Messages";
 import Settings from "./pages/settings/Settings";
+import MyMeetings from "./pages/meetings/MyMeetings";
+import JoinMeeting from "./pages/meetings/JoinMeeting";
+
+// import socketIO from 'socket.io-client';
+// const socket = socketIO.connect('http://localhost:4000');
 
 function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
+  const user = useSelector(state => state.user)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
 
@@ -38,11 +44,17 @@ function App() {
         email: data.user.email,
         name: data.user.name,
       }))
+
+      // localStorage.setItem("userName", data.user.name)
+      // localStorage.setItem("email", data.user.email)
+      // localStorage.setItem("id", data.user.id)
+
+      // console.log("fired");
     }
   }, [data, isSuccess, dispatch])
 
   useEffect(() => {
-
+    
     const getListsResult = async () => {
 
       await instance.get(`mylists`)
@@ -90,8 +102,11 @@ function App() {
             <Route path="/activities/:id" element={<ActivityDetails />} />
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/events" element={<CalendarEvents />} />
-            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages" element={<MyMeetings  />} />
+            {/* <Route path="/messages" element={<Messages socket={socket} />} /> */}
             <Route path="/settings" element={<Settings />} />
+            <Route path="/mymeetings" element={<MyMeetings />} />
+            <Route path="/join/:id" element={<JoinMeeting />} />
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />
         </Routes>

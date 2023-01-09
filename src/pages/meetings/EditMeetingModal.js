@@ -11,7 +11,7 @@ import instance from '../../services/fetchApi';
 import { addEvent } from '../../features/EventSlice';
 import { CloseOutlined } from '@mui/icons-material';
 import { addEventToActivity } from '../../features/ActivitySlice';
-import { addMeeting } from '../../features/MeetingSlice';
+import { addMeeting, setUpdateMeeting } from '../../features/MeetingSlice';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -41,18 +41,21 @@ const style = {
 };
 
 const validationSchema = yup.object({
-  title: yup
-    .string('Enter your title')
-    .required('Title is required'),
-  description: yup
-    .string('Enter your description')
-    .required('Description is required'),
-  start: yup
-    .string('Enter your start time')
-    .required('Start time is required'),
-  end: yup
-    .string('Enter your end time')
-    .required('End time is required'),
+  meetingName: yup
+    .string('Enter your meeting name')
+    .required('Meeting name is required'),
+  meetingType: yup
+    .string('Enter your type')
+    .required('Type is required'),
+  maxUsers: yup
+    .number('Enter your max users')
+    .required('Max is required'),
+  // start: yup
+  //   .string('Enter your start time')
+  //   .required('Start time is required'),
+  // end: yup
+  //   .string('Enter your end time')
+  //   .required('End time is required'),
 });
 
 const generateMeetingId = () => {
@@ -66,7 +69,8 @@ const generateMeetingId = () => {
   return meetingID;
 }
 
-const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activityId}) => {
+const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
+  
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("Event created successfully");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
@@ -78,14 +82,17 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
   const [usersValueSingle, setUsersValueSingle] = useState("");
   const [size, setSize] = useState(1);
   const [anyoneCanJoin, setAnyoneCanJoin] = useState(false);
+  const [status, setStatus] = useState(false);
 
   const handleClose = () => {
+    //closeModal()
     setOpen(false);
     setOneOnOne(false)
     setConference(false)
     setUsersValue([])
     setUsersValueSingle("")
     setSize(1)
+    setStatus(false)
   }
   const dispatch = useDispatch()
 
@@ -96,120 +103,139 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
 
     setOpenAlert(false);
   };
-  useEffect(() => {
-   if (startTime) {
-    formik.setFieldValue('start', startTime)
-    formik.setFieldValue('end', endTime)
-   }
-  }, [open,startTime, endTime])
 
   useEffect(() => {
-    if (activityId) {
-      formik.setFieldValue('activity', activityId)
-      formik.setFieldValue('start', "")
-      formik.setFieldValue('end', "")
+    if (meeting) {
+      formik.setFieldValue('meetingName', meeting.meetingName)
+      formik.setFieldValue('meetingDate', meeting.event.start)
+     
+      if ( meeting.meetingType === 'Anyone-can-join') {
+        setConference(true)
+        setAnyoneCanJoin(true)
+        setSize(meeting.maxUsers)
+      }
+      if  ( meeting.meetingType === '1-on-1') {
+        setOneOnOne(true)
+        setUsersValueSingle(meeting.invitedUsers[0])
+      }
+      if ( meeting.meetingType === 'Conference') {
+        setConference(true)
+        setUsersValue(meeting.invitedUsers)
+      }
+
+      setStatus(meeting.status)
+
+      fetchUsers()
     }
-   }, [open, activityId])
+   }, [open, meeting])
 
-   const createMeeting = async (body) => {
+   const editMeeting = async (body, id) => {
     let response 
-     await instance.post(`meetings`, body)
+     await instance.patch(`meetings/${id}`, body)
      .then((res) => {
        console.log(res);
-       dispatch(addMeeting({meeting: res.data.meeting}))
-       response = res.data.meeting
+      //  dispatch(addMeeting({meeting: res.data.meeting}))
+      //response = res.data.meeting
+      setOpenAlert(true);
+      dispatch(setUpdateMeeting({meeting: res.data.meeting}))
+      handleClose()
+      formik.resetForm();
      })
 
-     return response
+     //return response
    }
 
   const formik = useFormik({
     initialValues: {
-      title: '',
-      description: '',
-      start: "",
-      end: "",
-      activity: undefined,
       meetingName: '',
-      maxUsers: 1
+      maxUsers: 1,
+      meetingDate: ""
     },
-    validationSchema: validationSchema,
-    onSubmit: async (values, {resetForm}) => {
-      let body = {
-        ...values,
-        user_id: user.id,
-        activity_id: values.activity ? values.activity : null,
-        start: moment(values.start).format(),
-        end: moment(values.end).format()
+    //validationSchema: validationSchema,
+    onSubmit:  (values, {resetForm}) => {
+     
+      if (oneOnOne){
+        let meetingBody = {
+          meetingName: values.meetingName,
+          meetingType: '1-on-1',
+          invitedUsers: [usersValueSingle],
+          meetingDate: moment(values.meetingDate).format("L"),
+          eventStartDate: moment(values.meetingDate).format(),
+          status: status,
+        }
+
+        editMeeting(meetingBody, meeting.id)
+        //let res = editMeeting(meetingBody, meeting.id)
+
+        // setOpenAlert(true);
+        // dispatch(setUpdateMeeting({meeting: res.data.meeting}))
+        // handleClose()
+        // resetForm();
+      } else if (conference) {
+         let meetingBody = {
+          meetingName: values.meetingName,
+          meetingType: anyoneCanJoin ? 'Anyone-can-join' : 'Conference',
+          invitedUsers: anyoneCanJoin ? [] : usersValue,
+          meetingDate: moment(values.meetingDate).format("L"),
+          eventStartDate: moment(values.meetingDate).format(),
+          maxUsers: anyoneCanJoin ? size : usersValue.length,
+          status: status,
+        }
+
+        editMeeting(meetingBody, meeting.id)
+
+        // let res = editMeeting(meetingBody, meeting.id)
+        // setOpenAlert(true);
+        // dispatch(setUpdateMeeting({meeting: res.data.meeting}))
+        // //dispatch(addEvent({event: res.data.event}))
+        // handleClose()
+        // resetForm();
       }
+        
 
-      await instance.post(`events`, body)
-      .then((res) => {
-        if (activityId) {
-          dispatch(addEventToActivity({event: res.data.event}))
-        }
+      // if (oneOnOne) {
 
-        if (oneOnOne) {
+      //   let meetingBody = {
+      //     meetingName: values.meetingName,
+      //     meetingType: '1-on-1',
+      //     invitedUsers: [usersValueSingle],
+      //     meetingDate: moment(values.meetingDate).format("L"),
+      //     //status: true,
+      //   }
 
-          let meetingBody = {
-            user_id: user.id,
-            meetingName: values.meetingName,
-            meetingId: generateMeetingId(),
-            meetingType: '1-on-1',
-            invitedUsers: [usersValueSingle],
-            meetingDate: moment(values.start).format("L"),
-            maxUsers: 1,
-            status: true,
-            event_id: res.data.event.id
-          }
+      //   createMeeting(meetingBody)
 
-          createMeeting(meetingBody)
+      //   setOpenAlert(true);
+      //   //dispatch(addEvent({event: res.data.event}))
+      //   handleClose()
+      //   resetForm();
+      // } else if (conference) {
+      //   let meetingBody = {
+      //     meetingName: values.meetingName,
+      //     meetingType: anyoneCanJoin ? 'Anyone-can-join' : 'Conference',
+      //     invitedUsers: anyoneCanJoin ? [] : usersValue,
+      //     meetingDate: moment(values.meetingDate).format("L"),
+      //     maxUsers: anyoneCanJoin ? size : usersValue.length,
+      //     //status: true,
+      //   }
 
-          setOpenAlert(true);
-          dispatch(addEvent({event: res.data.event}))
-          handleClose()
-          resetForm();
-        } else if (conference) {
-          let meetingBody = {
-            user_id: user.id,
-            meetingName: values.meetingName,
-            meetingId: generateMeetingId(),
-            meetingType: anyoneCanJoin ? 'Anyone-can-join' : 'Conference',
-            invitedUsers: anyoneCanJoin ? [] : usersValue,
-            meetingDate: moment(values.start).format("L"),
-            maxUsers: anyoneCanJoin ? size : usersValue.length,
-            status: true,
-            event_id: res.data.event.id
-          }
+      //   createMeeting(meetingBody)
 
-          createMeeting(meetingBody)
+      //   setOpenAlert(true);
+      //   //dispatch(addEvent({event: res.data.event}))
+      //   handleClose()
+      //   resetForm();
 
-          setOpenAlert(true);
-          dispatch(addEvent({event: res.data.event}))
-          handleClose()
-          resetForm();
-
-        } else {
-          setOpenAlert(true);
-          dispatch(addEvent({event: res.data.event}))
-          handleClose()
-          resetForm();
-        }
-      
-      });
+      // }
     },
   });
 
   const handleDateChange = (e) => {
-    formik.setFieldValue('start', e)
+    formik.setFieldValue('meetingDate', e)
   }
 
-  const handleEndDateChange = (e) => {
-    formik.setFieldValue('end', e)
-  }
-
-  const fetchUsers = async (e) => {
-    e.preventDefault()
+  const fetchUsers = async () => {
+    //e.preventDefault()
     await instance.get(`users`)
     .then((res) => {
       console.log(res);
@@ -226,7 +252,6 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
     const {
       target: { value },
     } = event;
-    // let value = JSON.parse(event.target.value).id
    
     setUsersValue(typeof value === 'string' ? value.split(',') : value)
   }
@@ -242,67 +267,22 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             <Typography variant='h6' style={{marginBottom: "10px"}}>
-            Add Event
+          Edit Meeting
             </Typography>
-            <TextField
-              required
-              size='small'
-              fullWidth
-              id="title"
-              name="title"
-              label="Title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              error={formik.touched.title && Boolean(formik.errors.title)}
-              helperText={formik.touched.title && formik.errors.title}
-            />
-            <p></p>
-            <TextField
-              required
-              size='small'
-              fullWidth
-              id="description"
-              name="description"
-              label="description"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              error={formik.touched.description && Boolean(formik.errors.description)}
-              helperText={formik.touched.description && formik.errors.description}
-            />
 
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <DateTimePicker
-                value={formik.values.start}
+                value={formik.values.meetingDate}
                 onChange={handleDateChange}
                 TextFieldComponent={
                   (params) => (
                     <TextField
-                      error={Boolean(formik.touched.start && formik.errors.start)}
-                      helperText={formik.touched.start && formik.errors.start}
-                      label="Start"
+                      // error={Boolean(formik.touched.meetingDate && formik.errors.meetingDate)}
+                      // helperText={formik.touched.meetingDate && formik.errors.meetingDate}
+                      label="Date"
                       size='small'
                       margin="normal"
-                      name="start"
-                      variant="standard"
-                      fullWidth
-                      {...params}
-                      />
-                  )
-                }
-              />
-
-              <DateTimePicker
-                value={formik.values.end}
-                onChange={handleEndDateChange}
-                TextFieldComponent={
-                  (params) => (
-                    <TextField
-                      error={Boolean(formik.touched.end && formik.errors.end)}
-                      helperText={formik.touched.end && formik.errors.end}
-                      label="End"
-                      margin="normal"
-                      size='small'
-                      name="end"
+                      name="meetingDate"
                       variant="standard"
                       fullWidth
                       {...params}
@@ -312,44 +292,10 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
               />
             </MuiPickersUtilsProvider>
 
-
-            {
-              showActivitySelect ? (
-                <Button variant="text" onClick={() => setShowActivitySelect(false)}>Hide</Button>
-              ) : (
-                <Button variant="text" size='small' disabled={activityId} onClick={() => setShowActivitySelect(true)}>Link to Activity</Button>
-              )
-            }
-
-            {
-              showActivitySelect && (
-                <>
-                  <InputLabel id="demo-select-small">Related Activity</InputLabel>
-                  <Select
-                    id='activity'
-                    name="activity"
-                    label="Related Activity"
-                    size='small'
-                    fullWidth
-                    value={formik.values.activity}
-                    onChange={formik.handleChange}
-                  >
-                    {
-                      activities.map((a, i) => (
-                        <MenuItem value={a.id} key={i}>{a.label}</MenuItem>
-                      ))
-                    }
-                  </Select>
-                  <p></p>
-                </>
-              )
-            }
-
             <div style={{display: "flex", justifyContent: "space-between"}}>
               <Button size='small' onClick={(e) => {
                 setOneOnOne(true);
                 setConference(false)
-                fetchUsers(e)
               }}>
                 1 On-1Meeting
               </Button>
@@ -357,11 +303,22 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
               <Button size='small' onClick={(e)=>{
                 setConference(true)
                 setOneOnOne(false);
-                fetchUsers(e)
               }}>
                 Conference
               </Button>
             </div>
+
+            <FormControlLabel
+              control={ 
+                <Switch
+                  checked={status}
+                  onChange={(event) => setStatus(event.target.checked)}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              } 
+              label="Status" 
+            />
+            <p></p>
 
             {
               oneOnOne &&
@@ -486,7 +443,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
 
               <p></p>
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>
+              <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}} >
                Add
               </Button>
 
@@ -517,4 +474,4 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
   )
 }
 
-export default EventModal
+export default EditMeetingModal

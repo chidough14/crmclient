@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedCompanyId, setSingleList } from "../features/listSlice";
 import { setSingleCompany } from "../features/companySlice";
-import { MessageOutlined, SettingsOutlined } from "@mui/icons-material";
+import { MeetingRoomOutlined, MessageOutlined, SettingsOutlined } from "@mui/icons-material";
 
 
 const Layout = () => {
@@ -26,6 +26,7 @@ const Layout = () => {
   const navigate = useNavigate()
 
   const isListPage = matchPath("/listsview/*", pathname)
+  const isJoinPage = matchPath("/join/*", pathname)
 
 
  
@@ -40,8 +41,8 @@ const Layout = () => {
     <CssBaseline />
     <Navbar collapseSidebar={collapseSidebar} />
 
-    {
-      loggedIn ? (
+    { 
+     ( loggedIn && isJoinPage?.pathnameBase !== "/join" ) ? (
         <div style={{ display: 'flex', height: '100%', marginTop: "64px"}}>
           <Sidebar 
             backgroundColor="#E0E0E0"
@@ -51,7 +52,7 @@ const Layout = () => {
             }}
           >
             {
-              isListPage ? (
+              isListPage?.pathnameBase === "/listsview" ? (
                   <Menu>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                       <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
@@ -121,6 +122,15 @@ const Layout = () => {
                   </MenuItem>
 
                   <MenuItem 
+                    routerLink={<Link to="/mymeetings" />}
+                    rootStyles={{
+                      backgroundColor: pathname === "/mymeetings" ? "#DDA0DD" : ""
+                    }}
+                  >
+                    <MeetingRoomOutlined />&nbsp;&nbsp;&nbsp; Meetings
+                  </MenuItem>
+
+                  <MenuItem 
                     routerLink={<Link to="/settings" />}
                     rootStyles={{
                       backgroundColor: pathname === "/settings" ? "#DDA0DD" : ""
@@ -139,7 +149,9 @@ const Layout = () => {
           </main>
         </div>
       ) : (
-        <Outlet />
+        <main style={{width: "100%"}}>
+          <Outlet />
+        </main>
       )
     }
    
