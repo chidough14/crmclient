@@ -346,19 +346,27 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
             }
 
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' onClick={(e) => {
-                setOneOnOne(true);
-                setConference(false)
-                fetchUsers(e)
-              }}>
+              <Button 
+                size='small' 
+                onClick={(e) => {
+                  setOneOnOne(true);
+                  setConference(false)
+                  fetchUsers(e)
+                }}
+                style={{border: oneOnOne ? "4px solid #EE82EE" : null }}
+              >
                 1 On-1Meeting
               </Button>
 
-              <Button size='small' onClick={(e)=>{
-                setConference(true)
-                setOneOnOne(false);
-                fetchUsers(e)
-              }}>
+              <Button 
+                size='small' 
+                onClick={(e)=>{
+                  setConference(true)
+                  setOneOnOne(false);
+                  fetchUsers(e)
+                }}
+                style={{border: conference ? "4px solid #EE82EE" : null }}
+              >
                 Conference
               </Button>
             </div>

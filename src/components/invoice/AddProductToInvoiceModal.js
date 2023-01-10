@@ -115,7 +115,7 @@ const AddProductToInvoiceModal = ({open, setOpen, setProductId, quantity, setQua
                     }
                   })
 
-                  let dt = pr.filter((a) => a?.name.includes(e.target.value))
+                  let dt = pr.filter((a) => a?.name.toLowerCase().includes(e.target.value))
                   setData(dt)
                 }
               }}

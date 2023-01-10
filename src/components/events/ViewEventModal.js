@@ -11,6 +11,7 @@ import instance from '../../services/fetchApi';
 import { deleteEvent, updateEvent } from '../../features/EventSlice';
 import { CloseOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import { updateActivityEvent } from '../../features/ActivitySlice';
+import { Link } from 'react-router-dom';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -275,6 +276,17 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
               <Typography variant="h7" display="block"  gutterBottom>
                 <b>End</b> : {moment(event?.end).format("dddd, MMMM Do YYYY, h:mm:ss a")}  
               </Typography>
+
+              {
+                (event?.meeting && moment().isBetween(event?.start, event?.end, 'milliseconds', null)) &&
+                <Typography variant="h7" display="block"  gutterBottom>
+                
+                  <Link to={`/join/${event?.meeting.meetingId}`}>
+                   <b>Meeting Link</b>
+                  </Link>
+                </Typography>
+              }
+           
 
               {
                 relatedActivity && (

@@ -27,6 +27,10 @@ export const store = configureStore({
     meeting: meetingReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userAuthApi.middleware),
+    getDefaultMiddleware(
+      {
+        serializableCheck: false,
+      }
+    ).concat(userAuthApi.middleware),
 })
 setupListeners(store.dispatch)

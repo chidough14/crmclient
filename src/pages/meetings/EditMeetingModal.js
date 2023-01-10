@@ -8,7 +8,7 @@ import { MuiPickersUtilsProvider, DateTimePicker, KeyboardDateTimePicker, DatePi
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import instance from '../../services/fetchApi';
-import { addEvent } from '../../features/EventSlice';
+import { addEvent, updateEvent } from '../../features/EventSlice';
 import { CloseOutlined } from '@mui/icons-material';
 import { addEventToActivity } from '../../features/ActivitySlice';
 import { addMeeting, setUpdateMeeting } from '../../features/MeetingSlice';
@@ -138,6 +138,7 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
       //response = res.data.meeting
       setOpenAlert(true);
       dispatch(setUpdateMeeting({meeting: res.data.meeting}))
+      dispatch(updateEvent({event: res.data.meeting.event}))
       handleClose()
       formik.resetForm();
      })
@@ -293,17 +294,25 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
             </MuiPickersUtilsProvider>
 
             <div style={{display: "flex", justifyContent: "space-between"}}>
-              <Button size='small' onClick={(e) => {
-                setOneOnOne(true);
-                setConference(false)
-              }}>
+              <Button 
+                size='small' 
+                style={{border: oneOnOne ? "4px solid #EE82EE" : null }}
+                onClick={(e) => {
+                  setOneOnOne(true);
+                  setConference(false)
+                }}
+              >
                 1 On-1Meeting
               </Button>
 
-              <Button size='small' onClick={(e)=>{
-                setConference(true)
-                setOneOnOne(false);
-              }}>
+              <Button 
+                style={{border: conference ? "4px solid #EE82EE" : null }}
+                size='small' 
+                onClick={(e)=>{
+                  setConference(true)
+                  setOneOnOne(false);
+                }}
+              >
                 Conference
               </Button>
             </div>

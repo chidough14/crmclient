@@ -10,6 +10,7 @@ import { setCompany } from '../features/companySlice';
 import UserAccountsCircle from './UserAccountsCircle';
 import { styled } from '@mui/material/styles';
 import { Notifications, NotificationsActive } from '@mui/icons-material';
+import BellNotification from './BellNotification';
 
 const Navbar = ({collapseSidebar}) => {
 
@@ -18,7 +19,9 @@ const Navbar = ({collapseSidebar}) => {
   const [data, setData] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const company = useSelector(state=> state.company)
-  const {name, email} = useSelector(state=> state.user)
+  const {name, email, allUsers} = useSelector(state=> state.user)
+  const { invitedMeetings } = useSelector((state) => state.meeting) 
+  const {inbox} = useSelector(state => state.message)
   const navigate = useNavigate()
   //const {token} = useSelector(state=> state.auth)
   const dispatch = useDispatch()
@@ -69,9 +72,7 @@ const Navbar = ({collapseSidebar}) => {
                 />
             )
           }
-          <Badge color="primary" badgeContent={4}>
-            <Notifications style={{cursor: "pointer"}}  />
-          </Badge>
+          <BellNotification inbox={inbox} allUsers={allUsers} invitedMeetings={invitedMeetings} />
           
 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>

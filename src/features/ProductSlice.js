@@ -10,12 +10,25 @@ export const ProductSlice = createSlice({
   reducers: {
     setProducts: (state, action) => {
       state.products = action.payload.products
-    }
+    },
+    addProduct: (state, action) => {
+      state.products = [...state.products, action.payload.product]
+    },
+    updateProduct: (state, action) => {
+      let idx = state.products.findIndex((a) => a.id === action.payload.product.id)
+      state.products[idx] = action.payload.product
+    },
+    removeProduct: (state, action) => {
+      state.products = state.products.filter((a) => a.id !== action.payload.productId)
+    },
   },
 })
 
 export const { 
-  setProducts
+  setProducts,
+  addProduct,
+  updateProduct,
+  removeProduct
 } = ProductSlice.actions
 
 export default ProductSlice.reducer

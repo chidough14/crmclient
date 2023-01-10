@@ -50,7 +50,7 @@ const ListModal = ({list, open, setOpen}) => {
   //   (state, updates) => ({ ...state, ...updates }),
   //   initialState
   // );
-
+  
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
       return;

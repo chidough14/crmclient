@@ -23,11 +23,14 @@ export const MeetingSlice = createSlice({
     setInvitedMeetings: (state, action) => {
       state.invitedMeetings = action.payload.invitedMeetings
     },
+    removeMeeting: (state, action) => {
+      state.meetings = state.meetings.filter((a) => a.id !== action.payload.meetingId)
+    },
   },
 })
 
 export const { 
-  setMeetings, addMeeting, setUpdateMeeting, setInvitedMeetings
+  setMeetings, addMeeting, setUpdateMeeting, setInvitedMeetings, removeMeeting
 } = MeetingSlice.actions
 
 export default MeetingSlice.reducer

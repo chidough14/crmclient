@@ -11,7 +11,7 @@ import Lists from "./pages/Lists";
 import { useEffect, useState } from "react";
 import { getToken } from "./services/LocalStorageService";
 import ChangePassword from "./pages/auth/ChangePassword";
-import { setUserInfo } from "./features/userSlice";
+import { setAllUsersData, setUserInfo } from "./features/userSlice";
 import { useGetLoggedUserQuery } from "./services/userAuthApi";
 import Activities from "./pages/Activities";
 import SingleList from "./pages/SingleList";
@@ -26,6 +26,10 @@ import Messages from "./pages/messages/Messages";
 import Settings from "./pages/settings/Settings";
 import MyMeetings from "./pages/meetings/MyMeetings";
 import JoinMeeting from "./pages/meetings/JoinMeeting";
+import UserMessages from "./pages/userMessages/UserMessages";
+import { setInboxMessages, setOutboxMessages } from "./features/MessagesSlice";
+import SingleMessage from "./pages/userMessages/SingleMessage";
+import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -34,6 +38,8 @@ function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
   const user = useSelector(state => state.user)
+  const {inbox} = useSelector(state => state.message)
+  const {outbox} = useSelector(state => state.message)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
 
@@ -79,9 +85,38 @@ function App() {
       })
     }
 
+    const getUserMessages = async () => {
+
+      await instance.get(`messages`)
+      .then((res)=> {
+        dispatch(setInboxMessages({inbox: res.data.inbox}))
+        dispatch(setOutboxMessages({outbox: res.data.outbox}))
+      })
+    }
+
+    const fetchUsers = async () => {
+      await instance.get(`users`)
+      .then((res) => {
+        dispatch(setAllUsersData({users: res.data.users}))
+      })
+    }
+
+    const  fetchMeetings = async () => {
+      await instance.get(`meetings`)
+      .then((res) => {
+        dispatch(setMeetings({meetings: res.data.meetings}))
+        dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
+      })
+    }
+
+    
+
     getEventsResult()
     getActivitiesResult()
     getListsResult()
+    getUserMessages()
+    fetchUsers()
+    fetchMeetings()
   }, [])
 
   return (
@@ -93,7 +128,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<LoginReg />} />
             <Route path="sendpasswordresetemail" element={<SendPasswordResetEmail />} />
-            <Route path="api/user/reset/:token" element={<ResetPassword />} />
+            <Route path="api/reset/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/lists" element={<Lists />} />
             <Route path="/listsview/:id" element={<SingleList />} />
@@ -102,11 +137,12 @@ function App() {
             <Route path="/activities/:id" element={<ActivityDetails />} />
             <Route path="/changepassword" element={<ChangePassword />} />
             <Route path="/events" element={<CalendarEvents />} />
-            <Route path="/messages" element={<MyMeetings  />} />
             {/* <Route path="/messages" element={<Messages socket={socket} />} /> */}
             <Route path="/settings" element={<Settings />} />
             <Route path="/mymeetings" element={<MyMeetings />} />
             <Route path="/join/:id" element={<JoinMeeting />} />
+            <Route path="/messages" element={<UserMessages inbox={inbox} outbox={outbox}  />} /> 
+            <Route path="/messages/:id" element={<SingleMessage   />} /> 
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />
         </Routes>
