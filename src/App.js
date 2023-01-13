@@ -49,6 +49,7 @@ function App() {
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
+        setting: data.user.setting,
       }))
 
       // localStorage.setItem("userName", data.user.name)

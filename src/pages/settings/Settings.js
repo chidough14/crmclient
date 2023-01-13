@@ -17,6 +17,7 @@ import { setProducts } from '../../features/ProductSlice';
 import ProductsTable from './ProductsTable';
 import CompaniesTable from './CompaniesTable';
 import { setCompany } from '../../features/companySlice';
+import AppModeSettings from './AppModeSettings';
 
 
 function TabPanel(props) {
@@ -88,6 +89,7 @@ const Settings = () => {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Products" {...a11yProps(0)} />
           <Tab label="Companies" {...a11yProps(1)} />
+          <Tab label="App Mode" {...a11yProps(2)} />
         </Tabs>
       </Box>
 
@@ -97,6 +99,10 @@ const Settings = () => {
 
       <TabPanel value={value} index={1}>
         <CompaniesTable rows={companies} />
+      </TabPanel>
+
+      <TabPanel value={value} index={2}>
+        <AppModeSettings />
       </TabPanel>
     </>
  

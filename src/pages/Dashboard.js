@@ -23,22 +23,24 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const token = getToken()
   const [logoutUser] = useLogoutUserMutation()
-  const { data, isSuccess } = useGetLoggedUserQuery(token)
+  // const { data, isSuccess } = useGetLoggedUserQuery(token)
   const { events } = useSelector(state => state.event)
   const { lists } = useSelector(state => state.list)
-  const { activities } = useSelector(state => state.activity)
+  // const { activities } = useSelector(state => state.activity)
   const [eventsToday, setEventsToday] = useState([])
+  const { setting } = useSelector(state => state.user)
+  console.log(setting);
 
 
-  const handleLogout = async () => {
-    const res = await logoutUser({ token })
-    if (res.data.status === "success") {
-      dispatch(unsetUserToken({ token: null }))
-      dispatch(unsetUserInfo({ email: "", name: "" }))
-      removeToken('token')
-      navigate('/login')
-    }
-  }
+  // const handleLogout = async () => {
+  //   const res = await logoutUser({ token })
+  //   if (res.data.status === "success") {
+  //     dispatch(unsetUserToken({ token: null }))
+  //     dispatch(unsetUserInfo({ email: "", name: "" }))
+  //     removeToken('token')
+  //     navigate('/login')
+  //   }
+  // }
 
   useEffect(() => {
     if (!token) {
@@ -47,14 +49,14 @@ const Dashboard = () => {
   }, [token])
 
   // Store User Data in Local State
-  useEffect(() => {
-    if (data && isSuccess) {
-      setUserData({
-        email: data.user.email,
-        name: data.user.name,
-      })
-    }
-  }, [data, isSuccess])
+  // useEffect(() => {
+  //   if (data && isSuccess) {
+  //     setUserData({
+  //       email: data.user.email,
+  //       name: data.user.name,
+  //     })
+  //   }
+  // }, [data, isSuccess])
 
   useEffect(() => {
     
@@ -90,12 +92,45 @@ const Dashboard = () => {
       </div>
 
       <div style={{display: "flex", justifyContent: "space-between",  columnGap: "10px", }}>
-        <div style={{width: "50%"}}>
-          <BarChart />
-        </div>
-        <div style={{width: "30%"}}>
-          <DoughnutChart />
-        </div>
+        {
+          setting?.dashboard_mode === "show_graphs" && (
+            <>
+             <div style={{width: "50%"}}>
+              <BarChart />
+            </div>
+            <div style={{width: "30%"}}>
+              <DoughnutChart />
+            </div>
+            </>
+          )
+        }
+
+        {
+          setting?.dashboard_mode === "show_bar_graph" && (
+            <>
+             <div style={{width: "50%"}}>
+              <BarChart />
+            </div>
+            <div style={{width: "30%"}}>
+              
+            </div>
+            </>
+          )
+        }
+
+        {
+          setting?.dashboard_mode === "show_doughnut_graph" && (
+            <>
+            <div style={{width: "40%"}}>
+              <DoughnutChart />
+            </div>
+            <div style={{width: "30%"}}>
+             
+            </div>
+            </>
+          )
+        }
+       
       </div>
     </div>
   )

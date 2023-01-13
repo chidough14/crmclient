@@ -47,7 +47,7 @@ const UserAccountsCircle = ({name}) => {
     const res = await logoutUser({ token })
     if (res.data.status === "success") {
       dispatch(unsetUserToken({ token: null }))
-      dispatch(unsetUserInfo({ id: undefined, email: "", name: "" }))
+      dispatch(unsetUserInfo({ id: undefined, email: "", name: "", setting: undefined }))
       removeToken('token')
       navigate('/login')
     }

@@ -121,7 +121,8 @@ const CalendarEvents = () => {
     <div style={{width: "100%", height: "100%"}}>
       <DnDCalendar
         defaultDate={defaultDate}
-        defaultView={Views.WEEK}
+        //defaultView={Views.WEEK}
+        defaultView={user?.setting?.calendar_mode}
         events={myEvents}
         localizer={localizer}
         onSelectEvent={handleSelectEvent}
