@@ -15,9 +15,13 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Button, TableHead } from '@mui/material';
-import { AddOutlined } from '@mui/icons-material';
+import { Alert, Button, Snackbar, TableHead } from '@mui/material';
+import { AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import AddCompanyModal from './modals/AddCompanyModal';
+import AlertDialog from './modals/AlertDialog';
+import instance from '../../services/fetchApi';
+import { removeCompany } from '../../features/companySlice';
+import { useDispatch } from 'react-redux';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -104,6 +108,14 @@ const CompaniesTable = ({rows}) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
+  const [openSnackAlert, setOpenSnackAlert] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState("");
+
+  const [editMode, setEditMode] = React.useState(false);
+  const [companyObj, setCompanyObj] = React.useState();
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const dispatch = useDispatch()
+  
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -118,9 +130,37 @@ const CompaniesTable = ({rows}) => {
     setPage(0);
   };
 
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackAlert(false);
+  };
+
+  const deleteCompany = async () => {
+    await instance.delete(`companies/${companyObj.id}`)
+    .then(() => {
+      dispatch(removeCompany({companyId: companyObj.id}))
+      setOpenAlert(false)
+      setOpenSnackAlert(true)
+      setAlertMessage("Company Deleted")
+    })
+  
+    //after delete set productobj to empty
+  };
+
   return (
     <>
-    <Button  variant="contained" size='small' style={{borderRadius: "30px", float: "right"}} onClick={()=> setOpenModal(true)}>
+    <Button  
+      variant="contained" 
+      size='small' 
+      style={{borderRadius: "30px", float: "right"}} 
+      onClick={()=> {
+        setOpenModal(true)
+        setEditMode(false)
+      }}
+    >
       <AddOutlined />
     </Button>
     <TableContainer component={Paper}>
@@ -157,7 +197,22 @@ const CompaniesTable = ({rows}) => {
                 {row.email}
               </TableCell>
               <TableCell style={{ width: 160 }}>
-                EDIT
+                <EditOutlined
+                  style={{cursor: "pointer"}}
+                  onClick={() => {
+                    setEditMode(true)
+                    setOpenModal(true)
+                    setCompanyObj(row)
+                  }}
+                />
+
+                <DeleteOutlined 
+                  style={{cursor: "pointer"}}
+                  onClick={() => {
+                    setOpenAlert(true)
+                    setCompanyObj(row)
+                  }}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -195,6 +250,23 @@ const CompaniesTable = ({rows}) => {
     <AddCompanyModal
       open={openModal}
       setOpen={setOpenModal}
+      setOpenAlert={setOpenSnackAlert}
+      setAlertMessage={setAlertMessage}
+      editMode={editMode}
+      company={companyObj}
+    />
+
+    <Snackbar open={openSnackAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+      <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        {alertMessage}
+      </Alert>
+    </Snackbar>
+
+    <AlertDialog
+      open={openAlert}
+      setOpen={setOpenAlert}
+      deleteItem={deleteCompany}
+      companyMode={true}
     />
     </>
   );

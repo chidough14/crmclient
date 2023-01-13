@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addActivity, editActivity, setSingleActivity } from '../../features/ActivitySlice';
-import { addActivityToCompany, setCompany } from '../../features/companySlice';
+import { addActivityToCompany, setCompany, setSearchResults } from '../../features/companySlice';
 import { addEvent } from '../../features/EventSlice';
 import instance from '../../services/fetchApi';
 import SearchBar from '../SearchBar';
@@ -54,7 +54,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
   const handleClose = () => setOpen(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
-  const company = useSelector(state=> state.company)
+  const {searchResults} = useSelector(state=> state.company)
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -85,9 +85,8 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
         url: `companies/search?query=${searchQuery}`,
         method: "GET",
       }).then((res) => {
-        console.log(res);
 
-        dispatch(setCompany({companies: res.data.companies}))
+        dispatch(setSearchResults({companies: res.data.companies}))
       });
     }
 
@@ -178,7 +177,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
                 <SearchBar 
                   activityModal={true} 
                   populateFields={populateFields}  
-                  data={company.companies} 
+                  data={searchResults} 
                   setSearchQuery={setSearchQuery} 
                 />
               )

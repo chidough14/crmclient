@@ -237,7 +237,8 @@ const ProductsTable = ({rows}) => {
     <AlertDialog
       open={openAlert}
       setOpen={setOpenAlert}
-      deleteProduct={deleteProduct}
+      deleteItem={deleteProduct}
+      companyMode={false}
     />
 
     <Snackbar open={openSnackAlert} autoHideDuration={6000} onClose={handleCloseAlert}>

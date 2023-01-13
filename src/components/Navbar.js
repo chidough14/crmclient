@@ -6,7 +6,7 @@ import { getToken } from '../services/LocalStorageService';
 import SearchBar from './SearchBar';
 import instance from "../services/fetchApi";
 import DensitySmallIcon from '@mui/icons-material/DensitySmall';
-import { setCompany } from '../features/companySlice';
+import { setCompany, setSearchResults } from '../features/companySlice';
 import UserAccountsCircle from './UserAccountsCircle';
 import { styled } from '@mui/material/styles';
 import { Notifications, NotificationsActive } from '@mui/icons-material';
@@ -18,7 +18,7 @@ const Navbar = ({collapseSidebar}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
-  const company = useSelector(state=> state.company)
+  const {searchResults} = useSelector(state=> state.company)
   const {name, email, allUsers} = useSelector(state=> state.user)
   const { invitedMeetings } = useSelector((state) => state.meeting) 
   const {inbox} = useSelector(state => state.message)
@@ -43,7 +43,7 @@ const Navbar = ({collapseSidebar}) => {
       }).then((res) => {
         console.log(res);
 
-        dispatch(setCompany({companies: res.data.companies}))
+        dispatch(setSearchResults({companies: res.data.companies}))
       });
     }
 
@@ -66,7 +66,7 @@ const Navbar = ({collapseSidebar}) => {
           {
             loggedIn && (
                 <SearchBar  
-                  data={company.companies} 
+                  data={searchResults} 
                   setSearchQuery={setSearchQuery} 
                   navigate={navigate}
                 />

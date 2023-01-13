@@ -27,6 +27,8 @@ const Layout = () => {
 
   const isListPage = matchPath("/listsview/*", pathname)
   const isJoinPage = matchPath("/join/*", pathname)
+  const isActivityPage = matchPath("/activities/*", pathname)
+  const isMessagePage = matchPath("/messages/*", pathname)
 
 
  
@@ -97,7 +99,7 @@ const Layout = () => {
                   <MenuItem 
                     routerLink={<Link to="/activities" />}
                     rootStyles={{
-                      backgroundColor: pathname === "/activities" ? "#DDA0DD" : ""
+                      backgroundColor: isActivityPage?.pathnameBase  === "/activities" ? "#DDA0DD" : ""
                     }}
                   >
                     <PointOfSaleIcon />&nbsp;&nbsp;&nbsp; Activities
@@ -115,7 +117,7 @@ const Layout = () => {
                   <MenuItem 
                     routerLink={<Link to="/messages" />}
                     rootStyles={{
-                      backgroundColor: pathname === "/messages" ? "#DDA0DD" : ""
+                      backgroundColor:  isMessagePage?.pathnameBase === "/messages" ? "#DDA0DD" : ""
                     }}
                   >
                     <MessageOutlined />&nbsp;&nbsp;&nbsp; Messages
