@@ -1,10 +1,11 @@
 import { Box, CircularProgress, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { emptyCompanyObject } from '../features/companySlice';
 import { getSingleList, setSelectedCompanyId, setSingleList } from '../features/listSlice';
 import instance from '../services/fetchApi';
+import { getToken } from '../services/LocalStorageService';
 import Company from './Company';
 
 const SingleList = () => {
@@ -15,6 +16,14 @@ const SingleList = () => {
   const {pathname} = useLocation()
   const [comp, setComp] = useState(list?.companies[0])
   const {company} = useSelector((state) => state.company)
+  const token = getToken()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   useEffect(() => {
     const getList = async () => {
@@ -38,28 +47,6 @@ const SingleList = () => {
     <>
       <Company />
     </>
-
-    // <>
-    //   <Grid container justifyContent='center'>
-    //     <Grid item sm={10}>
-    //       {
-    //         loading ? (
-    //            <div style={{marginTop: "30px"}}>
-    //             Loading List <CircularProgress/>
-    //            </div>
-    //         ) : (
-    //           <>
-    //             <h1>{ list?.name }</h1>
-    //             <hr />
-    //             <p>{list?.description}</p>
-    //           </>
-    //         )
-    //       }
-         
-    //     </Grid>
-       
-    //   </Grid>
-    // </>
   )
 }
 

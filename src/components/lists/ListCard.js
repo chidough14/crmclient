@@ -109,7 +109,7 @@ const ListCard = ({list}) => {
   return (
     <>
       <Card 
-        sx={{ minWidth: 300 }}
+        sx={{ width: "90%" }}
       >
         <CardContent>
           <div style={{display: "flex", justifyContent: "space-between"}}>

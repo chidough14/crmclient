@@ -31,6 +31,7 @@ const Registration = () => {
           // Store Token Code here
           storeToken(res.data.token)
           navigate('/dashboard')
+          window.location.reload()
         }
         if (res.data.status === "failed") {
           setError({ status: true, msg: res.data.message, type: 'error' })

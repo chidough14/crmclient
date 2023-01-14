@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setEvents, updateEvent } from '../features/EventSlice.js';
 import EventModal from '../components/events/EventModal.js';
 import ViewEventModal from '../components/events/ViewEventModal.js';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../services/LocalStorageService.js';
 
 
 const DnDCalendar = withDragAndDrop(Calendar)
@@ -33,6 +35,15 @@ const CalendarEvents = () => {
   const dispatch = useDispatch()
   const { activities } = useSelector((state) => state.activity) 
   const user = useSelector((state) => state.user)
+  
+  const token = getToken()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {

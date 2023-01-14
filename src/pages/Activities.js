@@ -7,6 +7,7 @@ import ActivityColumn from '../components/activities/ActivityColumn'
 import ActivityModal from '../components/activities/ActivityModal'
 import { editActivity, setActivities, setOpenPrompt } from '../features/ActivitySlice'
 import instance from '../services/fetchApi'
+import { getToken } from '../services/LocalStorageService'
 
 const Activities = () => {
   const [columns, setColumns] = useState([])
@@ -16,6 +17,14 @@ const Activities = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const navigate = useNavigate()
+
+  const token = getToken()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   // useEffect(() => {
   //   const fetchActivities = async () => {

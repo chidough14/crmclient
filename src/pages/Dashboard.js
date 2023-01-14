@@ -23,24 +23,10 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const token = getToken()
   const [logoutUser] = useLogoutUserMutation()
-  // const { data, isSuccess } = useGetLoggedUserQuery(token)
   const { events } = useSelector(state => state.event)
   const { lists } = useSelector(state => state.list)
-  // const { activities } = useSelector(state => state.activity)
   const [eventsToday, setEventsToday] = useState([])
   const { setting } = useSelector(state => state.user)
-  console.log(setting);
-
-
-  // const handleLogout = async () => {
-  //   const res = await logoutUser({ token })
-  //   if (res.data.status === "success") {
-  //     dispatch(unsetUserToken({ token: null }))
-  //     dispatch(unsetUserInfo({ email: "", name: "" }))
-  //     removeToken('token')
-  //     navigate('/login')
-  //   }
-  // }
 
   useEffect(() => {
     if (!token) {

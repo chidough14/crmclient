@@ -10,6 +10,8 @@ import { useEffect } from 'react';
 import instance from '../../services/fetchApi';
 import { setInboxMessages, setOutboxMessages } from '../../features/MessagesSlice';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../../services/LocalStorageService';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +49,15 @@ function a11yProps(index) {
 const UserMessages = ({inbox, outbox}) => {
   const [value, setValue] = React.useState(0);
   const dispatch = useDispatch()
+
+  const token = getToken()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

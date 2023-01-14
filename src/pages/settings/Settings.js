@@ -18,6 +18,8 @@ import ProductsTable from './ProductsTable';
 import CompaniesTable from './CompaniesTable';
 import { setCompany } from '../../features/companySlice';
 import AppModeSettings from './AppModeSettings';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../../services/LocalStorageService';
 
 
 function TabPanel(props) {
@@ -53,6 +55,14 @@ const Settings = () => {
   const {products} = useSelector((state) => state.product) 
   const {companies} = useSelector((state) => state.company) 
   const [value, setValue] = useState(0)
+  const token = getToken()
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   React.useEffect(() => {
     const  fetchProducts = async () => {

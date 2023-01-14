@@ -1,7 +1,9 @@
 import { Button } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { setChatMessages, setHide } from '../../features/MessagesSlice';
+import { getToken } from '../../services/LocalStorageService';
 import ChatBar from './ChatBar';
 import ChatBody from './ChatBody';
 import ChatFooter from './ChatFooter';
@@ -15,9 +17,16 @@ const Messages = ({socket}) => {
   const {hide} = useSelector(state => state.message)
   const {chatMessages} = useSelector((state) => state.message, shallowEqual)
   const dispatch = useDispatch()
+  const token = getToken()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    console.log("fired");
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
+
+  useEffect(() => {
     socket.on('messageResponse', (data) => setMessages([...messages, data]));
     // socket.on('messageResponse', (data) => dispatch(setChatMessages({data: data})));
   }, [socket, messages]);

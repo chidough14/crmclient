@@ -4,14 +4,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './app/store'
 import { Provider } from 'react-redux'
-import { ProSidebarProvider } from 'react-pro-sidebar';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ProSidebarProvider>
         <App />
-      </ProSidebarProvider>
     </Provider>,
   </React.StrictMode>,
   document.getElementById('root')

@@ -15,6 +15,8 @@ import { setInvitedMeetings, setMeetings } from '../../features/MeetingSlice';
 import { useState } from 'react';
 import MeetingsTable from './MeetingsTable';
 import EditMeetingModal from './EditMeetingModal';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../../services/LocalStorageService';
 
 
 function TabPanel(props) {
@@ -52,6 +54,14 @@ const MyMeetings = () => {
   const [value, setValue] = useState(0)
   const [showEditMeetingModal, setShowEditMeetingModal] = useState(false)
   const [meeting, setMeeting] = useState()
+  const token = getToken()
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   React.useEffect(() => {
     const  fetchMeetings = async () => {

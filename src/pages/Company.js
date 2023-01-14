@@ -1,7 +1,7 @@
 import { Button, Divider, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useMatch, useParams } from 'react-router-dom'
+import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom'
 import ActivityModal from '../components/activities/ActivityModal'
 import AddCompanyToListModal from '../components/company/AddCompanyToListModal'
 import ComanyActivitiesTable from '../components/company/CompanyActivitiesTable'
@@ -9,6 +9,7 @@ import LineChart from '../components/company/LineChart'
 import Map from '../components/company/Map'
 import { setSingleCompany } from '../features/companySlice'
 import instance from '../services/fetchApi'
+import { getToken } from '../services/LocalStorageService'
 
 const Company = ({companyObj}) => {
   const params = useParams()
@@ -39,6 +40,15 @@ const Company = ({companyObj}) => {
       fetchCompany(params.id)
     }
   }, [params.id, isListPage, selectedCompanyId])
+
+  const token = getToken()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   return (
     <div>

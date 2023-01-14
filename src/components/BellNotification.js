@@ -17,6 +17,7 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
     setAnchorEl(null);
   };
   const navigate = useNavigate()
+  //console.log(inbox, inbox?.filter((a) => !a.isRead)?.length );
 
   return (
     <div>
@@ -65,12 +66,18 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
          <Divider>Inbox</Divider>
         {
           inbox?.filter((a) => !a.isRead).length ? 
-          inbox?.filter((a) => !a.isRead).map((a) => (
-            <MenuItem onClick={()=>navigate(`/messages/${a.id}`)}>
-              <p><b>{a.subject} </b>sent from <b>{allUsers?.find((b)=> b.id === a.sender_id)?.name}</b></p><br></br>
-              <p><b>Date:</b> {moment(a.created_at).format("MMMM Do YYYY, h:mm a")}</p>
-            </MenuItem>
-          )) :   <p style={{marginLeft: "130px"}}>You have no new messages</p>
+          inbox?.filter((a) => !a.isRead).map((a) => {
+            let username
+            if (!a.sender_id) {
+              username = "Auto Generated"
+            } else {
+               username = allUsers?.find((b)=> b.id === a.sender_id)?.name
+            }
+            return <MenuItem onClick={()=>navigate(`/messages/${a.id}`, {state: {isInbox: true, isRead: a.isRead, auto: !a.sender_id ? true : false}})}>
+                    <p><b>{a.subject} </b>sent from <b>{username}</b></p><br></br>
+                    <p><b>Date:</b> {moment(a.created_at).format("MMMM Do YYYY, h:mm a")}</p>
+                  </MenuItem>
+          }) :   <p style={{marginLeft: "130px"}}>You have no new messages</p>
          
         }
          <Divider>Meetings</Divider>

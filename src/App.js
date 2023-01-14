@@ -1,11 +1,10 @@
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import LoginReg from "./pages/auth/LoginReg";
 import ResetPassword from "./pages/auth/ResetPassword";
 import SendPasswordResetEmail from "./pages/auth/SendPasswordResetEmail";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
-import Layout from "./pages/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import Lists from "./pages/Lists";
 import { useEffect, useState } from "react";
@@ -30,6 +29,7 @@ import UserMessages from "./pages/userMessages/UserMessages";
 import { setInboxMessages, setOutboxMessages } from "./features/MessagesSlice";
 import SingleMessage from "./pages/userMessages/SingleMessage";
 import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
+import AppLayout from "./pages/AppLayout";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -51,12 +51,6 @@ function App() {
         name: data.user.name,
         setting: data.user.setting,
       }))
-
-      // localStorage.setItem("userName", data.user.name)
-      // localStorage.setItem("email", data.user.email)
-      // localStorage.setItem("id", data.user.id)
-
-      // console.log("fired");
     }
   }, [data, isSuccess, dispatch])
 
@@ -124,7 +118,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+        {/* <Route path="/" element={<Layout />}> */}
+          <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<LoginReg />} />

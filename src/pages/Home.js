@@ -1,6 +1,19 @@
 import { Grid } from "@mui/material";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "../services/LocalStorageService";
+
+
 
 const Home = () => {
+  const token = getToken()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
   return <>
     <Grid container justifyContent='center'>
       <Grid item sm={10}>
