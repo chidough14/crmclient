@@ -17,6 +17,9 @@ import { setProducts } from '../../features/ProductSlice';
 import ProductsTable from './ProductsTable';
 import CompaniesTable from './CompaniesTable';
 import { setCompany } from '../../features/companySlice';
+import AppModeSettings from './AppModeSettings';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../../services/LocalStorageService';
 
 
 function TabPanel(props) {
@@ -52,6 +55,14 @@ const Settings = () => {
   const {products} = useSelector((state) => state.product) 
   const {companies} = useSelector((state) => state.company) 
   const [value, setValue] = useState(0)
+  const token = getToken()
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   React.useEffect(() => {
     const  fetchProducts = async () => {
@@ -88,6 +99,7 @@ const Settings = () => {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Products" {...a11yProps(0)} />
           <Tab label="Companies" {...a11yProps(1)} />
+          <Tab label="App Mode" {...a11yProps(2)} />
         </Tabs>
       </Box>
 
@@ -97,6 +109,10 @@ const Settings = () => {
 
       <TabPanel value={value} index={1}>
         <CompaniesTable rows={companies} />
+      </TabPanel>
+
+      <TabPanel value={value} index={2}>
+        <AppModeSettings />
       </TabPanel>
     </>
  

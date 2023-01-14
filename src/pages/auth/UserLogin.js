@@ -33,6 +33,7 @@ const UserLogin = () => {
         dispatch(setUserInfo({ email: res.data.user.email, name: res.data.user.name }))
         dispatch(setUserToken({ token: res.data.token }))
         navigate('/dashboard')
+        window.location.reload()
       }
       if (res.error && res.error.data.status === "failed") {
         setError({ status: true, msg: res.error.data.message, type: 'error' })

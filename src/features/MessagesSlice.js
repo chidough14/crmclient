@@ -28,6 +28,9 @@ export const MessageSlice = createSlice({
     setInboxMessages: (state, action) => {
       state.inbox = action.payload.inbox
     },
+    readInboxMessages: (state, action) => {
+      state.inbox = state.inbox.filter((a) => a.id !== action.payload.messageId)
+    },
     setOutboxMessages: (state, action) => {
       state.outbox = action.payload.outbox
     },
@@ -53,7 +56,8 @@ export const {
   setOutboxMessages,
   setSingleMessage,
   addNewMessage,
-  removeMessage
+  removeMessage,
+  readInboxMessages
 } = MessageSlice.actions
 
 export default MessageSlice.reducer

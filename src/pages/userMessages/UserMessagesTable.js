@@ -179,7 +179,7 @@ const UserMessagesTable = ({messages, isInbox}) => {
                 <div style={{display: "flex", justifyContent: "space-between"}}>
                   <ReadMoreOutlined
                     style={{cursor: "pointer"}}
-                    onClick={()=> navigate(`/messages/${row.id}`, {state: {isInbox, isRead: row.isRead}})}
+                    onClick={()=> navigate(`/messages/${row.id}`, {state: {isInbox, isRead: row.isRead, auto: !row.sender_id ? true : false}})}
                   />
 
                   {

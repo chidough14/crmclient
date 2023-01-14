@@ -55,7 +55,7 @@ export default function Lists() {
 
 
   return (
-    <>
+    <div >
       <Toolbar>
         <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }} >My Lists</Typography>
 
@@ -74,6 +74,6 @@ export default function Lists() {
          open={open}
          setOpen={setOpen}
       />
-    </>
+    </div>
   );
 }

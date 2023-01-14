@@ -50,6 +50,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
   const [showActivitySelect, setShowActivitySelect] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const user = useSelector(state=> state.user)
   const dispatch = useDispatch()
 
   const handleCloseAlert = (event, reason) => {
@@ -242,7 +243,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
             ) : (
               <>
               {
-                !dashboard && (
+                (!dashboard && (event?.user_id === user?.id)) && (
                   <div style={{display: "flex", float: "right"}}>
                     <Tooltip title="Edit" placement="top">
                       <EditOutlined

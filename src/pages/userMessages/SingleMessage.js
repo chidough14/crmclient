@@ -6,8 +6,9 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { setInboxMessages, setSingleMessage } from '../../features/MessagesSlice'
+import { readInboxMessages, setSingleMessage } from '../../features/MessagesSlice'
 import instance from '../../services/fetchApi'
+import { getToken } from '../../services/LocalStorageService'
 import ComposeMessage from './ComposeMessage'
 
 const SingleMessage = () => {
@@ -17,8 +18,16 @@ const SingleMessage = () => {
   const { singleMessage } = useSelector(state => state.message)
   const {allUsers} = useSelector(state => state.user)
   const [replyMode, setReplyMode] = useState(false)
+  const [activityId, setActivityId] = useState()
   const navigate = useNavigate()
-  console.log(location);
+
+  const token = getToken()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   useEffect(() => {
 
@@ -32,7 +41,7 @@ const SingleMessage = () => {
     const readMessage = async () => {
       await instance.patch(`messages/${params.id}/read`, {isRead: true})
       .then((res) => {
-        dispatch(setInboxMessages({message: res.data.messageDetails}))
+        dispatch(readInboxMessages({messageId: res.data.messageDetails.id}))
       })
     }
 
@@ -46,6 +55,20 @@ const SingleMessage = () => {
     }
 
   }, [params?.id])
+
+  useEffect(()=> {
+    if(location.state?.auto) {
+      let mySubString = singleMessage?.message?.substring(
+        singleMessage?.message.indexOf("(") + 1, 
+        singleMessage?.message.lastIndexOf(")")
+      );
+
+      setActivityId(parseInt(mySubString))
+    }
+   
+
+  
+  }, [singleMessage])
 
   return (
     <>
@@ -81,9 +104,17 @@ const SingleMessage = () => {
             {
               location.state?.isInbox &&
               <>
-               <Typography variant='h7'>
+              {
+                location?.state?.auto ? (
+                <Typography variant='h7'>
+                  <b>Sent By</b> : Auto Generated
+                </Typography>
+                ) : (
+                <Typography variant='h7'>
                   <b>Sent By</b> : {allUsers?.find((a) => a.id === singleMessage?.sender_id)?.name} ({allUsers?.find((a) => a.id === singleMessage?.sender_id)?.email})
                 </Typography>
+                )
+              }
                 <p></p>
               </>
             }
@@ -96,7 +127,16 @@ const SingleMessage = () => {
               <b>Message</b> : 
             </Typography>
             <div style={{border: "1px solid black", width: "50%", height: "250px", borderRadius: "10px"}}>
-              {singleMessage?.message}
+              {!singleMessage?.sender_id ? singleMessage?.message.replace(/ *\([^)]*\) */g, "") : singleMessage?.message}
+              {
+                activityId ? (
+                  <>
+                  <p></p>
+                  <Button onClick={()=> navigate(`/activities/${activityId}`)}>View Activity</Button>
+                  </>
+                ) : null
+              }
+             
             </div>
             <p></p>
              
@@ -109,6 +149,7 @@ const SingleMessage = () => {
                   onClick={() => {
                     setReplyMode(true)
                   }}
+                  disabled={location?.state?.auto }
                   style={{borderRadius: "30px"}}
                 >
                   Reply
