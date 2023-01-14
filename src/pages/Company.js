@@ -1,4 +1,5 @@
-import { Button, Divider, Toolbar, Typography } from '@mui/material'
+import { AddOutlined, DeleteOutlined } from '@mui/icons-material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom'
@@ -8,6 +9,7 @@ import ComanyActivitiesTable from '../components/company/CompanyActivitiesTable'
 import LineChart from '../components/company/LineChart'
 import Map from '../components/company/Map'
 import { setSingleCompany } from '../features/companySlice'
+import { removeCompanyFromList } from '../features/listSlice'
 import instance from '../services/fetchApi'
 import { getToken } from '../services/LocalStorageService'
 
@@ -22,6 +24,7 @@ const Company = ({companyObj}) => {
   const {pathname} = useLocation()
   const {selectedCompanyId} = useSelector(state => state.list)
   const {list} = useSelector(state => state.list)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const isListPage = useMatch("/listsview/*", pathname)
   
@@ -34,7 +37,6 @@ const Company = ({companyObj}) => {
     }
 
     if (isListPage && selectedCompanyId) {
-      console.log(selectedCompanyId);
       fetchCompany(selectedCompanyId)
     } else {
       fetchCompany(params.id)
@@ -50,6 +52,22 @@ const Company = ({companyObj}) => {
     }
   }, [token])
 
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true)
+  }
+
+  const agree = async () => {
+    await instance.delete(`companies/${selectedCompanyId}/lists`)
+    .then((res) => {
+      dispatch(removeCompanyFromList({companyId: selectedCompanyId}))
+      handleClose()
+    })
+  }
+
+  const handleClose = () => {
+    setOpenDeleteDialog(false)
+  }
+
   return (
     <div>
       <Toolbar>
@@ -61,7 +79,17 @@ const Company = ({companyObj}) => {
           )
         }
 
-        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpen} disabled={isListPage && !list?.companies.length}>Add to list</Button>&nbsp;&nbsp;&nbsp;
+        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenDeleteDialog} disabled={!isListPage || !list?.companies.length}>
+          <Tooltip title="Delete company from list" placement="top">
+            <DeleteOutlined />
+          </Tooltip> 
+        </Button>&nbsp;&nbsp;&nbsp;
+
+        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpen} disabled={isListPage && !list?.companies.length}>
+          <Tooltip title="Add company to list" placement="top">
+            <AddOutlined />
+          </Tooltip> 
+        </Button>&nbsp;&nbsp;&nbsp;
 
         <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenActivityModal} disabled={isListPage && !list?.companies.length}>Start Activity</Button>
       </Toolbar>
@@ -116,6 +144,29 @@ const Company = ({companyObj}) => {
         setOpen={setOpenActivityModal}
         companyObject={company}
       />
+
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete company from list
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+           Are you sure you want to delete this company from the list?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Disagree</Button>
+          <Button onClick={agree} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }

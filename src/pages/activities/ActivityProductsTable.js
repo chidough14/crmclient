@@ -7,10 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 
 
-const ActivityProductsTable = ({products, editItem, deleteItem}) => {
+const ActivityProductsTable = ({products, editItem, deleteItem, activity, user}) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -40,18 +40,24 @@ const ActivityProductsTable = ({products, editItem, deleteItem}) => {
               <TableCell>{row.tax_percentage}</TableCell>
               <TableCell>{row.active}</TableCell>
               <TableCell>
-                <Tooltip title="Edit Quantity" placement="top">
-                  <EditOutlined
-                    style={{cursor: "pointer"}}
-                    onClick={() => editItem(row)}
-                  />
-                </Tooltip>
-                <Tooltip title="Delete" placement="top">
-                  <DeleteOutlined
-                    style={{cursor: "pointer"}}
-                    onClick={() => deleteItem(row)}
-                  />
-                </Tooltip>
+                <Button disabled={activity?.user_id !== user?.id}>
+                  <Tooltip title="Edit Quantity" placement="top">
+                    <EditOutlined
+                      style={{cursor: "pointer"}}
+                      onClick={() => editItem(row)}
+                    />
+                  </Tooltip>
+                </Button>
+                
+                <Button disabled={activity?.user_id !== user?.id}>
+                  <Tooltip title="Delete" placement="top">
+                    <DeleteOutlined
+                      style={{cursor: "pointer"}}
+                      onClick={() => deleteItem(row)}
+                    />
+                  </Tooltip>
+                </Button>
+               
               </TableCell>
             </TableRow>
           ))}

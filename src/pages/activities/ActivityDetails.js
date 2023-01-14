@@ -276,15 +276,15 @@ const ActivityDetails = () => {
                 </Button>
               </Typography>
 
-              <Button variant="contained" size='small' onClick={() => setOpenEditModal(true)} style={{borderRadius: "30px"}}><EditOutlined /></Button>&nbsp;&nbsp;&nbsp;
+              <Button disabled={activity?.user_id !== user?.id} variant="contained" size='small' onClick={() => setOpenEditModal(true)} style={{borderRadius: "30px"}}><EditOutlined /></Button>&nbsp;&nbsp;&nbsp;
 
-              <Button variant="contained" color='error' size='small' onClick={()=> setOpenDialogDeleteActivity(true)} style={{borderRadius: "30px"}}><DeleteOutlined /> </Button>
+              <Button disabled={activity?.user_id !== user?.id}  variant="contained" color='error' size='small' onClick={()=> setOpenDialogDeleteActivity(true)} style={{borderRadius: "30px"}}><DeleteOutlined /> </Button>
             </div>
 
             <div style={{margin: "auto", width: "60%"}}>
               <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }}><b>Upcoming Events</b></Typography>
-                <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)} style={{borderRadius: "30px"}}>
+                <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)} style={{borderRadius: "30px"}} disabled={activity?.user_id !== user?.id}>
                   <AddOutlined />
                 </Button>
               </div>
@@ -293,6 +293,8 @@ const ActivityDetails = () => {
                 events={activity?.events}
                 editEvent={editEvent}
                 deleteEvent={removeEvent}
+                activity={activity}
+                user={user}
               />
             </div>
           </div>
@@ -302,7 +304,7 @@ const ActivityDetails = () => {
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <Typography variant='h6'><b>Products</b></Typography>
 
-            <Button variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
+            <Button disabled={activity?.user_id !== user?.id} variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
           </div>
          
           <div>
@@ -310,6 +312,8 @@ const ActivityDetails = () => {
               products={activity?.products} 
               editItem={editItem} 
               deleteItem={deleteItem}
+              activity={activity}
+              user={user}
             />
 
 
@@ -339,6 +343,7 @@ const ActivityDetails = () => {
                       disableElevation 
                       style={{borderRadius: "30px"}} 
                       onClick={() => setOpenForm(true)}
+                      disabled={activity?.user_id !== user?.id}
                     >
                       Create Invoice
                     </Button>
@@ -360,11 +365,13 @@ const ActivityDetails = () => {
           </div>
         </TabPanel>
 
-        <TabPanel  value={value} index={2}>
+        <TabPanel value={value} index={2}>
           <ActivityInvoiceTable 
             invoices={activity?.invoices} 
             showInvoice={showInvoice} 
             showDeleteDialog={showDeleteDialog}
+            activity={activity}
+            user={user}
           />
         </TabPanel>
       </Box>
@@ -456,6 +463,8 @@ const ActivityDetails = () => {
       <ViewInvoiceModal
         invoice={invoiceDetails}
         companyName={activity?.company?.name}
+        activity={activity}
+        user={user}
       />
     </div>
   )

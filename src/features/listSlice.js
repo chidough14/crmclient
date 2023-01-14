@@ -20,6 +20,10 @@ export const listSlice = createSlice({
     getSingleList: (state, action) => {
       state.list = state.lists.find((a) => a.id === action.payload.id)
     },
+    removeCompanyFromList: (state, action) => {
+      state.list.companies = state.list.companies.filter((a)=> a.id !== action.payload.companyId)
+      state.selectedCompanyId = state.list.companies[0].id
+    },
     setSingleList: (state, action) => {
       state.list = action.payload.list
     },
@@ -52,7 +56,8 @@ export const {
   closeAlert, 
   getSingleList, 
   setSingleList,
-  setSelectedCompanyId 
+  setSelectedCompanyId ,
+  removeCompanyFromList
 } = listSlice.actions
 
 export default listSlice.reducer
