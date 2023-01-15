@@ -70,64 +70,72 @@ const Company = ({companyObj}) => {
 
   return (
     <div>
-      <Toolbar>
-        {
-          (isListPage && !list?.companies.length) ? (
-            <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>No companies in list</Typography>
-          ) : (
-            <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${company?.name}'s Details`}</Typography>
-          )
-        }
+      {
+        !list ? (
+               <p>List has been deleted</p>
+        ) : (
+          <>
+            <Toolbar>
+              {
+                (isListPage && !list?.companies.length) ? (
+                  <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>No companies in list</Typography>
+                ) : (
+                  <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${company?.name}'s Details`}</Typography>
+                )
+              }
 
-        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenDeleteDialog} disabled={!isListPage || !list?.companies.length}>
-          <Tooltip title="Delete company from list" placement="top">
-            <DeleteOutlined />
-          </Tooltip> 
-        </Button>&nbsp;&nbsp;&nbsp;
+              <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenDeleteDialog} disabled={!isListPage || !list?.companies.length}>
+                <Tooltip title="Delete company from list" placement="top">
+                  <DeleteOutlined />
+                </Tooltip> 
+              </Button>&nbsp;&nbsp;&nbsp;
 
-        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpen} disabled={isListPage && !list?.companies.length}>
-          <Tooltip title="Add company to list" placement="top">
-            <AddOutlined />
-          </Tooltip> 
-        </Button>&nbsp;&nbsp;&nbsp;
+              <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpen} disabled={isListPage && !list?.companies.length}>
+                <Tooltip title="Add company to list" placement="top">
+                  <AddOutlined />
+                </Tooltip> 
+              </Button>&nbsp;&nbsp;&nbsp;
 
-        <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenActivityModal} disabled={isListPage && !list?.companies.length}>Start Activity</Button>
-      </Toolbar>
-     
+              <Button variant="contained" style={{borderRadius: "30px"}} size='small' onClick={handleOpenActivityModal} disabled={isListPage && !list?.companies.length}>Start Activity</Button>
+            </Toolbar>
+          
 
-      <div style={{display: "flex", justifyContent: "space-between", marginBottom: "20px"}}>
-        <div>
-          <Typography variant="h7" display="block"  gutterBottom>
-            <b>Name</b> : {company?.name}
-          </Typography>
+            <div style={{display: "flex", justifyContent: "space-between", marginBottom: "20px"}}>
+              <div>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Name</b> : {company?.name}
+                </Typography>
 
-          <Typography variant="h7" display="block"  gutterBottom>
-            <b>Address</b> : {company?.address}
-          </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Address</b> : {company?.address}
+                </Typography>
 
-          <Typography variant="h7" display="block"  gutterBottom>
-            <b>Email</b> : {company?.email}
-          </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Email</b> : {company?.email}
+                </Typography>
 
-          <Typography variant="h7" display="block"  gutterBottom>
-            <b>Phone</b> : {company?.phone}
-          </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Phone</b> : {company?.phone}
+                </Typography>
 
-          <Typography variant="h7" display="block"  gutterBottom>
-            <b>Contact Person</b> : {company?.contactPerson}
-          </Typography>
-        </div>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Contact Person</b> : {company?.contactPerson}
+                </Typography>
+              </div>
 
-        <div style={{margin: "auto", width: "50%"}}>
-          <Map />
-        </div>
-      </div>
-      <Divider>
-        <Typography variant='h6'><b>Activities</b></Typography>
-      </Divider>
-      <div>
-        <ComanyActivitiesTable rows={company?.activities} />
-      </div>
+              <div style={{margin: "auto", width: "50%"}}>
+                <Map />
+              </div>
+            </div>
+            <Divider>
+              <Typography variant='h6'><b>Activities</b></Typography>
+            </Divider>
+            <div>
+              <ComanyActivitiesTable rows={company?.activities} />
+            </div>
+          </>
+        )
+      }
 
       {/* <div style={{display: "flex", justifyContent: "space-between", marginTop: "20px"}}>
         <LineChart />

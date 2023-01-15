@@ -29,7 +29,7 @@ const validationSchema = yup.object({
     .required('Email is required'),
 });
 
-const ActivityTransferModal = ({ open, setOpen, activity}) => {
+const ListTransferModal = ({ open, setOpen, list}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [showEmailError, setShowEmailError] = useState(false);
@@ -55,12 +55,12 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
-      await instance.post(`activities/${activity?.id}/transfer`, values)
+      await instance.post(`mylists/${list?.id}/transfer`, values)
       .then((res)=> {
        
         if (res.data.status === "success") {
           setOpenAlert(true);
-          setAlertMessage("Activity Transfered")
+          setAlertMessage("List Transfered")
           handleClose()
           resetForm()
         }
@@ -83,7 +83,7 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             <Typography variant='h6' style={{marginBottom: "10px"}}>
-              Transfer Activity
+              Transfer List
             </Typography>
             {
               showEmailError &&
@@ -136,4 +136,4 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
   )
 }
 
-export default ActivityTransferModal
+export default ListTransferModal

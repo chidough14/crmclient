@@ -8,13 +8,14 @@ import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import { CardHeader, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { MoreVert } from '@mui/icons-material';
+import { CopyAllOutlined, DeleteOutlined, EditOutlined, MoreVert, MoveUpOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
 import ListModal from './ListModal';
 import { addList, closeAlert, removeList, showAlert } from '../../features/listSlice';
 import instance from '../../services/fetchApi';
+import ListTransferModal from './ListTransferModal';
 
 const bull = (
   <Box
@@ -44,6 +45,8 @@ const ListCard = ({list}) => {
   const open = Boolean(anchorEl);
 
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [openTransferModal, setOpenTransferModal] = React.useState(false);
+  const [listObj, setListObj] = React.useState();
   //const [openAlert, setOpenAlert] = React.useState(false);
 
   const {openAlert} = useSelector((state) => state.list)
@@ -98,12 +101,11 @@ const ListCard = ({list}) => {
     .then((res)=> {
        dispatch(addList({list: res.data.clonedList}))
     })
+  };
 
-
-    // if (res.data.status === "success"){
-    //   dispatch(showAlert())
-    //   dispatch(removeList({listId: id}))
-    // }
+  const transferList =  (value) => {
+    setOpenTransferModal(true)
+    setListObj(value)
   };
 
   return (
@@ -137,9 +139,10 @@ const ListCard = ({list}) => {
                 'aria-labelledby': 'basic-button',
               }}
             >
-              <MenuItem onClick={showEditModal} disabled={(list.user_id !== user.id)}>Edit</MenuItem>
-              <MenuItem onClick={() => cloneList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}>Clone</MenuItem>
-              <MenuItem onClick={handleClickOpen} disabled={(list.user_id !== user.id)}>Delete</MenuItem>
+              <MenuItem onClick={showEditModal} disabled={(list.user_id !== user.id)}><EditOutlined /> Edit</MenuItem>
+              <MenuItem onClick={() => cloneList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}><CopyAllOutlined /> Clone</MenuItem>
+              <MenuItem onClick={() => transferList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}><MoveUpOutlined /> Transfer</MenuItem>
+              <MenuItem onClick={handleClickOpen} disabled={(list.user_id !== user.id)}><DeleteOutlined /> Delete</MenuItem>
             </Menu>
           </div>
           
@@ -159,6 +162,12 @@ const ListCard = ({list}) => {
         list={list}
         open={openModal}
         setOpen={setOpenModal}
+      />
+
+      <ListTransferModal
+        list={listObj}
+        open={openTransferModal}
+        setOpen={setOpenTransferModal}
       />
 
 

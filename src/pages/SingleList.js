@@ -36,7 +36,11 @@ const SingleList = () => {
         }
         dispatch(setSingleList({list: res.data.list}))
         setLoading(false)
-      });
+      })
+      .catch(()=> {
+        dispatch(setSingleList({list: undefined}))
+        setLoading(false)
+      })
     }
 
 

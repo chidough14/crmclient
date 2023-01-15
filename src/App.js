@@ -30,6 +30,7 @@ import { setInboxMessages, setOutboxMessages } from "./features/MessagesSlice";
 import SingleMessage from "./pages/userMessages/SingleMessage";
 import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
 import AppLayout from "./pages/AppLayout";
+import { setUserToken } from "./features/authSlice";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -42,6 +43,16 @@ function App() {
   const {outbox} = useSelector(state => state.message)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
+
+
+  useEffect(() => {
+    if (token) {
+      dispatch(setUserToken({
+        token: token,
+      }))
+    }
+  }, [token])
+
 
   useEffect(() => {
     if (data && isSuccess) {
@@ -104,15 +115,17 @@ function App() {
       })
     }
 
-    
+    if (auth?.token) {
+      getEventsResult()
+      getActivitiesResult()
+      getListsResult()
+      getUserMessages()
+      fetchUsers()
+      fetchMeetings()
+    }
 
-    getEventsResult()
-    getActivitiesResult()
-    getListsResult()
-    getUserMessages()
-    fetchUsers()
-    fetchMeetings()
-  }, [])
+  
+  }, [auth?.token])
 
   return (
     <>

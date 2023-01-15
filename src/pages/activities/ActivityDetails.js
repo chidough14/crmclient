@@ -19,6 +19,7 @@ import InvoiceForm from './InvoiceForm';
 import ActivityInvoiceTable from './ActivityInvoiceTable';
 import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal';
 import { setOpenViewInvoiceModal } from '../../features/InvoiceSlice';
+import { getToken } from '../../services/LocalStorageService';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -76,6 +77,15 @@ const ActivityDetails = () => {
   const [total, setTotal] = React.useState(0);
   const [editingInvoice, setEditingInvoice] = React.useState(false);
   const navigate = useNavigate()
+
+  
+  const token = getToken()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

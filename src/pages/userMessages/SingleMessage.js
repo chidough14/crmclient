@@ -132,7 +132,9 @@ const SingleMessage = () => {
                 activityId ? (
                   <>
                   <p></p>
-                  <Button onClick={()=> navigate(`/activities/${activityId}`)}>View Activity</Button>
+                  <Button onClick={()=> singleMessage?.subject.includes("List") ? navigate(`/listsview/${activityId}`) : navigate(`/activities/${activityId}`) }>
+                    View {singleMessage?.subject.includes("List") ? "List" : "Activity"}
+                  </Button>
                   </>
                 ) : null
               }

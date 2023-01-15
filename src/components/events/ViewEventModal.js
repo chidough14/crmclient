@@ -279,9 +279,9 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
               </Typography>
 
               {
-                (event?.meeting && moment().isBetween(event?.start, event?.end, 'milliseconds', null)) &&
+                //  (event?.meeting && moment().isBetween(event?.start, event?.end, 'milliseconds', null)) &&
+                event?.meeting &&
                 <Typography variant="h7" display="block"  gutterBottom>
-                
                   <Link to={`/join/${event?.meeting.meetingId}`}>
                    <b>Meeting Link</b>
                   </Link>
