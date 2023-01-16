@@ -3,8 +3,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegisterUserMutation } from '../../services/userAuthApi';
 import { storeToken } from '../../services/LocalStorageService';
+import { useDispatch } from 'react-redux';
+import { setUserInfo } from '../../features/userSlice';
+import { setUserToken } from '../../features/authSlice';
 
 const Registration = () => {
+  const dispatch = useDispatch()
   const [error, setError] = useState({
     status: false,
     msg: "",
@@ -26,12 +30,14 @@ const Registration = () => {
       if (actualData.password === actualData.password_confirmation) {
 
         const res = await registerUser(actualData)
-        console.log(res)
+
         if (res.data.status === "success") {
           // Store Token Code here
           storeToken(res.data.token)
+          dispatch(setUserInfo({ email: res.data.user.email, name: res.data.user.name }))
+          dispatch(setUserToken({ token: res.data.token }))
           navigate('/dashboard')
-          window.location.reload()
+          //window.location.reload()
         }
         if (res.data.status === "failed") {
           setError({ status: true, msg: res.data.message, type: 'error' })

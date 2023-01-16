@@ -1,4 +1,4 @@
-import { Button, CssBaseline, Grid, Typography } from '@mui/material';
+import { Button, CircularProgress, CssBaseline, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from './auth/ChangePassword';
 import { useLogoutUserMutation, useGetLoggedUserQuery } from '../services/userAuthApi';
@@ -11,6 +11,7 @@ import DashboardCard from '../components/dashboard/DashboardCard';
 import { BarChart } from '../components/dashboard/BarChart';
 import { DoughnutChart } from '../components/dashboard/DoughnutChart';
 import moment from 'moment';
+import { Box } from '@mui/system';
 
 
 const Dashboard = () => {
@@ -26,7 +27,7 @@ const Dashboard = () => {
   const { events } = useSelector(state => state.event)
   const { lists } = useSelector(state => state.list)
   const [eventsToday, setEventsToday] = useState([])
-  const { setting } = useSelector(state => state.user)
+  const { setting, loadingDashboard } = useSelector(state => state.user)
 
   useEffect(() => {
     if (!token) {
@@ -63,62 +64,73 @@ const Dashboard = () => {
 
 
   return (
-    <div>
-      <Typography variant='h6'><b>Dashboard</b></Typography>
-      <div style={{display: "flex", justifyContent: "space-between", columnGap: "30px", marginBottom: "30px"}}>
-        <div style={{width: "90%"}}>
-          <DashboardCard type="list" lists={lists}  />
-        </div>
-        <div style={{width: "90%"}}>
-          <DashboardCard type="event" events={eventsToday}/>
-        </div>
-        <div style={{width: "90%"}}>
-          <DashboardCard type="activity" />
-        </div>
-      </div>
-
-      <div style={{display: "flex", justifyContent: "space-between",  columnGap: "10px", }}>
-        {
-          setting?.dashboard_mode === "show_graphs" && (
-            <>
-             <div style={{width: "50%"}}>
-              <BarChart />
+    <>
+      {
+        loadingDashboard ? (
+          <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <div>
+            <Typography variant='h6'><b>Dashboard</b></Typography>
+            <div style={{display: "flex", justifyContent: "space-between", columnGap: "30px", marginBottom: "30px"}}>
+              <div style={{width: "90%"}}>
+                <DashboardCard type="list" lists={lists}  />
+              </div>
+              <div style={{width: "90%"}}>
+                <DashboardCard type="event" events={eventsToday}/>
+              </div>
+              <div style={{width: "90%"}}>
+                <DashboardCard type="activity" />
+              </div>
             </div>
-            <div style={{width: "30%"}}>
-              <DoughnutChart />
+      
+            <div style={{display: "flex", justifyContent: "space-between",  columnGap: "10px", }}>
+              {
+                setting?.dashboard_mode === "show_graphs" && (
+                  <>
+                  <div style={{width: "50%"}}>
+                    <BarChart />
+                  </div>
+                  <div style={{width: "30%"}}>
+                    <DoughnutChart />
+                  </div>
+                  </>
+                )
+              }
+      
+              {
+                setting?.dashboard_mode === "show_bar_graph" && (
+                  <>
+                  <div style={{width: "50%"}}>
+                    <BarChart />
+                  </div>
+                  <div style={{width: "30%"}}>
+                    
+                  </div>
+                  </>
+                )
+              }
+      
+              {
+                setting?.dashboard_mode === "show_doughnut_graph" && (
+                  <>
+                  <div style={{width: "40%"}}>
+                    <DoughnutChart />
+                  </div>
+                  <div style={{width: "30%"}}>
+                  
+                  </div>
+                  </>
+                )
+              }
+            
             </div>
-            </>
-          )
-        }
-
-        {
-          setting?.dashboard_mode === "show_bar_graph" && (
-            <>
-             <div style={{width: "50%"}}>
-              <BarChart />
-            </div>
-            <div style={{width: "30%"}}>
-              
-            </div>
-            </>
-          )
-        }
-
-        {
-          setting?.dashboard_mode === "show_doughnut_graph" && (
-            <>
-            <div style={{width: "40%"}}>
-              <DoughnutChart />
-            </div>
-            <div style={{width: "30%"}}>
-             
-            </div>
-            </>
-          )
-        }
-       
-      </div>
-    </div>
+          </div>
+        )
+      }
+    </>
+   
   )
 };
 

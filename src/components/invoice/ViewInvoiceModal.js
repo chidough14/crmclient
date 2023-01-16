@@ -29,7 +29,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ViewInvoiceModal = ({invoice, companyName}) => {
+const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
   const {openViewInvoiceModal} = useSelector((state) => state.invoice)
   const {singleInvoice} = useSelector((state) => state.invoice)
   const dispatch = useDispatch()
@@ -281,12 +281,13 @@ const ViewInvoiceModal = ({invoice, companyName}) => {
               variant="contained"   
               style={{borderRadius: "30px"}}
               onClick={()=> openForm()}
+              disabled={activity?.user_id !== user?.id}
             >
               <EditOutlined />
             </Button>
 
 
-            <Button size='small' color="secondary" variant="contained"   style={{borderRadius: "30px"}} onClick={()=> printDocument()}>
+            <Button disabled={activity?.user_id !== user?.id} size='small' color="secondary" variant="contained"   style={{borderRadius: "30px"}} onClick={()=> printDocument()}>
               <PrintOutlined />
             </Button>
         

@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,6 +19,7 @@ import InvoiceForm from './InvoiceForm';
 import ActivityInvoiceTable from './ActivityInvoiceTable';
 import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal';
 import { setOpenViewInvoiceModal } from '../../features/InvoiceSlice';
+import { getToken } from '../../services/LocalStorageService';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -75,7 +76,17 @@ const ActivityDetails = () => {
   const [invoiceDetails, setInvoiceDetails] = React.useState();
   const [total, setTotal] = React.useState(0);
   const [editingInvoice, setEditingInvoice] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate()
+
+  
+  const token = getToken()
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [token])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -84,9 +95,11 @@ const ActivityDetails = () => {
   useEffect(()=> {
 
     const getActivityDetails = async () => {
+      setLoading(true)
       await instance.get(`activities/${params.id}`)
       .then((res) => {
         dispatch(setSingleActivity({activity: res.data.activity}))
+        setLoading(false)
       })
     }
 
@@ -233,141 +246,156 @@ const ActivityDetails = () => {
       {/* <Toolbar>
         <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }}>{`${activity?.label}`}</Typography>
       </Toolbar> */}
-    
-      <Box sx={{ width: '100%', marginTop: "30px" }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Details" {...a11yProps(0)} />
-            <Tab label="Products" {...a11yProps(1)} />
-            <Tab label="Invoices" {...a11yProps(2)} />
-          </Tabs>
-        </Box>
-        <TabPanel value={value} index={0}>
-          <div style={{display: "flex", justifyContent: "space-between", marginBottom: "20px"}}>
-            <div>
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Label</b> : {activity?.label}
-              </Typography>
+      {
+        loading ? (
+          <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+        <Box sx={{ width: '100%', marginTop: "30px" }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tab label="Details" {...a11yProps(0)} />
+              <Tab label="Products" {...a11yProps(1)} />
+              <Tab label="Invoices" {...a11yProps(2)} />
+            </Tabs>
+          </Box>
+          <TabPanel value={value} index={0}>
+            <div style={{display: "flex", justifyContent: "space-between", marginBottom: "20px"}}>
+              <div>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Label</b> : {activity?.label}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Description</b> : {activity?.description}
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Description</b> : {activity?.description}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Assignee</b> : {activity?.assignedTo}
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Assignee</b> : {activity?.assignedTo}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Type</b> : {activity?.type}
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Type</b> : {activity?.type}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Estimate</b> : {activity?.earningEstimate}
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Estimate</b> : {activity?.earningEstimate}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Probability</b> : {activity?.probability}
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Probability</b> : {activity?.probability}
+                </Typography>
 
-              <Typography variant="h7" display="block"  gutterBottom>
-                <b>Company</b> : 
-                <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/companies/${activity?.company?.id}`)}>
-                  {activity?.company?.name}
-                </Button>
-              </Typography>
+                <Typography variant="h7" display="block"  gutterBottom>
+                  <b>Company</b> : 
+                  <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/companies/${activity?.company?.id}`)}>
+                    {activity?.company?.name}
+                  </Button>
+                </Typography>
 
-              <Button variant="contained" size='small' onClick={() => setOpenEditModal(true)} style={{borderRadius: "30px"}}><EditOutlined /></Button>&nbsp;&nbsp;&nbsp;
+                <Button disabled={activity?.user_id !== user?.id} variant="contained" size='small' onClick={() => setOpenEditModal(true)} style={{borderRadius: "30px"}}><EditOutlined /></Button>&nbsp;&nbsp;&nbsp;
 
-              <Button variant="contained" color='error' size='small' onClick={()=> setOpenDialogDeleteActivity(true)} style={{borderRadius: "30px"}}><DeleteOutlined /> </Button>
-            </div>
-
-            <div style={{margin: "auto", width: "60%"}}>
-              <div style={{display: "flex", justifyContent: "space-between"}}>
-                <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }}><b>Upcoming Events</b></Typography>
-                <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)} style={{borderRadius: "30px"}}>
-                  <AddOutlined />
-                </Button>
+                <Button disabled={activity?.user_id !== user?.id}  variant="contained" color='error' size='small' onClick={()=> setOpenDialogDeleteActivity(true)} style={{borderRadius: "30px"}}><DeleteOutlined /> </Button>
               </div>
 
-              <ActivityEventsTable
-                events={activity?.events}
-                editEvent={editEvent}
-                deleteEvent={removeEvent}
-              />
+              <div style={{margin: "auto", width: "60%"}}>
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                  <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }}><b>Upcoming Events</b></Typography>
+                  <Button variant="contained" size='small' onClick={() => setOpenAddEventModal(true)} style={{borderRadius: "30px"}} disabled={activity?.user_id !== user?.id}>
+                    <AddOutlined />
+                  </Button>
+                </div>
+
+                <ActivityEventsTable
+                  events={activity?.events}
+                  editEvent={editEvent}
+                  deleteEvent={removeEvent}
+                  activity={activity}
+                  user={user}
+                />
+              </div>
             </div>
-          </div>
-        </TabPanel>
+          </TabPanel>
 
-        <TabPanel value={value} index={1}>
-          <div style={{display: "flex", justifyContent: "space-between"}}>
-            <Typography variant='h6'><b>Products</b></Typography>
+          <TabPanel value={value} index={1}>
+            <div style={{display: "flex", justifyContent: "space-between"}}>
+              <Typography variant='h6'><b>Products</b></Typography>
 
-            <Button variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
-          </div>
-         
-          <div>
-            <ActivityProductsTable 
-              products={activity?.products} 
-              editItem={editItem} 
-              deleteItem={deleteItem}
-            />
+              <Button disabled={activity?.user_id !== user?.id} variant="contained" size='small' style={{borderRadius: "30px"}} onClick={() => setOpenAddModal(true)}>Add Product</Button>
+            </div>
+          
+            <div>
+              <ActivityProductsTable 
+                products={activity?.products} 
+                editItem={editItem} 
+                deleteItem={deleteItem}
+                activity={activity}
+                user={user}
+              />
 
 
-            <div style={{display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
-              <Typography variant='h5'  component="div" sx={{ flexGrow: 2}}>
-                <b>Total:</b> ${total}
-              </Typography>
+              <div style={{display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
+                <Typography variant='h5'  component="div" sx={{ flexGrow: 2}}>
+                  <b>Total:</b> ${total}
+                </Typography>
+                
+                {
+                  activity?.probability !== "Closed" ? (
+                    <Tooltip title="Close the deal to create an invoice">
+                      <div>
+                      <Button 
+                        variant="contained" 
+                        disableElevation 
+                        style={{borderRadius: "30px"}} 
+                        disabled
+                      >
+                        Create Invoice
+                      </Button>
+                      </div>
+                    </Tooltip>
+                  ) : (
+                    <div hidden={openForm}>
+                      <Button 
+                        variant="contained" 
+                        disableElevation 
+                        style={{borderRadius: "30px"}} 
+                        onClick={() => setOpenForm(true)}
+                        disabled={activity?.user_id !== user?.id}
+                      >
+                        Create Invoice
+                      </Button>
+                    </div>
+                  )
+                }
+                
+              </div>
               
               {
-                activity?.probability !== "Closed" ? (
-                  <Tooltip title="Close the deal to create an invoice">
-                    <div>
-                    <Button 
-                      variant="contained" 
-                      disableElevation 
-                      style={{borderRadius: "30px"}} 
-                      disabled
-                    >
-                      Create Invoice
-                    </Button>
-                    </div>
-                  </Tooltip>
-                ) : (
-                  <div hidden={openForm}>
-                    <Button 
-                      variant="contained" 
-                      disableElevation 
-                      style={{borderRadius: "30px"}} 
-                      onClick={() => setOpenForm(true)}
-                    >
-                      Create Invoice
-                    </Button>
+                openForm && (
+                  <div>
+                    <InvoiceForm activityId={activity?.id} />
                   </div>
                 )
               }
-              
-            </div>
             
-            {
-              openForm && (
-                <div>
-                  <InvoiceForm activityId={activity?.id} />
-                </div>
-              )
-            }
-           
-           
-          </div>
-        </TabPanel>
+            
+            </div>
+          </TabPanel>
 
-        <TabPanel  value={value} index={2}>
-          <ActivityInvoiceTable 
-            invoices={activity?.invoices} 
-            showInvoice={showInvoice} 
-            showDeleteDialog={showDeleteDialog}
-          />
-        </TabPanel>
-      </Box>
+          <TabPanel value={value} index={2}>
+            <ActivityInvoiceTable 
+              invoices={activity?.invoices} 
+              showInvoice={showInvoice} 
+              showDeleteDialog={showDeleteDialog}
+              activity={activity}
+              user={user}
+            />
+          </TabPanel>
+        </Box>
+        )
+      }
+      
 
       <AddProductToActivityModal
         open={openAddModal}
@@ -456,6 +484,8 @@ const ActivityDetails = () => {
       <ViewInvoiceModal
         invoice={invoiceDetails}
         companyName={activity?.company?.name}
+        activity={activity}
+        user={user}
       />
     </div>
   )

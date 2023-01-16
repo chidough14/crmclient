@@ -10,7 +10,7 @@ import Lists from "./pages/Lists";
 import { useEffect, useState } from "react";
 import { getToken } from "./services/LocalStorageService";
 import ChangePassword from "./pages/auth/ChangePassword";
-import { setAllUsersData, setUserInfo } from "./features/userSlice";
+import { setAllUsersData, setLoadingDashboard, setUserInfo } from "./features/userSlice";
 import { useGetLoggedUserQuery } from "./services/userAuthApi";
 import Activities from "./pages/Activities";
 import SingleList from "./pages/SingleList";
@@ -30,6 +30,7 @@ import { setInboxMessages, setOutboxMessages } from "./features/MessagesSlice";
 import SingleMessage from "./pages/userMessages/SingleMessage";
 import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
 import AppLayout from "./pages/AppLayout";
+import { setUserToken } from "./features/authSlice";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -37,11 +38,21 @@ import AppLayout from "./pages/AppLayout";
 function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
-  const user = useSelector(state => state.user)
+  //const {loadingDashboard} = useSelector(state => state.user)
   const {inbox} = useSelector(state => state.message)
   const {outbox} = useSelector(state => state.message)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
+
+
+  useEffect(() => {
+    if (token) {
+      dispatch(setUserToken({
+        token: token,
+      }))
+    }
+  }, [token])
+
 
   useEffect(() => {
     if (data && isSuccess) {
@@ -56,63 +67,136 @@ function App() {
 
   useEffect(() => {
     
-    const getListsResult = async () => {
+    // const getListsResult = async () => {
 
-      await instance.get(`mylists`)
+    //   await instance.get(`mylists`)
+    //   .then((res)=> {
+    //     dispatch(setLists({lists: res.data.lists}))
+    //   })
+    // }
+
+    // const getActivitiesResult = async () => {
+
+    //   await instance.get(`activities`)
+    //   .then((res)=> {
+    //     dispatch(setActivities({activities: res.data.activities}))
+    //   })
+    // }
+
+    // const getEventsResult = async () => {
+
+    //   await instance.get(`events`)
+    //   .then((res)=> {
+    //     dispatch(setEvents({events: res.data.events}))
+    //   })
+    // }
+
+    // const getUserMessages = async () => {
+
+    //   await instance.get(`messages`)
+    //   .then((res)=> {
+    //     dispatch(setInboxMessages({inbox: res.data.inbox}))
+    //     dispatch(setOutboxMessages({outbox: res.data.outbox}))
+    //   })
+    // }
+
+    // const fetchUsers = async () => {
+    //   await instance.get(`users`)
+    //   .then((res) => {
+    //     dispatch(setAllUsersData({users: res.data.users}))
+    //   })
+    // }
+
+    // const  fetchMeetings = async () => {
+    //   await instance.get(`meetings`)
+    //   .then((res) => {
+    //     dispatch(setMeetings({meetings: res.data.meetings}))
+    //     dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
+    //   })
+    // }
+
+    // if (auth?.token) {
+    //   getEventsResult()
+    //   getActivitiesResult()
+    //   getListsResult()
+    //   getUserMessages()
+    //   fetchUsers()
+    //   fetchMeetings()
+    // }
+
+
+    let requests = []
+    requests.push(
+      instance.get(`mylists`)
       .then((res)=> {
-        dispatch(setLists({lists: res.data.lists}))
+          dispatch(setLists({lists: res.data.lists}))
+        return Promise.resolve(true);
       })
-    }
-
-    const getActivitiesResult = async () => {
-
-      await instance.get(`activities`)
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`activities`)
       .then((res)=> {
         dispatch(setActivities({activities: res.data.activities}))
+        return Promise.resolve(true);
       })
-    }
-
-    const getEventsResult = async () => {
-
-      await instance.get(`events`)
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`events`)
       .then((res)=> {
         dispatch(setEvents({events: res.data.events}))
+        return Promise.resolve(true);
       })
-    }
-
-    const getUserMessages = async () => {
-
-      await instance.get(`messages`)
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`messages`)
       .then((res)=> {
         dispatch(setInboxMessages({inbox: res.data.inbox}))
         dispatch(setOutboxMessages({outbox: res.data.outbox}))
+        return Promise.resolve(true);
       })
-    }
-
-    const fetchUsers = async () => {
-      await instance.get(`users`)
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`users`)
       .then((res) => {
         dispatch(setAllUsersData({users: res.data.users}))
+        return Promise.resolve(true);
       })
-    }
-
-    const  fetchMeetings = async () => {
-      await instance.get(`meetings`)
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`meetings`)
       .then((res) => {
         dispatch(setMeetings({meetings: res.data.meetings}))
         dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
+        return Promise.resolve(true);
+      })
+      .catch((e)=>{
+        return Promise.resolve(false);
+      })
+    )
+
+
+    const  runAll = async () => {
+      dispatch(setLoadingDashboard({value: true}))
+      await Promise.all(requests).then((results)=>{
+       
+        dispatch(setLoadingDashboard({value: false}))
+      })
+      .catch((err)=> {
+        console.log(err);
       })
     }
 
-    
-
-    getEventsResult()
-    getActivitiesResult()
-    getListsResult()
-    getUserMessages()
-    fetchUsers()
-    fetchMeetings()
-  }, [])
+    if (auth?.token) {
+      runAll()
+    }
+   
+  
+  }, [auth?.token])
 
   return (
     <>

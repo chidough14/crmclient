@@ -22,7 +22,7 @@ import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOu
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import BellNotification from '../components/BellNotification';
 import UserAccountsCircle from '../components/UserAccountsCircle';
 import SearchBar from '../components/SearchBar';
@@ -143,7 +143,7 @@ export default function AppLayout() {
 
   const token = getToken()
   const {name, allUsers} = useSelector(state => state.user)
-  const {list} = useSelector(state => state.list)
+  const {list, loadingCompanies} = useSelector(state => state.list)
   const [loggedIn, setLoggedIn] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("");
   const {searchResults} = useSelector(state=> state.company)
@@ -181,6 +181,12 @@ export default function AppLayout() {
       getSearchResult()
     }
   }, [searchQuery])
+
+  React.useEffect(()=> {
+    if ( isListPage?.pathnameBase === "/listsview") {
+      setOpen(true)
+    }
+  }, [isListPage?.pathnameBase])
 
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)
@@ -248,32 +254,43 @@ export default function AppLayout() {
                     {
                        isListPage?.pathnameBase === "/listsview" ? (
                          <>
-                          <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
+                         {
+                            loadingCompanies ? (
+                              <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+                              <CircularProgress />
+                            </Box>
+                            ) : (
+                              <>
+                                <div style={{display: "flex", justifyContent: "space-between"}}>
+                                  <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
 
 
-                            <ListIcon style={{cursor: "pointer"}} onClick={() => navigate("/lists")} />
+                                  <ListIcon style={{cursor: "pointer"}} onClick={() => navigate("/lists")} />
 
-                          </div>
-                           {
-                              list?.companies.map((a) => (
-                              <ListItem  
-                                  disablePadding 
-                                  sx={{ display: 'block', backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" }}
-                                  onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
-                                >
-                                  <ListItemButton
-                                    sx={{
-                                      minHeight: 48,
-                                      justifyContent: open ? 'initial' : 'center',
-                                      px: 2.5,
-                                    }}
-                                  >
-                                    <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
-                                  </ListItemButton>
-                                </ListItem>
-                              ))
-                            }
+                                </div>
+                                { 
+                                  list?.companies.map((a) => (
+                                  <ListItem  
+                                      disablePadding 
+                                      sx={{ display: 'block', backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" }}
+                                      onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
+                                    >
+                                      <ListItemButton
+                                        sx={{
+                                          minHeight: 48,
+                                          justifyContent: open ? 'initial' : 'center',
+                                          px: 2.5,
+                                        }}
+                                      >
+                                        <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                                      </ListItemButton>
+                                    </ListItem>
+                                  ))
+                                }
+                              </>
+                            )
+                         }
+                         
                          </>
                        ) : 
                       sideBarItems.map((a, i) => (
