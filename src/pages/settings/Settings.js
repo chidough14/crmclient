@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Box, Button, Tab, Tabs, Tooltip, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import instance from '../../services/fetchApi';
@@ -55,6 +55,7 @@ const Settings = () => {
   const {products} = useSelector((state) => state.product) 
   const {companies} = useSelector((state) => state.company) 
   const [value, setValue] = useState(0)
+  const [loading, setLoading] = useState(false)
   const token = getToken()
   const navigate = useNavigate()
 
@@ -65,22 +66,42 @@ const Settings = () => {
   }, [token])
 
   React.useEffect(() => {
-    const  fetchProducts = async () => {
-      await instance.get(`products`)
-      .then((res) => {
-       dispatch(setProducts({products: res.data.products}))
-      })
-    }
 
-    const  fetchCompanies = async () => {
-      await instance.get(`companies`)
+    let requests = []
+    requests.push(
+      instance.get(`products`)
       .then((res) => {
-       dispatch(setCompany({companies: res.data.companies}))
+        dispatch(setProducts({products: res.data.products}))
+        return Promise.resolve(true);
       })
-    }
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
+      instance.get(`companies`)
+      .then((res) => {
+        dispatch(setCompany({companies: res.data.companies}))
+        return Promise.resolve(true);
+      })
+      .catch((e)=>{
+        return Promise.resolve(false);
+      }),
 
-    fetchCompanies()
-    fetchProducts()
+    )
+
+   
+
+     const  runAll = async () => {
+        setLoading(true)
+        await Promise.all(requests).then((results)=>{
+          
+          setLoading(false)
+        })
+        .catch((err)=> {
+          console.log(err);
+        })
+     }
+
+     runAll()
   }, [])
 
   const handleChange = (event, newValue) => {
@@ -104,11 +125,29 @@ const Settings = () => {
       </Box>
 
       <TabPanel value={value} index={0}>
-        <ProductsTable rows={products} />
+        {
+          loading ? (
+            <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <ProductsTable rows={products} />
+          )
+        }
+      
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <CompaniesTable rows={companies} />
+       {
+          loading ? (
+            <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <CompaniesTable rows={companies} />
+          )
+        }
+      
       </TabPanel>
 
       <TabPanel value={value} index={2}>

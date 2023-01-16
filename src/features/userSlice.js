@@ -5,7 +5,8 @@ const initialState = {
   email: "",
   name: "",
   setting: undefined,
-  allUsers: []
+  allUsers: [],
+  loadingDashboard: false
 }
 
 export const userSlice = createSlice({
@@ -30,9 +31,12 @@ export const userSlice = createSlice({
     updateUserSettings : (state, action) => {
       state.setting = action.payload.setting
     },
+    setLoadingDashboard: (state, action) => {
+      state.loadingDashboard = action.payload.value
+    }
   },
 })
 
-export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings } = userSlice.actions
+export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard } = userSlice.actions
 
 export default userSlice.reducer

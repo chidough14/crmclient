@@ -4,7 +4,8 @@ const initialState = {
   lists: [],
   openAlert: false,
   list: undefined,
-  selectedCompanyId: undefined
+  selectedCompanyId: undefined,
+  loadingCompanies: false
 }
 
 export const listSlice = createSlice({
@@ -44,6 +45,9 @@ export const listSlice = createSlice({
     setSelectedCompanyId: (state, action) => {
       state.selectedCompanyId = action.payload.id
     },
+    setLoadingCompanies: (state, action) => {
+      state.loadingCompanies = action.payload.value
+    },
   },
 })
 
@@ -57,7 +61,8 @@ export const {
   getSingleList, 
   setSingleList,
   setSelectedCompanyId ,
-  removeCompanyFromList
+  removeCompanyFromList,
+  setLoadingCompanies
 } = listSlice.actions
 
 export default listSlice.reducer

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { emptyCompanyObject } from '../features/companySlice';
-import { getSingleList, setSelectedCompanyId, setSingleList } from '../features/listSlice';
+import { getSingleList, setLoadingCompanies, setSelectedCompanyId, setSingleList } from '../features/listSlice';
 import instance from '../services/fetchApi';
 import { getToken } from '../services/LocalStorageService';
 import Company from './Company';
@@ -11,8 +11,7 @@ import Company from './Company';
 const SingleList = () => {
   const {id} = useParams()
   const dispatch = useDispatch()
-  const {list} = useSelector((state) => state.list)
-  const [loading, setLoading] = useState(true)
+  const {list, loadingCompanies} = useSelector((state) => state.list)
   const {pathname} = useLocation()
   const [comp, setComp] = useState(list?.companies[0])
   const {company} = useSelector((state) => state.company)
@@ -26,6 +25,7 @@ const SingleList = () => {
   }, [token])
 
   useEffect(() => {
+    dispatch(setLoadingCompanies({value: true}))
     const getList = async () => {
       await instance.get(`mylists/${id}`)
       .then((res) => {
@@ -35,11 +35,11 @@ const SingleList = () => {
           dispatch(emptyCompanyObject())
         }
         dispatch(setSingleList({list: res.data.list}))
-        setLoading(false)
+        dispatch(setLoadingCompanies({value: false}))
       })
       .catch(()=> {
         dispatch(setSingleList({list: undefined}))
-        setLoading(false)
+        dispatch(setLoadingCompanies({value: false}))
       })
     }
 
@@ -49,7 +49,16 @@ const SingleList = () => {
 
   return ( 
     <>
-      <Company />
+      {
+        loadingCompanies ? (
+          <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Company />
+        )
+      }
+     
     </>
   )
 }

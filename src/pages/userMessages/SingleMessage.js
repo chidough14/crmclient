@@ -1,5 +1,5 @@
 import { ArrowBack } from '@mui/icons-material'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
 import React from 'react'
 import { useState } from 'react'
@@ -18,6 +18,7 @@ const SingleMessage = () => {
   const { singleMessage } = useSelector(state => state.message)
   const {allUsers} = useSelector(state => state.user)
   const [replyMode, setReplyMode] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [activityId, setActivityId] = useState()
   const navigate = useNavigate()
 
@@ -32,9 +33,11 @@ const SingleMessage = () => {
   useEffect(() => {
 
     const getMessage = async () => {
+      setLoading(true)
       await instance.get(`messages/${params.id}`)
       .then((res) => {
         dispatch(setSingleMessage({message: res.data.messageDetails}))
+        setLoading(false)
       })
     }
 
@@ -73,97 +76,105 @@ const SingleMessage = () => {
   return (
     <>
       {
-        replyMode &&
-        <Tooltip title="Back" placement="top">
-          <Button onClick={() => setReplyMode(false)}>
-            <ArrowBack />
-          </Button>
-        </Tooltip>
-      }
-
-      {
-        !replyMode &&
-        <Tooltip title="Back to Messages" placement="top">
-          <Button onClick={() => navigate("/messages")}>
-            <ArrowBack />
-          </Button>
-        </Tooltip>
-      }
-      
-      {
-        replyMode ? (
-          <ComposeMessage replyMode={replyMode} singleMessage={singleMessage}/>
-        ) : (
-          <Box
-            sx={{  bgcolor: 'background.paper', height: 224, marginTop: "20px" }}
-          >
-            <Typography variant='h7'>
-              <b>Subject</b> : {singleMessage?.subject}
-            </Typography>
-            <p></p>
-            {
-              location.state?.isInbox &&
-              <>
-              {
-                location?.state?.auto ? (
-                <Typography variant='h7'>
-                  <b>Sent By</b> : Auto Generated
-                </Typography>
-                ) : (
-                <Typography variant='h7'>
-                  <b>Sent By</b> : {allUsers?.find((a) => a.id === singleMessage?.sender_id)?.name} ({allUsers?.find((a) => a.id === singleMessage?.sender_id)?.email})
-                </Typography>
-                )
-              }
-                <p></p>
-              </>
-            }
-           
-            <Typography variant='h7'>
-              <b>Date</b> : {moment(singleMessage?.created_at).format("MMMM Do YYYY, h:mm a")}
-            </Typography>
-            <p></p>
-            <Typography variant='h7'>
-              <b>Message</b> : 
-            </Typography>
-            <div style={{border: "1px solid black", width: "50%", height: "250px", borderRadius: "10px"}}>
-              {!singleMessage?.sender_id ? singleMessage?.message.replace(/ *\([^)]*\) */g, "") : singleMessage?.message}
-              {
-                activityId ? (
-                  <>
-                  <p></p>
-                  <Button onClick={()=> singleMessage?.subject.includes("List") ? navigate(`/listsview/${activityId}`) : navigate(`/activities/${activityId}`) }>
-                    View {singleMessage?.subject.includes("List") ? "List" : "Activity"}
-                  </Button>
-                  </>
-                ) : null
-              }
-             
-            </div>
-            <p></p>
-             
-            {
-              location.state?.isInbox && (
-                <Button 
-                  size='small' 
-                  color="error" 
-                  variant="contained" 
-                  onClick={() => {
-                    setReplyMode(true)
-                  }}
-                  disabled={location?.state?.auto }
-                  style={{borderRadius: "30px"}}
-                >
-                  Reply
-                </Button>
-              ) 
-            } 
-           
+        loading ? (
+          <Box sx={{ display: 'flex', marginLeft: "50%" }}>
+            <CircularProgress />
           </Box>
+        ) : (
+          <>
+          {
+            replyMode &&
+            <Tooltip title="Back" placement="top">
+              <Button onClick={() => setReplyMode(false)}>
+                <ArrowBack />
+              </Button>
+            </Tooltip>
+          }
+    
+          {
+            !replyMode &&
+            <Tooltip title="Back to Messages" placement="top">
+              <Button onClick={() => navigate("/messages")}>
+                <ArrowBack />
+              </Button>
+            </Tooltip>
+          }
+          
+          {
+            replyMode ? (
+              <ComposeMessage replyMode={replyMode} singleMessage={singleMessage}/>
+            ) : (
+              <Box
+                sx={{  bgcolor: 'background.paper', height: 224, marginTop: "20px" }}
+              >
+                <Typography variant='h7'>
+                  <b>Subject</b> : {singleMessage?.subject}
+                </Typography>
+                <p></p>
+                {
+                  location.state?.isInbox &&
+                  <>
+                  {
+                    location?.state?.auto ? (
+                    <Typography variant='h7'>
+                      <b>Sent By</b> : Auto Generated
+                    </Typography>
+                    ) : (
+                    <Typography variant='h7'>
+                      <b>Sent By</b> : {allUsers?.find((a) => a.id === singleMessage?.sender_id)?.name} ({allUsers?.find((a) => a.id === singleMessage?.sender_id)?.email})
+                    </Typography>
+                    )
+                  }
+                    <p></p>
+                  </>
+                }
+              
+                <Typography variant='h7'>
+                  <b>Date</b> : {moment(singleMessage?.created_at).format("MMMM Do YYYY, h:mm a")}
+                </Typography>
+                <p></p>
+                <Typography variant='h7'>
+                  <b>Message</b> : 
+                </Typography>
+                <div style={{border: "1px solid black", width: "50%", height: "250px", borderRadius: "10px"}}>
+                  {!singleMessage?.sender_id ? singleMessage?.message.replace(/ *\([^)]*\) */g, "") : singleMessage?.message}
+                  {
+                    activityId ? (
+                      <>
+                      <p></p>
+                      <Button onClick={()=> singleMessage?.subject.includes("List") ? navigate(`/listsview/${activityId}`) : navigate(`/activities/${activityId}`) }>
+                        View {singleMessage?.subject.includes("List") ? "List" : "Activity"}
+                      </Button>
+                      </>
+                    ) : null
+                  }
+                
+                </div>
+                <p></p>
+                
+                {
+                  location.state?.isInbox && (
+                    <Button 
+                      size='small' 
+                      color="error" 
+                      variant="contained" 
+                      onClick={() => {
+                        setReplyMode(true)
+                      }}
+                      disabled={location?.state?.auto }
+                      style={{borderRadius: "30px"}}
+                    >
+                      Reply
+                    </Button>
+                  ) 
+                } 
+              
+              </Box>
+            )
+          }
+          </>
         )
       }
-     
-
     </>
   )
 }

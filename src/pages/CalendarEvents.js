@@ -14,6 +14,7 @@ import EventModal from '../components/events/EventModal.js';
 import ViewEventModal from '../components/events/ViewEventModal.js';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../services/LocalStorageService.js';
+import "./event.css"
 
 
 const DnDCalendar = withDragAndDrop(Calendar)
@@ -129,9 +130,10 @@ const CalendarEvents = () => {
   }
 
   return (
-    <div style={{width: "100%", height: "100%"}}>
+    <div style={{width: "100%"}}>
       <DnDCalendar
         defaultDate={defaultDate}
+        //style={{ height: "100%"}}
         //defaultView={Views.WEEK}
         defaultView={user?.setting?.calendar_mode}
         events={myEvents}
