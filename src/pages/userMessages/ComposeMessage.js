@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Chip, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Select, Snackbar, Switch, TextField, Tooltip, Typography } from '@mui/material'
+import { Alert, Box, Button, Chip, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Select, Snackbar, Switch, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -7,8 +7,6 @@ import instance from '../../services/fetchApi';
 import { useState } from 'react';
 import { addNewMessage } from '../../features/MessagesSlice';
 import { useEffect } from 'react';
-import { ArrowBack } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -122,7 +120,6 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
     const {
       target: { value },
     } = event;
-    // let value = JSON.parse(event.target.value).id
    
     setUsersValue(typeof value === 'string' ? value.split(',') : value)
     formik.setFieldValue("email", "gggh")
@@ -211,20 +208,6 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
                 />
               )
             }
-
-            {/* <FormControlLabel
-              value="end"
-              control={
-                <Switch 
-                  color="primary"
-                  checked={checked}
-                  onChange={handleChange}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                 />
-              }
-              label="Send to multiple users"
-              labelPlacement="end"
-            /> */}
           </div>
         
           <p></p>

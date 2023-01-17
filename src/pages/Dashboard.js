@@ -1,29 +1,17 @@
-import { Button, CircularProgress, CssBaseline, Grid, Typography } from '@mui/material';
+import {  CircularProgress,  Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ChangePassword from './auth/ChangePassword';
-import { useLogoutUserMutation, useGetLoggedUserQuery } from '../services/userAuthApi';
-import { getToken, removeToken } from '../services/LocalStorageService';
+import { getToken } from '../services/LocalStorageService';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUserInfo, unsetUserInfo } from '../features/userSlice';
-import { unsetUserToken } from '../features/authSlice';
+import { useSelector } from 'react-redux';
 import DashboardCard from '../components/dashboard/DashboardCard';
 import { BarChart } from '../components/dashboard/BarChart';
 import { DoughnutChart } from '../components/dashboard/DoughnutChart';
 import moment from 'moment';
-import { Box } from '@mui/system';
 
 
 const Dashboard = () => {
-  const [userData, setUserData] = useState({
-    email: "",
-    name: ""
-  })
- 
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const token = getToken()
-  const [logoutUser] = useLogoutUserMutation()
   const { events } = useSelector(state => state.event)
   const { lists } = useSelector(state => state.list)
   const [eventsToday, setEventsToday] = useState([])

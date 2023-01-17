@@ -1,15 +1,14 @@
-import React, { Fragment, useState, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Calendar, Views, DateLocalizer, momentLocalizer } from 'react-big-calendar'
-//import events from "../services/events.js"
+import { Calendar,  DateLocalizer, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Alert, Grid, Snackbar } from '@mui/material';
+import { Alert,  Snackbar } from '@mui/material';
 import instance from '../services/fetchApi.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEvents, updateEvent } from '../features/EventSlice.js';
+import {  updateEvent } from '../features/EventSlice.js';
 import EventModal from '../components/events/EventModal.js';
 import ViewEventModal from '../components/events/ViewEventModal.js';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +17,6 @@ import "./event.css"
 
 
 const DnDCalendar = withDragAndDrop(Calendar)
-
-// moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
 const CalendarEvents = () => {
@@ -133,8 +130,6 @@ const CalendarEvents = () => {
     <div style={{width: "100%"}}>
       <DnDCalendar
         defaultDate={defaultDate}
-        //style={{ height: "100%"}}
-        //defaultView={Views.WEEK}
         defaultView={user?.setting?.calendar_mode}
         events={myEvents}
         localizer={localizer}

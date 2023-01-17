@@ -1,7 +1,7 @@
-import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem, Snackbar } from '@mui/material'
+import { Box, Button, Modal, TextField, Typography} from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
 import { useFormik } from 'formik';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addCompany, updateCompany } from '../../../features/companySlice';
@@ -43,7 +43,6 @@ const validationSchema = yup.object({
 
 const AddCompanyModal = ({open, setOpen, setOpenAlert, setAlertMessage, editMode, company}) => {
   const handleClose = () => setOpen(false);
-  const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
   useEffect(() => {

@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import instance from '../services/fetchApi';
-import { setLists } from '../features/listSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getToken } from '../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
+import {  Button, Toolbar, Typography } from '@mui/material';
 import ListCard from '../components/lists/ListCard';
 import ListModal from '../components/lists/ListModal';
 import "./list.css"
@@ -24,8 +21,6 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 export default function Lists() {
-
-  const dispatch = useDispatch()
   const token = getToken()
   const navigate = useNavigate()
   const {lists} = useSelector((state) => state.list)

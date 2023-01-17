@@ -262,17 +262,24 @@ export default function AppLayout() {
                             ) : (
                               <>
                                 <div style={{display: "flex", justifyContent: "space-between"}}>
-                                  <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
+                                  <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}><b>{list?.name}</b></Typography>
 
 
-                                  <ListIcon style={{cursor: "pointer"}} onClick={() => navigate("/lists")} />
+                                  <ListIcon style={{cursor: "pointer", opacity: open ? 1 : 0 }} onClick={() => navigate("/lists")} />
 
                                 </div>
+                               
                                 { 
+                                  open &&
                                   list?.companies.map((a) => (
                                   <ListItem  
                                       disablePadding 
-                                      sx={{ display: 'block', backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" }}
+                                      sx={{ 
+                                        display: 'block', 
+                                        borderRadius: "30px", 
+                                        backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" ,
+                                        borderRadius: selectedCompanyId === a.id ? "15px" : "" 
+                                      }}
                                       onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
                                     >
                                       <ListItemButton
@@ -282,7 +289,10 @@ export default function AppLayout() {
                                           px: 2.5,
                                         }}
                                       >
-                                        <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                                        <ListItemText 
+                                          primary={a.name} 
+                                          sx={{ opacity: open ? 1 : 0 }} 
+                                        />
                                       </ListItemButton>
                                     </ListItem>
                                   ))
@@ -296,7 +306,11 @@ export default function AppLayout() {
                       sideBarItems.map((a, i) => (
                         <ListItem  
                           disablePadding 
-                          sx={{ display: 'block', backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null }}
+                          sx={{ 
+                            display: 'block', 
+                            backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
+                            borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
+                          }}
                           onClick={()=> navigate(`${a.link}`)}
                         >
                           <ListItemButton

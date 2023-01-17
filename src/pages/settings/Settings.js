@@ -1,17 +1,7 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Box, Button, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material';
-import moment from 'moment';
+import { Box, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import instance from '../../services/fetchApi';
-import { setInvitedMeetings, setMeetings } from '../../features/MeetingSlice';
 import { useState } from 'react';
 import { setProducts } from '../../features/ProductSlice';
 import ProductsTable from './ProductsTable';
@@ -51,7 +41,6 @@ function a11yProps(index) {
 
 const Settings = () => {
   const dispatch = useDispatch()
-  const user = useSelector((state) => state.user) 
   const {products} = useSelector((state) => state.product) 
   const {companies} = useSelector((state) => state.company) 
   const [value, setValue] = useState(0)
@@ -106,10 +95,6 @@ const Settings = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const showModal = (row) => {
-  
   };
 
 

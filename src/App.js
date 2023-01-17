@@ -38,7 +38,6 @@ import { setUserToken } from "./features/authSlice";
 function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
-  //const {loadingDashboard} = useSelector(state => state.user)
   const {inbox} = useSelector(state => state.message)
   const {outbox} = useSelector(state => state.message)
   const dispatch = useDispatch()
