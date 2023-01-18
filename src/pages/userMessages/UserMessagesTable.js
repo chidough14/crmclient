@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Chip, Snackbar, TableHead } from '@mui/material';
+import { Alert, Chip, Pagination, Snackbar, TableHead } from '@mui/material';
 import { DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -85,9 +85,10 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const UserMessagesTable = ({messages, isInbox}) => {
+const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessages}) => {
+
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(3);
   const {allUsers} = useSelector(state => state.user)
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -105,7 +106,11 @@ const UserMessagesTable = ({messages, isInbox}) => {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - messages?.length) : 0;
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    if(isInbox){
+      getInboxMessages(newPage)
+    } else {
+      getOutboxMessages(newPage)
+    }
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -143,10 +148,12 @@ const UserMessagesTable = ({messages, isInbox}) => {
             </TableRow>
           </TableHead>
         <TableBody>
-          {(rowsPerPage > 0
-            ? messages?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : messages
-          )?.map((row) => (
+          {
+          // (rowsPerPage > 0
+          //   ? messages?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          //   : messages?.data
+          // )?
+          messages?.data?.map((row) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
                 {row.subject}
@@ -201,12 +208,12 @@ const UserMessagesTable = ({messages, isInbox}) => {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
+        {/* <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              rowsPerPageOptions={[3, 10, 25, { label: 'All', value: -1 }]}
               colSpan={3}
-              count={messages?.length}
+              count={-1}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
@@ -220,9 +227,23 @@ const UserMessagesTable = ({messages, isInbox}) => {
               ActionsComponent={TablePaginationActions}
             />
           </TableRow>
-        </TableFooter>
+        </TableFooter> */}
       </Table>
     </TableContainer>
+
+
+    <div style={{marginTop: "20px"}}>
+      <Pagination
+        count={ Math.ceil(messages?.total / messages?.per_page)}
+        //count={messages?.per_page}
+        onChange={(page, idx) => {
+          handleChangePage(page, idx)
+        }}
+        color="secondary"
+        showFirstButton
+        showLastButton
+      />
+    </div>
 
     <DeleteDialog
       open={openDialog}

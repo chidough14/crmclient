@@ -2,20 +2,26 @@ import {  CircularProgress,  Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../services/LocalStorageService';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DashboardCard from '../components/dashboard/DashboardCard';
 import { BarChart } from '../components/dashboard/BarChart';
 import { DoughnutChart } from '../components/dashboard/DoughnutChart';
 import moment from 'moment';
+import instance from '../services/fetchApi';
+import { setLoadingDashboard } from '../features/userSlice';
 
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const token = getToken()
-  const { events } = useSelector(state => state.event)
+  //const { events } = useSelector(state => state.event)
   const { lists } = useSelector(state => state.list)
   const [eventsToday, setEventsToday] = useState([])
   const { setting, loadingDashboard } = useSelector(state => state.user)
+  const [events, setEvents] = useState([])
+  const [list, setList] = useState()
+  //const [activitySummary, setActivitySummary] = useState()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!token) {
@@ -34,9 +40,41 @@ const Dashboard = () => {
   // }, [data, isSuccess])
 
   useEffect(() => {
+
+    let requests = []
+    requests.push(
+      instance.get(`dashboardevents`)
+      .then((res) => {
+        setEvents(res.data.events)
+      }),
+      instance.get(`mylists-dashboard`)
+      .then((res) => {
+        setList(res.data.list)
+      }),
+      // instance.get(`activities-summary`)
+      // .then((res) => {
+      //   setActivitySummary(res.data)
+      // })
+    )
+
+    const  runAll = async () => {
+      dispatch(setLoadingDashboard({value: true}))
+      await Promise.all(requests).then((results)=>{
+      
+        dispatch(setLoadingDashboard({value: false}))
+      })
+      .catch((err)=> {
+        console.log(err);
+      })
+    }
+
+    runAll()
+  }, [])
+
+  useEffect(() => {
     
 
-    let ev = events.filter((ev) => moment().isSame(ev.start, 'day') && moment().isBefore(ev.end))
+    let ev = events.filter((ev) =>  moment().isBefore(ev.end))
     .map((a) => {
       return {
         ...a,
@@ -63,7 +101,7 @@ const Dashboard = () => {
             <Typography variant='h6'><b>Dashboard</b></Typography>
             <div style={{display: "flex", justifyContent: "space-between", columnGap: "30px", marginBottom: "30px"}}>
               <div style={{width: "90%"}}>
-                <DashboardCard type="list" lists={lists}  />
+                <DashboardCard type="list" list={list}  />
               </div>
               <div style={{width: "90%"}}>
                 <DashboardCard type="event" events={eventsToday}/>

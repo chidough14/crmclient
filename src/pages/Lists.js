@@ -2,13 +2,16 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
 import {  Button, Toolbar, Typography } from '@mui/material';
 import ListCard from '../components/lists/ListCard';
 import ListModal from '../components/lists/ListModal';
 import "./list.css"
+import instance from '../services/fetchApi';
+import { setLists } from '../features/listSlice';
+import Pagination from '@mui/material/Pagination';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -23,24 +26,25 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Lists() {
   const token = getToken()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const {lists} = useSelector((state) => state.list)
+  const [page, setPage] = React.useState(1)
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
 
-  // React.useEffect(() => {
+  const getListsResult = async (pageNo = 1) => {
 
-  //   const getListsResult = async () => {
+    await instance.get(`mylists?page=${pageNo}`)
+    .then((res)=> {
+      console.log(res);
+      dispatch(setLists({lists: res.data.lists}))
+    })
+  }
 
-  //     await instance.get(`mylists`)
-  //     .then((res)=> {
-  //       console.log(res);
-  //       dispatch(setLists({lists: res.data.lists}))
-  //     })
-  //   }
-
-  //   getListsResult()
-  // }, [])
+  React.useEffect(() => {
+    getListsResult()
+  }, [])
 
   React.useEffect(() => {
     if (!token) {
@@ -58,12 +62,25 @@ export default function Lists() {
       </Toolbar>
       <div className="cards">
         {
-          lists?.map((list, idx) => (
+          lists?.data?.map((list, idx) => (
             <Grid item key={idx} >
               <ListCard list={list} />
             </Grid>
           ))
-        }
+        }  
+      
+      </div>
+
+      <div style={{marginTop: "50px", marginLeft: "40%"}}>
+        <Pagination
+          count={ Math.ceil(lists?.total / lists?.per_page)}
+          onChange={(page, idx) => {
+            getListsResult(idx)
+          }}
+          color="secondary"
+          showFirstButton
+          showLastButton
+        />
       </div>
       <ListModal
          open={open}

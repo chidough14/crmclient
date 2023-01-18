@@ -29,7 +29,7 @@ const bull = (
 );
 const localizer = momentLocalizer(moment);
 
-export default function DashboardCard({type, events, lists}) {
+export default function DashboardCard({type, events, list}) {
   const navigate = useNavigate()
   const [openViewEventModal, setOpenViewEventModal] = useState(false)
   const [eventObj, setEventObj] = useState()
@@ -41,29 +41,30 @@ export default function DashboardCard({type, events, lists}) {
 
   useEffect(() => {
     if(activities && activities.length) {
+
       let low = activities.filter((a) => a.probability === "Low")
       let medium = activities.filter((a) => a.probability === "Medium")
       let high = activities.filter((a) => a.probability === "High")
       let closed = activities.filter((a) => a.probability === "Closed")
       
       setLowActivities({
-        count: low.length,
-        amount: low.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.2
+        count: low?.length,
+        amount: low?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.2
       })
   
       setMediumActivities({
-        count: medium.length,
-        amount: medium.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.4
+        count:  medium?.length,
+        amount:  medium?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.4
       })
   
       setHighActivities({
-        count: high.length,
-        amount: high.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.8
+        count:  high?.length,
+        amount:  high?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.8
       })
   
       setClosedActivities({
-        count: closed.length,
-        amount: closed.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0)
+        count:  closed?.length,
+        amount:  closed?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0)
       })
     }
   
@@ -141,11 +142,11 @@ export default function DashboardCard({type, events, lists}) {
         {
            type === "list"  && (
             <>
-              <p style={{fontWeight: "bolder"}}>{lists[0]?.description}</p>
+              <p style={{fontWeight: "bolder"}}>{list?.name}</p>
 
               <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Button type='default' onClick={()=> navigate(`/lists`)}>My Lists</Button>
-                <Button type='primary' onClick={()=> navigate(`/listsview/${lists[0].id}`)}>Resume Work</Button>
+                <Button type='primary' onClick={()=> navigate(`/listsview/${list?.id}`)}>Resume Work</Button>
               </div>
           </>
           )

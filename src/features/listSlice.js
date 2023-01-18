@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  lists: [],
+  //lists: [],
+  lists: undefined,
   openAlert: false,
   list: undefined,
   selectedCompanyId: undefined,
@@ -16,10 +17,10 @@ export const listSlice = createSlice({
       state.lists = action.payload.lists
     },
     addList: (state, action) => {
-      state.lists = [...state.lists, action.payload.list]
+      state.lists.data = [...state.lists.data, action.payload.list]
     },
     getSingleList: (state, action) => {
-      state.list = state.lists.find((a) => a.id === action.payload.id)
+      state.list = state.lists.data.find((a) => a.id === action.payload.id)
     },
     removeCompanyFromList: (state, action) => {
       state.list.companies = state.list.companies.filter((a)=> a.id !== action.payload.companyId)
@@ -30,11 +31,11 @@ export const listSlice = createSlice({
     },
     updateList: (state, action) => {
       let idx
-      idx = state.lists.findIndex((a) => a.id === action.payload.list.id)
-      state.lists[idx] = action.payload.list
+      idx = state.lists.data.findIndex((a) => a.id === action.payload.list.id)
+      state.lists.data[idx] = action.payload.list
     },
     removeList: (state, action) => {
-      state.lists = state.lists.filter((a) => a.id !== action.payload.listId)
+      state.lists.data = state.lists.data.filter((a) => a.id !== action.payload.listId)
     },
     showAlert: (state, action) => {
       state.openAlert = true

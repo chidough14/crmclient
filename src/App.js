@@ -65,75 +65,18 @@ function App() {
   }, [data, isSuccess, dispatch])
 
   useEffect(() => {
-    
-    // const getListsResult = async () => {
-
-    //   await instance.get(`mylists`)
-    //   .then((res)=> {
-    //     dispatch(setLists({lists: res.data.lists}))
-    //   })
-    // }
-
-    // const getActivitiesResult = async () => {
-
-    //   await instance.get(`activities`)
-    //   .then((res)=> {
-    //     dispatch(setActivities({activities: res.data.activities}))
-    //   })
-    // }
-
-    // const getEventsResult = async () => {
-
-    //   await instance.get(`events`)
-    //   .then((res)=> {
-    //     dispatch(setEvents({events: res.data.events}))
-    //   })
-    // }
-
-    // const getUserMessages = async () => {
-
-    //   await instance.get(`messages`)
-    //   .then((res)=> {
-    //     dispatch(setInboxMessages({inbox: res.data.inbox}))
-    //     dispatch(setOutboxMessages({outbox: res.data.outbox}))
-    //   })
-    // }
-
-    // const fetchUsers = async () => {
-    //   await instance.get(`users`)
-    //   .then((res) => {
-    //     dispatch(setAllUsersData({users: res.data.users}))
-    //   })
-    // }
-
-    // const  fetchMeetings = async () => {
-    //   await instance.get(`meetings`)
-    //   .then((res) => {
-    //     dispatch(setMeetings({meetings: res.data.meetings}))
-    //     dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
-    //   })
-    // }
-
-    // if (auth?.token) {
-    //   getEventsResult()
-    //   getActivitiesResult()
-    //   getListsResult()
-    //   getUserMessages()
-    //   fetchUsers()
-    //   fetchMeetings()
-    // }
 
 
     let requests = []
     requests.push(
-      instance.get(`mylists`)
-      .then((res)=> {
-          dispatch(setLists({lists: res.data.lists}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      }),
+      // instance.get(`mylists`)
+      // .then((res)=> {
+      //     dispatch(setLists({lists: res.data.lists}))
+      //   return Promise.resolve(true);
+      // })
+      // .catch((e)=>{
+      //   return Promise.resolve(false);
+      // }),
       instance.get(`activities`)
       .then((res)=> {
         dispatch(setActivities({activities: res.data.activities}))
@@ -142,23 +85,23 @@ function App() {
       .catch((e)=>{
         return Promise.resolve(false);
       }),
-      instance.get(`events`)
-      .then((res)=> {
-        dispatch(setEvents({events: res.data.events}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      }),
-      instance.get(`messages`)
-      .then((res)=> {
-        dispatch(setInboxMessages({inbox: res.data.inbox}))
-        dispatch(setOutboxMessages({outbox: res.data.outbox}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      }),
+      // instance.get(`events`)
+      // .then((res)=> {
+      //   dispatch(setEvents({events: res.data.events}))
+      //   return Promise.resolve(true);
+      // })
+      // .catch((e)=>{
+      //   return Promise.resolve(false);
+      // }),
+      // instance.get(`messages`)
+      // .then((res)=> {
+      //   dispatch(setInboxMessages({inbox: res.data.inbox}))
+      //   dispatch(setOutboxMessages({outbox: res.data.outbox}))
+      //   return Promise.resolve(true);
+      // })
+      // .catch((e)=>{
+      //   return Promise.resolve(false);
+      // }),
       instance.get(`users`)
       .then((res) => {
         dispatch(setAllUsersData({users: res.data.users}))
@@ -167,23 +110,23 @@ function App() {
       .catch((e)=>{
         return Promise.resolve(false);
       }),
-      instance.get(`meetings`)
-      .then((res) => {
-        dispatch(setMeetings({meetings: res.data.meetings}))
-        dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      })
+      // instance.get(`meetings`)
+      // .then((res) => {
+      //   dispatch(setMeetings({meetings: res.data.meetings}))
+      //   dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
+      //   return Promise.resolve(true);
+      // })
+      // .catch((e)=>{
+      //   return Promise.resolve(false);
+      // })
     )
 
 
     const  runAll = async () => {
-      dispatch(setLoadingDashboard({value: true}))
+      // dispatch(setLoadingDashboard({value: true}))
       await Promise.all(requests).then((results)=>{
        
-        dispatch(setLoadingDashboard({value: false}))
+        // dispatch(setLoadingDashboard({value: false}))
       })
       .catch((err)=> {
         console.log(err);
@@ -220,7 +163,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/mymeetings" element={<MyMeetings />} />
             <Route path="/join/:id" element={<JoinMeeting />} />
-            <Route path="/messages" element={<UserMessages inbox={inbox} outbox={outbox}  />} /> 
+            <Route path="/messages" element={<UserMessages  />} /> 
             <Route path="/messages/:id" element={<SingleMessage   />} /> 
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />

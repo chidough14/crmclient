@@ -54,41 +54,47 @@ const Settings = () => {
     }
   }, [token])
 
+  const getProducts = (page = 1) => {
+    instance.get(`products?page=${page}`)
+    .then((res) => {
+      dispatch(setProducts({products: res.data.products}))
+      return Promise.resolve(true);
+    })
+    .catch((e)=>{
+      return Promise.resolve(false);
+    })
+  }
+
+  const getCompanies = (page = 1) => {
+    instance.get(`companies?page=${page}`)
+    .then((res) => {
+      dispatch(setCompany({companies: res.data.companies}))
+      return Promise.resolve(true);
+    })
+    .catch((e)=>{
+      return Promise.resolve(false);
+    })
+  }
+
   React.useEffect(() => {
 
     let requests = []
     requests.push(
-      instance.get(`products`)
-      .then((res) => {
-        dispatch(setProducts({products: res.data.products}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      }),
-      instance.get(`companies`)
-      .then((res) => {
-        dispatch(setCompany({companies: res.data.companies}))
-        return Promise.resolve(true);
-      })
-      .catch((e)=>{
-        return Promise.resolve(false);
-      }),
-
+      getProducts(), getCompanies()
     )
 
    
 
-     const  runAll = async () => {
-        setLoading(true)
-        await Promise.all(requests).then((results)=>{
-          
-          setLoading(false)
-        })
-        .catch((err)=> {
-          console.log(err);
-        })
-     }
+    const  runAll = async () => {
+      setLoading(true)
+      await Promise.all(requests).then((results)=>{
+        
+        setLoading(false)
+      })
+      .catch((err)=> {
+        console.log(err);
+      })
+    }
 
      runAll()
   }, [])
@@ -116,7 +122,7 @@ const Settings = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <ProductsTable rows={products} />
+            <ProductsTable rows={products} getProducts={getProducts}/>
           )
         }
       
@@ -129,7 +135,7 @@ const Settings = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <CompaniesTable rows={companies} />
+            <CompaniesTable rows={companies} getCompanies={getCompanies}/>
           )
         }
       

@@ -150,6 +150,8 @@ export default function AppLayout() {
   const dispatch = useDispatch()
   const {pathname} = useLocation()
   const {selectedCompanyId} = useSelector(state => state.list)
+  const [inboxData, setInboxData] = React.useState([])
+  const [invitedMeetingsData, setInvitedMeetingsData] = React.useState([])
   const { invitedMeetings } = useSelector((state) => state.meeting) 
   const {inbox} = useSelector(state => state.message)
   const navigate = useNavigate()
@@ -188,6 +190,18 @@ export default function AppLayout() {
     }
   }, [isListPage?.pathnameBase])
 
+  React.useEffect(()=> {
+    const getNotifications = async () => {
+      await instance.get(`notifications`)
+      .then((res) => {
+         setInboxData(res.data.inbox)
+         setInvitedMeetingsData(res.data.invitedMeetings)
+      })
+    }
+
+    getNotifications()
+  }, [inbox, invitedMeetings])
+
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)
   };
@@ -218,7 +232,7 @@ export default function AppLayout() {
                 />
             )
           }
-          <BellNotification inbox={inbox} allUsers={allUsers} invitedMeetings={invitedMeetings} />
+          <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
           
 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
@@ -256,9 +270,10 @@ export default function AppLayout() {
                          <>
                          {
                             loadingCompanies ? (
-                              <Box sx={{ display: 'flex', marginLeft: "50%" }}>
-                              <CircularProgress />
-                            </Box>
+                              <Box sx={{ display: 'flex', marginLeft: "35%" }}>
+                                {/* <CircularProgress /> */}
+                                <Typography variant='h6'>Loading...</Typography>
+                              </Box>
                             ) : (
                               <>
                                 <div style={{display: "flex", justifyContent: "space-between"}}>

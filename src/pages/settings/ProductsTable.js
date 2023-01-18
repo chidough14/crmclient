@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Button, Snackbar, TableHead } from '@mui/material';
+import { Alert, Button, Pagination, Snackbar, TableHead } from '@mui/material';
 import { Add, AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import AddProductModal from './modals/AddProductModal';
 import AlertDialog from './modals/AlertDialog';
@@ -84,7 +84,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ProductsTable = ({rows}) => {
+const ProductsTable = ({rows, getProducts}) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
@@ -97,7 +97,7 @@ const ProductsTable = ({rows}) => {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.data.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -154,10 +154,12 @@ const ProductsTable = ({rows}) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
+          {
+          // (rowsPerPage > 0
+          //   ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          //   : rows
+          // )
+          rows?.data.map((row) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
                 {row.name}
@@ -202,7 +204,7 @@ const ProductsTable = ({rows}) => {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
+        {/* <TableFooter>
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
@@ -221,9 +223,21 @@ const ProductsTable = ({rows}) => {
               ActionsComponent={TablePaginationActions}
             />
           </TableRow>
-        </TableFooter>
+        </TableFooter> */}
       </Table>
     </TableContainer>
+
+    <div style={{marginTop: "20px"}}>
+      <Pagination
+        count={ Math.ceil(rows?.total / rows?.per_page)}
+        onChange={(page, idx) => {
+          getProducts(idx)
+        }}
+        color="secondary"
+        showFirstButton
+        showLastButton
+      />
+    </div>
 
     <AddProductModal
       open={openModal}

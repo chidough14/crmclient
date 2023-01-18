@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  products: [],
+  products: undefined,
 }
 
 export const ProductSlice = createSlice({
@@ -12,14 +12,14 @@ export const ProductSlice = createSlice({
       state.products = action.payload.products
     },
     addProduct: (state, action) => {
-      state.products = [...state.products, action.payload.product]
+      state.products.data = [...state.products.data, action.payload.product]
     },
     updateProduct: (state, action) => {
-      let idx = state.products.findIndex((a) => a.id === action.payload.product.id)
-      state.products[idx] = action.payload.product
+      let idx = state.products.data.findIndex((a) => a.id === action.payload.product.id)
+      state.products.data[idx] = action.payload.product
     },
     removeProduct: (state, action) => {
-      state.products = state.products.filter((a) => a.id !== action.payload.productId)
+      state.products.data = state.products.data.filter((a) => a.id !== action.payload.productId)
     },
   },
 })
