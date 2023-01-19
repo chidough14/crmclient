@@ -2,7 +2,9 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   openViewInvoiceModal: false,
-  singleInvoice: undefined
+  singleInvoice: undefined,
+  invoices: undefined,
+  sortOption: "all"
 }
 
 export const InvoiceSlice = createSlice({
@@ -25,6 +27,12 @@ export const InvoiceSlice = createSlice({
     removeInvoiceProductItem: (state, action) => {
       state.singleInvoice.products = state.singleInvoice.products.filter((a) => a.id !== action.payload.id)
     },
+    setAllInvoices: (state, action) => {
+      state.invoices = action.payload.invoices
+    },
+    setSortOptionValue: (state, action) => {
+      state.sortOption = action.payload.option
+    },
   },
 })
 
@@ -33,7 +41,9 @@ export const {
   setInvoice,
   addProductItemToInvoice,
   updateInvoiceProduct,
-  removeInvoiceProductItem
+  removeInvoiceProductItem,
+  setAllInvoices,
+  setSortOptionValue
 } = InvoiceSlice.actions
 
 export default InvoiceSlice.reducer

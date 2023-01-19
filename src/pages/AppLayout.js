@@ -18,11 +18,11 @@ import ListItemText from '@mui/material/ListItemText';
 import { Link, matchPath, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getToken } from "../services/LocalStorageService";
-import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, SettingsOutlined } from '@mui/icons-material';
+import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, SettingsOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 import BellNotification from '../components/BellNotification';
 import UserAccountsCircle from '../components/UserAccountsCircle';
 import SearchBar from '../components/SearchBar';
@@ -118,6 +118,11 @@ const sideBarItems = [
     name: "Calendar",
     icon: <CalendarMonthIcon />,
     link: "/events"
+  },
+  {
+    name: "Orders",
+    icon: <ShoppingCartOutlined />,
+    link: "/orders"
   },
   {
     name: "Messages",
@@ -319,34 +324,37 @@ export default function AppLayout() {
                          </>
                        ) : 
                       sideBarItems.map((a, i) => (
-                        <ListItem  
-                          disablePadding 
-                          sx={{ 
-                            display: 'block', 
-                            backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
-                            borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
-                          }}
-                          onClick={()=> navigate(`${a.link}`)}
-                        >
-                          <ListItemButton
-                            sx={{
-                              minHeight: 48,
-                              justifyContent: open ? 'initial' : 'center',
-                              px: 2.5,
+                        <Tooltip title={a.name}>
+                          <ListItem 
+                            key={i} 
+                            disablePadding 
+                            sx={{ 
+                              display: 'block', 
+                              backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
+                              borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
                             }}
+                            onClick={()=> navigate(`${a.link}`)}
                           >
-                            <ListItemIcon
+                            <ListItemButton
                               sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : 'auto',
-                                justifyContent: 'center',
+                                minHeight: 48,
+                                justifyContent: open ? 'initial' : 'center',
+                                px: 2.5,
                               }}
                             >
-                              {a.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
-                          </ListItemButton>
-                        </ListItem>
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: 0,
+                                  mr: open ? 3 : 'auto',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                {a.icon}
+                              </ListItemIcon>
+                              <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                          </ListItem>
+                        </Tooltip>
                       ))
                     }
                   

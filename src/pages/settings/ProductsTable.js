@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Button, Pagination, Snackbar, TableHead } from '@mui/material';
+import { Alert, Button, CircularProgress, Pagination, Snackbar, TableHead } from '@mui/material';
 import { Add, AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import AddProductModal from './modals/AddProductModal';
 import AlertDialog from './modals/AlertDialog';
@@ -84,8 +84,8 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ProductsTable = ({rows, getProducts}) => {
-  const [page, setPage] = React.useState(0);
+const ProductsTable = ({rows, getProducts, loading}) => {
+  const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
@@ -95,18 +95,11 @@ const ProductsTable = ({rows, getProducts}) => {
   const [alertMessage, setAlertMessage] = React.useState("");
   const dispatch = useDispatch()
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.data.length) : 0;
+  React.useEffect(() => {
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(rows?.current_page)
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  }, [rows?.current_page])
 
   const deleteProduct = async () => {
     await instance.delete(`products/${productObj.id}`)
@@ -155,11 +148,16 @@ const ProductsTable = ({rows, getProducts}) => {
         </TableHead>
         <TableBody>
           {
-          // (rowsPerPage > 0
-          //   ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          //   : rows
-          // )
-          rows?.data.map((row) => (
+            loading ? (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <Box sx={{ display: 'flex', marginLeft: "45%" }}>
+                    <CircularProgress />
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ) :
+            rows?.data.map((row) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
                 {row.name}
@@ -197,39 +195,14 @@ const ProductsTable = ({rows, getProducts}) => {
               </TableCell>
             </TableRow>
           ))}
-
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
         </TableBody>
-        {/* <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter> */}
       </Table>
     </TableContainer>
 
-    <div style={{marginTop: "20px"}}>
+    <div style={{marginTop: "50px", marginLeft: "40%"}}>
       <Pagination
         count={ Math.ceil(rows?.total / rows?.per_page)}
+        page={page}
         onChange={(page, idx) => {
           getProducts(idx)
         }}

@@ -14,10 +14,11 @@
   gap: 1rem;
 }
 
-/* .pagination li{
-  display: inline;
-  padding: 10px;
-} */
+.text .MuiOutlinedInput-root {
+  background-color: white;
+  border-radius: 20px;
+  width: 300px;
+}
 
 @media (min-width: 600px) {
   .cards { grid-template-columns: repeat(2, 1fr); }

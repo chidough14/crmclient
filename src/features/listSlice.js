@@ -6,7 +6,8 @@ const initialState = {
   openAlert: false,
   list: undefined,
   selectedCompanyId: undefined,
-  loadingCompanies: false
+  loadingCompanies: false,
+  sortOption: "all"
 }
 
 export const listSlice = createSlice({
@@ -49,6 +50,9 @@ export const listSlice = createSlice({
     setLoadingCompanies: (state, action) => {
       state.loadingCompanies = action.payload.value
     },
+    setSortOptionValue: (state, action) => {
+      state.sortOption = action.payload.option
+    },
   },
 })
 
@@ -63,7 +67,8 @@ export const {
   setSingleList,
   setSelectedCompanyId ,
   removeCompanyFromList,
-  setLoadingCompanies
+  setLoadingCompanies,
+  setSortOptionValue
 } = listSlice.actions
 
 export default listSlice.reducer

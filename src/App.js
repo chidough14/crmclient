@@ -31,6 +31,7 @@ import SingleMessage from "./pages/userMessages/SingleMessage";
 import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
 import AppLayout from "./pages/AppLayout";
 import { setUserToken } from "./features/authSlice";
+import Orders from "./pages/orders/Orders";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -38,8 +39,6 @@ import { setUserToken } from "./features/authSlice";
 function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
-  const {inbox} = useSelector(state => state.message)
-  const {outbox} = useSelector(state => state.message)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
 
@@ -165,6 +164,7 @@ function App() {
             <Route path="/join/:id" element={<JoinMeeting />} />
             <Route path="/messages" element={<UserMessages  />} /> 
             <Route path="/messages/:id" element={<SingleMessage   />} /> 
+            <Route path="/orders" element={<Orders  />} /> 
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />
         </Routes>

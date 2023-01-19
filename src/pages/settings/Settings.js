@@ -55,8 +55,10 @@ const Settings = () => {
   }, [token])
 
   const getProducts = (page = 1) => {
+    setLoading(true)
     instance.get(`products?page=${page}`)
     .then((res) => {
+      setLoading(false)
       dispatch(setProducts({products: res.data.products}))
       return Promise.resolve(true);
     })
@@ -66,9 +68,11 @@ const Settings = () => {
   }
 
   const getCompanies = (page = 1) => {
+    setLoading(true)
     instance.get(`companies?page=${page}`)
     .then((res) => {
       dispatch(setCompany({companies: res.data.companies}))
+      setLoading(false)
       return Promise.resolve(true);
     })
     .catch((e)=>{
@@ -86,10 +90,10 @@ const Settings = () => {
    
 
     const  runAll = async () => {
-      setLoading(true)
+     // setLoading(true)
       await Promise.all(requests).then((results)=>{
         
-        setLoading(false)
+        //setLoading(false)
       })
       .catch((err)=> {
         console.log(err);
@@ -109,40 +113,24 @@ const Settings = () => {
       <Typography variant='h6'>Settings</Typography>  
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Products" {...a11yProps(0)} />
+          <Tab label="App Settings" {...a11yProps(0)} />
           <Tab label="Companies" {...a11yProps(1)} />
-          <Tab label="App Mode" {...a11yProps(2)} />
+          <Tab label="Products" {...a11yProps(2)} />
         </Tabs>
       </Box>
 
       <TabPanel value={value} index={0}>
-        {
-          loading ? (
-            <Box sx={{ display: 'flex', marginLeft: "50%" }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <ProductsTable rows={products} getProducts={getProducts}/>
-          )
-        }
+      
+        <AppModeSettings />
       
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-       {
-          loading ? (
-            <Box sx={{ display: 'flex', marginLeft: "50%" }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <CompaniesTable rows={companies} getCompanies={getCompanies}/>
-          )
-        }
-      
+        <CompaniesTable rows={companies} getCompanies={getCompanies} loading={loading}/>
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <AppModeSettings />
+        <ProductsTable rows={products} getProducts={getProducts} loading={loading}/> 
       </TabPanel>
     </>
  
