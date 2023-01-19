@@ -1,14 +1,5 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Box, Tab, Tabs, Tooltip, Typography } from '@mui/material';
-import moment from 'moment';
+import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import instance from '../../services/fetchApi';
 import { setInvitedMeetings, setMeetings } from '../../features/MeetingSlice';
@@ -87,7 +78,7 @@ const MyMeetings = () => {
 
   return (
     <>
-         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="My Meetings" {...a11yProps(0)} />
             <Tab label="Invited" {...a11yProps(1)} />

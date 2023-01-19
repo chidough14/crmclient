@@ -2,16 +2,14 @@ import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem
 import MuiAlert from '@mui/material/Alert';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
-import { MuiPickersUtilsProvider, DateTimePicker, KeyboardDateTimePicker, DatePicker } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import instance from '../../services/fetchApi';
-import { addEvent, updateEvent } from '../../features/EventSlice';
-import { CloseOutlined } from '@mui/icons-material';
-import { addEventToActivity } from '../../features/ActivitySlice';
-import { addMeeting, setUpdateMeeting } from '../../features/MeetingSlice';
+import { updateEvent } from '../../features/EventSlice';
+import { setUpdateMeeting } from '../../features/MeetingSlice';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -50,30 +48,12 @@ const validationSchema = yup.object({
   maxUsers: yup
     .number('Enter your max users')
     .required('Max is required'),
-  // start: yup
-  //   .string('Enter your start time')
-  //   .required('Start time is required'),
-  // end: yup
-  //   .string('Enter your end time')
-  //   .required('End time is required'),
 });
-
-const generateMeetingId = () => {
-  let meetingID = "";
-  const chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
-  const maxPos = chars.length;
-
-  for (let i = 0; i < 8; i++) {
-    meetingID += chars.charAt(Math.floor(Math.random() * maxPos));
-  }
-  return meetingID;
-}
 
 const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
   
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("Event created successfully");
-  const [showActivitySelect, setShowActivitySelect] = useState(false);
 
   const [oneOnOne, setOneOnOne] = useState(false);
   const [conference, setConference] = useState(false);
@@ -85,7 +65,6 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
   const [status, setStatus] = useState(false);
 
   const handleClose = () => {
-    //closeModal()
     setOpen(false);
     setOneOnOne(false)
     setConference(false)
@@ -130,20 +109,14 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
    }, [open, meeting])
 
    const editMeeting = async (body, id) => {
-    let response 
      await instance.patch(`meetings/${id}`, body)
      .then((res) => {
-       console.log(res);
-      //  dispatch(addMeeting({meeting: res.data.meeting}))
-      //response = res.data.meeting
       setOpenAlert(true);
       dispatch(setUpdateMeeting({meeting: res.data.meeting}))
       dispatch(updateEvent({event: res.data.meeting.event}))
       handleClose()
       formik.resetForm();
      })
-
-     //return response
    }
 
   const formik = useFormik({
@@ -166,12 +139,6 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
         }
 
         editMeeting(meetingBody, meeting.id)
-        //let res = editMeeting(meetingBody, meeting.id)
-
-        // setOpenAlert(true);
-        // dispatch(setUpdateMeeting({meeting: res.data.meeting}))
-        // handleClose()
-        // resetForm();
       } else if (conference) {
          let meetingBody = {
           meetingName: values.meetingName,
@@ -184,50 +151,7 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
         }
 
         editMeeting(meetingBody, meeting.id)
-
-        // let res = editMeeting(meetingBody, meeting.id)
-        // setOpenAlert(true);
-        // dispatch(setUpdateMeeting({meeting: res.data.meeting}))
-        // //dispatch(addEvent({event: res.data.event}))
-        // handleClose()
-        // resetForm();
       }
-        
-
-      // if (oneOnOne) {
-
-      //   let meetingBody = {
-      //     meetingName: values.meetingName,
-      //     meetingType: '1-on-1',
-      //     invitedUsers: [usersValueSingle],
-      //     meetingDate: moment(values.meetingDate).format("L"),
-      //     //status: true,
-      //   }
-
-      //   createMeeting(meetingBody)
-
-      //   setOpenAlert(true);
-      //   //dispatch(addEvent({event: res.data.event}))
-      //   handleClose()
-      //   resetForm();
-      // } else if (conference) {
-      //   let meetingBody = {
-      //     meetingName: values.meetingName,
-      //     meetingType: anyoneCanJoin ? 'Anyone-can-join' : 'Conference',
-      //     invitedUsers: anyoneCanJoin ? [] : usersValue,
-      //     meetingDate: moment(values.meetingDate).format("L"),
-      //     maxUsers: anyoneCanJoin ? size : usersValue.length,
-      //     //status: true,
-      //   }
-
-      //   createMeeting(meetingBody)
-
-      //   setOpenAlert(true);
-      //   //dispatch(addEvent({event: res.data.event}))
-      //   handleClose()
-      //   resetForm();
-
-      // }
     },
   });
 
@@ -236,7 +160,6 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
   }
 
   const fetchUsers = async () => {
-    //e.preventDefault()
     await instance.get(`users`)
     .then((res) => {
       console.log(res);

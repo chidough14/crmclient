@@ -29,7 +29,7 @@ export const MessageSlice = createSlice({
       state.inbox = action.payload.inbox
     },
     readInboxMessages: (state, action) => {
-      state.inbox = state.inbox.filter((a) => a.id !== action.payload.messageId)
+      state.inbox.data = state.inbox.data.filter((a) => a.id !== action.payload.messageId)
     },
     setOutboxMessages: (state, action) => {
       state.outbox = action.payload.outbox
@@ -38,10 +38,10 @@ export const MessageSlice = createSlice({
       state.singleMessage = action.payload.message
     },
     addNewMessage: (state, action) => {
-      state.outbox = [...state.outbox, action.payload.message]
+      state.outbox.data = [...state.outbox.data, action.payload.message]
     },
     removeMessage: (state, action) => {
-      state.outbox = state.outbox.filter((a) => a.id !== action.payload.messageId)
+      state.outbox.data = state.outbox.data.filter((a) => a.id !== action.payload.messageId)
     }
   },
 })

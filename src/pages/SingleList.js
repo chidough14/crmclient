@@ -1,9 +1,9 @@
-import { Box, CircularProgress, Grid } from '@mui/material';
-import React, { useEffect, useState } from 'react'
+import { Box, CircularProgress } from '@mui/material';
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { emptyCompanyObject } from '../features/companySlice';
-import { getSingleList, setLoadingCompanies, setSelectedCompanyId, setSingleList } from '../features/listSlice';
+import {  setLoadingCompanies, setSelectedCompanyId, setSingleList } from '../features/listSlice';
 import instance from '../services/fetchApi';
 import { getToken } from '../services/LocalStorageService';
 import Company from './Company';
@@ -11,10 +11,7 @@ import Company from './Company';
 const SingleList = () => {
   const {id} = useParams()
   const dispatch = useDispatch()
-  const {list, loadingCompanies} = useSelector((state) => state.list)
-  const {pathname} = useLocation()
-  const [comp, setComp] = useState(list?.companies[0])
-  const {company} = useSelector((state) => state.company)
+  const {loadingCompanies} = useSelector((state) => state.list)
   const token = getToken()
   const navigate = useNavigate()
 

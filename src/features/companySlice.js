@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  companies: [],
+  companies: undefined,
   company: undefined,
   searchResults: []
 }
@@ -26,14 +26,14 @@ export const companySlice = createSlice({
       state.company = undefined
     },
     addCompany: (state, action) => {
-      state.companies = [...state.companies, action.payload.company]
+      state.companies.data = [...state.companies.data, action.payload.company]
     },
     updateCompany: (state, action) => {
-      let idx = state.companies.findIndex((a) => a.id === action.payload.company.id)
-      state.companies[idx] = action.payload.company
+      let idx = state.companies.data.findIndex((a) => a.id === action.payload.company.id)
+      state.companies.data[idx] = action.payload.company
     },
     removeCompany: (state, action) => {
-      state.companies = state.companies.filter((a) => a.id !== action.payload.companyId)
+      state.companies.data = state.companies.data.filter((a) => a.id !== action.payload.companyId)
     },
   },
 })

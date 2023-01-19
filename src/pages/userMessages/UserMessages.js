@@ -9,7 +9,7 @@ import ComposeMessage from './ComposeMessage';
 import { useEffect } from 'react';
 import instance from '../../services/fetchApi';
 import { setInboxMessages, setOutboxMessages } from '../../features/MessagesSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
 
@@ -46,12 +46,13 @@ function a11yProps(index) {
   };
 }
 
-const UserMessages = ({inbox, outbox}) => {
+const UserMessages = () => {
   const [value, setValue] = React.useState(0);
   const dispatch = useDispatch()
 
   const token = getToken()
   const navigate = useNavigate()
+  const {inbox, outbox}  = useSelector(state => state.message)
 
   useEffect(() => {
     if (!token) {
@@ -63,17 +64,25 @@ const UserMessages = ({inbox, outbox}) => {
     setValue(newValue);
   };
 
+  const getInboxMessages = async (page = 1) => {
+
+    await instance.get(`inboxmessages?page=${page}`)
+    .then((res)=> {
+      dispatch(setInboxMessages({inbox: res.data.inbox}))
+    })
+  }
+
+  const getOutboxMessages = async (page = 1) => {
+
+    await instance.get(`outboxmessages?page=${page}`)
+    .then((res)=> {
+      dispatch(setOutboxMessages({outbox: res.data.outbox}))
+    })
+  }
+
   useEffect(()=> {
-    const getUserMessages = async () => {
-
-      await instance.get(`messages`)
-      .then((res)=> {
-        dispatch(setInboxMessages({inbox: res.data.inbox}))
-        dispatch(setOutboxMessages({outbox: res.data.outbox}))
-      })
-    }
-
-    getUserMessages()
+    getInboxMessages()
+    getOutboxMessages()
   }, [])
 
   return (
@@ -95,10 +104,10 @@ const UserMessages = ({inbox, outbox}) => {
           <Tab label="Compose" {...a11yProps(2)} />
         </Tabs>
         <TabPanel value={value} index={0}>
-          <UserMessagesTable messages={inbox} isInbox={true} />
+          <UserMessagesTable messages={inbox} isInbox={true} getInboxMessages={getInboxMessages} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <UserMessagesTable messages={outbox} isInbox={false}/>
+          <UserMessagesTable messages={outbox} isInbox={false} getOutboxMessages={getOutboxMessages}/>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <ComposeMessage />

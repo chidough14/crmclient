@@ -73,7 +73,14 @@ const MeetingsTable = ({meetings, showModal, user}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {meetings.map((row) => (
+            {
+            !meetings?.length ? (
+              <TableRow   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <Typography variant='h5' style={{marginLeft: "140%", marginTop: "70px", width: "150px"}}>No Meetings</Typography>
+              </TableRow>
+            
+            ) :
+            meetings?.map((row) => (
             
               <TableRow
                 key={row.meetingId}

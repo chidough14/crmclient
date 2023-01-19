@@ -36,17 +36,6 @@ const AddProductModal = ({open, setOpen, editMode, product, setOpenAlert, setAle
   const handleClose = () => setOpen(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
-  // const [openAlert, setOpenAlert] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState("");
-
-
-  // const handleCloseAlert = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-
-  //   setOpenAlert(false);
-  // };
 
   useEffect(() => {
     if (editMode && product) {

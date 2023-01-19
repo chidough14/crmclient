@@ -35,11 +35,9 @@ const SearchBar = ({setSearchQuery, data, activityModal, populateFields, navigat
     onInputChange={(e)=> setSearchQuery(e.target.value)}
     onChange={(e, f)=> {
       if (activityModal){
-        console.log("activity modal", f);
         populateFields(f)
 
       } else {
-        console.log("navbar");
         navigate(`/companies/${f.id}`)
       }
     }}

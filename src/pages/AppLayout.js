@@ -18,11 +18,11 @@ import ListItemText from '@mui/material/ListItemText';
 import { Link, matchPath, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getToken } from "../services/LocalStorageService";
-import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, SettingsOutlined } from '@mui/icons-material';
+import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, SettingsOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 import BellNotification from '../components/BellNotification';
 import UserAccountsCircle from '../components/UserAccountsCircle';
 import SearchBar from '../components/SearchBar';
@@ -120,6 +120,11 @@ const sideBarItems = [
     link: "/events"
   },
   {
+    name: "Orders",
+    icon: <ShoppingCartOutlined />,
+    link: "/orders"
+  },
+  {
     name: "Messages",
     icon: <MessageOutlined />,
     link: "/messages"
@@ -150,6 +155,8 @@ export default function AppLayout() {
   const dispatch = useDispatch()
   const {pathname} = useLocation()
   const {selectedCompanyId} = useSelector(state => state.list)
+  const [inboxData, setInboxData] = React.useState([])
+  const [invitedMeetingsData, setInvitedMeetingsData] = React.useState([])
   const { invitedMeetings } = useSelector((state) => state.meeting) 
   const {inbox} = useSelector(state => state.message)
   const navigate = useNavigate()
@@ -188,6 +195,18 @@ export default function AppLayout() {
     }
   }, [isListPage?.pathnameBase])
 
+  React.useEffect(()=> {
+    const getNotifications = async () => {
+      await instance.get(`notifications`)
+      .then((res) => {
+         setInboxData(res.data.inbox)
+         setInvitedMeetingsData(res.data.invitedMeetings)
+      })
+    }
+
+    getNotifications()
+  }, [inbox, invitedMeetings])
+
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)
   };
@@ -218,7 +237,7 @@ export default function AppLayout() {
                 />
             )
           }
-          <BellNotification inbox={inbox} allUsers={allUsers} invitedMeetings={invitedMeetings} />
+          <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
           
 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
@@ -256,23 +275,31 @@ export default function AppLayout() {
                          <>
                          {
                             loadingCompanies ? (
-                              <Box sx={{ display: 'flex', marginLeft: "50%" }}>
-                              <CircularProgress />
-                            </Box>
+                              <Box sx={{ display: 'flex', marginLeft: "35%" }}>
+                                {/* <CircularProgress /> */}
+                                <Typography variant='h6'>Loading...</Typography>
+                              </Box>
                             ) : (
                               <>
                                 <div style={{display: "flex", justifyContent: "space-between"}}>
-                                  <Typography variant="h6" style={{marginLeft: "10px"}}><b>{list?.name}</b></Typography>
+                                  <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}><b>{list?.name}</b></Typography>
 
 
-                                  <ListIcon style={{cursor: "pointer"}} onClick={() => navigate("/lists")} />
+                                  <ListIcon style={{cursor: "pointer", opacity: open ? 1 : 0 }} onClick={() => navigate("/lists")} />
 
                                 </div>
+                               
                                 { 
+                                  open &&
                                   list?.companies.map((a) => (
                                   <ListItem  
                                       disablePadding 
-                                      sx={{ display: 'block', backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" }}
+                                      sx={{ 
+                                        display: 'block', 
+                                        borderRadius: "30px", 
+                                        backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" ,
+                                        borderRadius: selectedCompanyId === a.id ? "15px" : "" 
+                                      }}
                                       onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
                                     >
                                       <ListItemButton
@@ -282,7 +309,10 @@ export default function AppLayout() {
                                           px: 2.5,
                                         }}
                                       >
-                                        <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                                        <ListItemText 
+                                          primary={a.name} 
+                                          sx={{ opacity: open ? 1 : 0 }} 
+                                        />
                                       </ListItemButton>
                                     </ListItem>
                                   ))
@@ -294,30 +324,37 @@ export default function AppLayout() {
                          </>
                        ) : 
                       sideBarItems.map((a, i) => (
-                        <ListItem  
-                          disablePadding 
-                          sx={{ display: 'block', backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null }}
-                          onClick={()=> navigate(`${a.link}`)}
-                        >
-                          <ListItemButton
-                            sx={{
-                              minHeight: 48,
-                              justifyContent: open ? 'initial' : 'center',
-                              px: 2.5,
+                        <Tooltip title={a.name}>
+                          <ListItem 
+                            key={i} 
+                            disablePadding 
+                            sx={{ 
+                              display: 'block', 
+                              backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
+                              borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
                             }}
+                            onClick={()=> navigate(`${a.link}`)}
                           >
-                            <ListItemIcon
+                            <ListItemButton
                               sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : 'auto',
-                                justifyContent: 'center',
+                                minHeight: 48,
+                                justifyContent: open ? 'initial' : 'center',
+                                px: 2.5,
                               }}
                             >
-                              {a.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
-                          </ListItemButton>
-                        </ListItem>
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: 0,
+                                  mr: open ? 3 : 'auto',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                {a.icon}
+                              </ListItemIcon>
+                              <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                          </ListItem>
+                        </Tooltip>
                       ))
                     }
                   
