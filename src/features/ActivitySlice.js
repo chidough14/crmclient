@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   activities: [],
   activity: undefined,
-  openPrompt: false
+  openPrompt: false,
+  sortOption: "all"
 }
 
 export const ActivitySlice = createSlice({
@@ -59,6 +60,9 @@ export const ActivitySlice = createSlice({
     removeInvoiceFromActivity: (state, action) => {
       state.activity.invoices = state.activity.invoices.filter((a) => a.id !== action.payload.invoiceId)
     },
+    setSortOptionValue: (state, action) => {
+      state.sortOption = action.payload.option
+    },
   },
 })
 
@@ -77,7 +81,8 @@ export const {
   setOpenPrompt,
   setClosePrompt,
   addInvoiceToActivity,
-  removeInvoiceFromActivity
+  removeInvoiceFromActivity,
+  setSortOptionValue
 } = ActivitySlice.actions
 
 export default ActivitySlice.reducer

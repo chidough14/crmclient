@@ -25,6 +25,11 @@ const items = [
   }
 ]
 
+const style = {
+  backgroundColor: "#DDA0DD",
+  borderRadius: "13px"
+}
+
 const SortButton = ({ setSortOption, sortOption, listpage, closeSearch }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -94,7 +99,7 @@ const SortButton = ({ setSortOption, sortOption, listpage, closeSearch }) => {
             <MenuItem
               key={a.name}
               onClick={() => setSortOption(a.argument)}
-              style={{backgroundColor: sortOption === a.argument ? "#DDA0DD" : null}}
+              style={sortOption === a.argument ? style : null}
             >
               {a.name}
              
