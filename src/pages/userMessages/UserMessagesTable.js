@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Chip, Pagination, Snackbar, TableHead } from '@mui/material';
+import { Alert, Chip, CircularProgress, Pagination, Snackbar, TableHead, Typography } from '@mui/material';
 import { DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -85,10 +85,9 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessages}) => {
+const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessages, loading}) => {
 
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(3);
   const {allUsers} = useSelector(state => state.user)
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -101,21 +100,12 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
     setOpenAlert(false)
   }
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - messages?.length) : 0;
-
   const handleChangePage = (event, newPage) => {
     if(isInbox){
       getInboxMessages(newPage)
     } else {
       getOutboxMessages(newPage)
     }
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const deleteMessage = (message) => {
@@ -149,11 +139,15 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
           </TableHead>
         <TableBody>
           {
-          // (rowsPerPage > 0
-          //   ? messages?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          //   : messages?.data
-          // )?
-          messages?.data?.map((row) => (
+            loading ? (
+              <div style={{ marginLeft: "200%", marginTop: "70px" }}>
+              {/* <CircularProgress /> */}
+              <Typography variant='h7'>
+                  <b>Loading...</b>
+                </Typography>
+            </div>
+            ) :
+            messages?.data?.map((row) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
                 {row.subject}
@@ -201,33 +195,7 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
               </TableCell>
             </TableRow>
           ))}
-
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
         </TableBody>
-        {/* <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[3, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
-              count={-1}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter> */}
       </Table>
     </TableContainer>
 
@@ -235,7 +203,6 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
     <div style={{marginTop: "20px"}}>
       <Pagination
         count={ Math.ceil(messages?.total / messages?.per_page)}
-        //count={messages?.per_page}
         onChange={(page, idx) => {
           handleChangePage(page, idx)
         }}

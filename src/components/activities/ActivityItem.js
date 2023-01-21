@@ -155,7 +155,7 @@ const ActivityItem = ({activity, index}) => {
             {...provided.dragHandleProps}
           >
 
-            <Card sx={{  width: "90%", }}>
+            <Card sx={{  width: "96%", margin: "auto", marginTop: "-15px"}}>
               <CardContent>
                 <div style={{display: "flex", justifyContent: "space-between"}}>
                   <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>

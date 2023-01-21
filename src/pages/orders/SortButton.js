@@ -30,7 +30,7 @@ const style = {
   borderRadius: "13px"
 }
 
-const SortButton = ({ setSortOption, sortOption, listpage, closeSearch }) => {
+const SortButton = ({ setSortOption, sortOption, title, closeSearch }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -43,7 +43,7 @@ const SortButton = ({ setSortOption, sortOption, listpage, closeSearch }) => {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title="Sort Invoices">
+        <Tooltip title={title}>
           <Button
             onClick={handleClick}
             size="small"

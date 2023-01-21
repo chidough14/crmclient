@@ -135,7 +135,7 @@ export default function Lists() {
         </Tooltip>
        
 
-        <SortButton setSortOption={setSortOption} sortOption={sortOption} listpage={true}  closeSearch={closeSearch} />
+        <SortButton setSortOption={setSortOption} sortOption={sortOption} title="Sort Lists" closeSearch={closeSearch} />
 
         <Tooltip title="Add List">
           <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px", marginLeft: "30px"}}>

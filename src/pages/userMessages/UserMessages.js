@@ -48,6 +48,8 @@ function a11yProps(index) {
 
 const UserMessages = () => {
   const [value, setValue] = React.useState(0);
+  const [inboxLoading, setInboxLoading] = React.useState(false);
+  const [outboxLoading, setOutboxLoading] = React.useState(false);
   const dispatch = useDispatch()
 
   const token = getToken()
@@ -65,18 +67,21 @@ const UserMessages = () => {
   };
 
   const getInboxMessages = async (page = 1) => {
+    setInboxLoading(true)
 
     await instance.get(`inboxmessages?page=${page}`)
     .then((res)=> {
       dispatch(setInboxMessages({inbox: res.data.inbox}))
+      setInboxLoading(false)
     })
   }
 
   const getOutboxMessages = async (page = 1) => {
-
+    setOutboxLoading(true)
     await instance.get(`outboxmessages?page=${page}`)
     .then((res)=> {
       dispatch(setOutboxMessages({outbox: res.data.outbox}))
+      setOutboxLoading(false)
     })
   }
 
@@ -104,10 +109,10 @@ const UserMessages = () => {
           <Tab label="Compose" {...a11yProps(2)} />
         </Tabs>
         <TabPanel value={value} index={0}>
-          <UserMessagesTable messages={inbox} isInbox={true} getInboxMessages={getInboxMessages} />
+          <UserMessagesTable messages={inbox} isInbox={true} getInboxMessages={getInboxMessages} loading={inboxLoading} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <UserMessagesTable messages={outbox} isInbox={false} getOutboxMessages={getOutboxMessages}/>
+          <UserMessagesTable messages={outbox} isInbox={false} getOutboxMessages={getOutboxMessages} loading={outboxLoading} />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <ComposeMessage />

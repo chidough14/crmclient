@@ -254,38 +254,30 @@ const Activities = () => {
           />
         </Tooltip>
 
-        <SortButton setSortOption={setSortOption} sortOption={sortOption}  closeSearch={closeSearch} />
-        
+        <SortButton setSortOption={setSortOption} sortOption={sortOption}  closeSearch={closeSearch} title="Sort Activities" />
+
         <Tooltip title="Add Activity">
           <Button variant="contained" size='small' className="addButton" onClick={handleOpen} style={{borderRadius: "30px", marginLeft: "30px"}}>
             <AddOutlined />
           </Button>
         </Tooltip>
       </Toolbar>
-      {
-        loading ? (
-          <div style={{ marginLeft: "40%", marginTop: "120px" }}>
-            <CircularProgress />
-          </div>
-        ) : (
-          <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                margin: '24px auto',
-                width: '100%',
-                gap: '8px'
-              }}
-            >
-              {Object.values(columns).map((col, i) => (
-                <ActivityColumn col={col} key={i} />
-              ))}
-            </div>
-          </DragDropContext>
-        )
-      }
-   
+
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr 1fr',
+            margin: 'auto',
+            width: '100%',
+            gap: '8px'
+          }}
+        >
+          {Object.values(columns).map((col, i) => (
+            <ActivityColumn col={col} key={i} loading={loading}  />
+          ))}
+        </div>
+      </DragDropContext>
 
       <ActivityModal
         open={open}
