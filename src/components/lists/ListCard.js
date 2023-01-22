@@ -82,10 +82,6 @@ const ListCard = ({list}) => {
   };
 
   const deleteList = async (id, e) => {
-    // const res = await instance({
-    //   url: `mylists/${id}`,
-    //   method: "DELETE",
-    // })
 
     const res = await instance.delete(`mylists/${id}`)
 
@@ -140,22 +136,50 @@ const ListCard = ({list}) => {
               }}
             >
               <MenuItem onClick={showEditModal} disabled={(list.user_id !== user.id)}><EditOutlined /> Edit</MenuItem>
-              <MenuItem onClick={() => cloneList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}><CopyAllOutlined /> Clone</MenuItem>
-              <MenuItem onClick={() => transferList(list)} disabled={(list.user_id !== user.id) && (list.type === "private")}><MoveUpOutlined /> Transfer</MenuItem>
+
+              <MenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  cloneList(list)
+                }} 
+                disabled={(list.user_id !== user.id) && (list.type === "private")}
+              >
+                <CopyAllOutlined /> 
+                 Clone
+              </MenuItem>
+
+              <MenuItem 
+                onClick={(e) => {
+                  e.stopPropagation()
+                  transferList(list)
+                }} 
+                disabled={(list.user_id !== user.id) && (list.type === "private")}
+              >
+                <MoveUpOutlined /> Transfer
+              </MenuItem>
+
               <MenuItem onClick={handleClickOpen} disabled={(list.user_id !== user.id)}><DeleteOutlined /> Delete</MenuItem>
             </Menu>
           </div>
           
-          <Typography variant="h6" component="div">
-            {list.name}
+          <Typography variant="h7" component="div">
+            <b>{list.name}</b>
           </Typography>
-          <Typography variant="body2">
-          {list.description}
-          </Typography>
+          <div style={{display: "flex", justifyContent: "space-between"}}>
+            <Typography variant="body2">
+            {list.description}
+            </Typography>
+
+            <Button size="small" onClick={() => navigate(`/listsview/${list.id}`)}>
+              <b>View</b>
+            </Button>
+          </div>  
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={() => navigate(`/listsview/${list.id}`)}>Learn More</Button>
-        </CardActions>
+        {/* <CardActions>
+          <Button size="small" onClick={() => navigate(`/listsview/${list.id}`)}>
+            View
+          </Button>
+        </CardActions> */}
       </Card>
 
       <ListModal 

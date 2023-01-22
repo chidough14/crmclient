@@ -1,20 +1,26 @@
-import { Button, Toolbar, Typography } from '@mui/material'
+import { AddOutlined, SearchOutlined } from '@mui/icons-material'
+import { Button, CircularProgress, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import {DragDropContext} from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import ActivityColumn from '../components/activities/ActivityColumn'
 import ActivityModal from '../components/activities/ActivityModal'
-import { editActivity, setActivities, setOpenPrompt } from '../features/ActivitySlice'
+import { editActivity, setActivities, setOpenPrompt, setSortOptionValue } from '../features/ActivitySlice'
 import instance from '../services/fetchApi'
 import { getToken } from '../services/LocalStorageService'
+import SortButton from './orders/SortButton'
 
 const Activities = () => {
   const [columns, setColumns] = useState([])
   const [activityId, setActivityId] = useState()
   const dispatch = useDispatch()
-  const { activities } = useSelector((state) => state.activity) 
+  const { activities, sortOption } = useSelector((state) => state.activity) 
   const [open, setOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetchData, setFetchData] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const handleOpen = () => setOpen(true);
   const navigate = useNavigate()
 
@@ -68,7 +74,6 @@ const Activities = () => {
   }, [activities])
 
   const onDragStart  = (e, f) => {
-    console.log(e, f);
     setActivityId(parseInt(e.draggableId))
   }
 
@@ -164,6 +169,57 @@ const Activities = () => {
     }
   }
 
+  const getSortedActivities = async (option) => {
+    setLoading(true)
+    let url
+    url = option !== "all" ? `filter-activities/${option}` : `activities`
+
+  
+    await instance.get(url)
+    .then((res) => {
+      dispatch(setActivities({activities: res.data.activities}))
+      setLoading(false)
+    })
+  }
+
+  const getSearchResult = async () => {
+    setLoading(true)
+    await instance({
+      url: `search-activities?query=${searchQuery}`,
+      method: "GET",
+    }).then((res) => {
+
+      dispatch(setSortOptionValue({option: ""}))
+      dispatch(setActivities({activities: res.data.activities}))
+      setLoading(false)
+    });
+  }
+
+  useEffect(() => {
+
+    if (fetchData) {
+      getSortedActivities(sortOption)
+      setFetchData(false)
+    }
+    
+  }, [sortOption, fetchData])
+
+  useEffect(()=> {
+    if (searchQuery.length === 3){
+      getSearchResult()
+    }
+  }, [searchQuery])
+
+  const setSortOption =  (value) => {
+    setFetchData(true)
+    dispatch(setSortOptionValue({option: value}))
+  }
+
+  const closeSearch =  () => {
+    setSearchQuery("")
+    setShowSearch(false)
+  }
+
   return (
     <div>
       <Toolbar>
@@ -173,20 +229,52 @@ const Activities = () => {
           Total : ${columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
         </Typography>
 
-        <Button variant="contained" size='small' className="addButton" onClick={handleOpen} style={{borderRadius: "30px"}}>Add Activity</Button>
+
+        {
+          showSearch && (
+            <TextField
+              className='text'
+              size="small"
+              label="Search Activities"
+              InputProps={{
+                type: 'search',
+              }}
+              onChange={(e)=> setSearchQuery(e.target.value)}
+            />
+          )
+        }
+
+        <Tooltip title="Search Activities">
+          <SearchOutlined
+            style={{cursor: "pointer"}}
+            onClick={() => {
+              setShowSearch(prev => !prev)
+              setSearchQuery("")
+            }}
+          />
+        </Tooltip>
+
+        <SortButton setSortOption={setSortOption} sortOption={sortOption}  closeSearch={closeSearch} title="Sort Activities" />
+
+        <Tooltip title="Add Activity">
+          <Button variant="contained" size='small' className="addButton" onClick={handleOpen} style={{borderRadius: "30px", marginLeft: "30px"}}>
+            <AddOutlined />
+          </Button>
+        </Tooltip>
       </Toolbar>
+
       <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr 1fr 1fr',
-            margin: '24px auto',
+            margin: 'auto',
             width: '100%',
             gap: '8px'
           }}
         >
           {Object.values(columns).map((col, i) => (
-            <ActivityColumn col={col} key={i} />
+            <ActivityColumn col={col} key={i} loading={loading}  />
           ))}
         </div>
       </DragDropContext>

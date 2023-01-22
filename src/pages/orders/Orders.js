@@ -61,7 +61,7 @@ const Orders = () => {
       <Toolbar>
         <Typography variant='h5'  component="div" sx={{ flexGrow: 2 }} >My Orders</Typography>
 
-        <SortButton setSortOption={setSortOption} sortOption={sortOption} />
+        <SortButton setSortOption={setSortOption} sortOption={sortOption} title="Sort Invoices" />
     
       </Toolbar>
 

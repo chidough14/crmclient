@@ -14,7 +14,8 @@ import { setLists, setSortOptionValue } from '../features/listSlice';
 import Pagination from '@mui/material/Pagination';
 import SortButton from './orders/SortButton';
 import { Box } from '@mui/system';
-import { SearchOutlined } from '@mui/icons-material';
+import { AddOutlined, SearchOutlined } from '@mui/icons-material';
+import UploadFile from '../components/lists/UploadFile';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -64,7 +65,7 @@ export default function Lists() {
       url: `search-lists?query=${searchQuery}&page=${page}`,
       method: "GET",
     }).then((res) => {
-
+      dispatch(setSortOptionValue({option: ""}))
       dispatch(dispatch(setLists({lists: res.data.lists})))
       setLoading(false)
     });
@@ -80,9 +81,6 @@ export default function Lists() {
       } else {
         getSortedLists(sortOption)
       }
-    
-    
-  
   }, [sortOption])
 
   React.useEffect(() => {
@@ -138,9 +136,17 @@ export default function Lists() {
         </Tooltip>
        
 
-        <SortButton setSortOption={setSortOption} sortOption={sortOption} listpage={true}  closeSearch={closeSearch} />
+        <SortButton setSortOption={setSortOption} sortOption={sortOption} title="Sort Lists" closeSearch={closeSearch} />
 
-        <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px", marginLeft: "30px"}}>Add list</Button>
+        <Tooltip title="Upload list">
+          <UploadFile />
+        </Tooltip>
+
+        <Tooltip title="Add List">
+          <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px", marginLeft: "20px"}}>
+            <AddOutlined />
+          </Button>
+        </Tooltip>
       </Toolbar>
       <div className="cards">
         {
