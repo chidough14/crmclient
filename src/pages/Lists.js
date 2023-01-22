@@ -15,6 +15,7 @@ import Pagination from '@mui/material/Pagination';
 import SortButton from './orders/SortButton';
 import { Box } from '@mui/system';
 import { AddOutlined, SearchOutlined } from '@mui/icons-material';
+import UploadFile from '../components/lists/UploadFile';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -137,8 +138,12 @@ export default function Lists() {
 
         <SortButton setSortOption={setSortOption} sortOption={sortOption} title="Sort Lists" closeSearch={closeSearch} />
 
+        <Tooltip title="Upload list">
+          <UploadFile />
+        </Tooltip>
+
         <Tooltip title="Add List">
-          <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px", marginLeft: "30px"}}>
+          <Button variant="contained" onClick={handleOpen} className="addButton" size='small' style={{borderRadius: "30px", marginLeft: "20px"}}>
             <AddOutlined />
           </Button>
         </Tooltip>

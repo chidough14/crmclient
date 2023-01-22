@@ -276,13 +276,25 @@ export default function AppLayout() {
                          {
                             loadingCompanies ? (
                               <Box sx={{ display: 'flex', marginLeft: "35%" }}>
-                                {/* <CircularProgress /> */}
                                 <Typography variant='h6'>Loading...</Typography>
                               </Box>
                             ) : (
                               <>
                                 <div style={{display: "flex", justifyContent: "space-between"}}>
-                                  <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}><b>{list?.name}</b></Typography>
+                                  {
+                                    list?.name.length > 10 ? (
+                                       <Tooltip title={list?.name}>
+                                          <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
+                                            <b>{`${list?.name.substring(0,10)}...`}</b>
+                                          </Typography>
+                                       </Tooltip>
+                                    ) : (
+                                    
+                                      <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
+                                        <b>{list?.name}</b>
+                                      </Typography>
+                                    )
+                                  }
 
 
                                   <ListIcon style={{cursor: "pointer", opacity: open ? 1 : 0 }} onClick={() => navigate("/lists")} />
