@@ -14,7 +14,7 @@ import { setLists, setSortOptionValue } from '../features/listSlice';
 import Pagination from '@mui/material/Pagination';
 import SortButton from './orders/SortButton';
 import { Box } from '@mui/system';
-import { AddOutlined, SearchOutlined } from '@mui/icons-material';
+import { AddOutlined, ContentPasteOff, SearchOutlined } from '@mui/icons-material';
 import UploadFile from '../components/lists/UploadFile';
 
 
@@ -79,7 +79,12 @@ export default function Lists() {
       if (sortOption === "all") {
         getListsResult()
       } else {
-        getSortedLists(sortOption)
+        if (sortOption === "") {
+
+        } else {
+          getSortedLists(sortOption)
+        }
+       
       }
   }, [sortOption])
 
@@ -94,6 +99,8 @@ export default function Lists() {
   React.useEffect(()=> {
     if (searchQuery.length === 3){
       getSearchResult()
+    } else if (searchQuery.length === 0) {
+      dispatch(setSortOptionValue({option: "all"}))
     }
   }, [searchQuery])
 
@@ -102,7 +109,7 @@ export default function Lists() {
   }
 
   const closeSearch =  () => {
-    setSearchQuery("")
+    //setSearchQuery("")
     setShowSearch(false)
   }
 
@@ -148,21 +155,29 @@ export default function Lists() {
           </Button>
         </Tooltip>
       </Toolbar>
-      <div className="cards">
-        {
-          loading ? (
-            <div style={{ width: "300%", marginLeft: "190%" }}>
-              <CircularProgress />
+
+      {
+         !lists?.data?.length ? (
+           <ContentPasteOff sx={{marginTop: "50px", marginLeft: "45%", fontSize: "64px"}}/>
+         ) : (
+            <div className="cards">
+              {
+                loading ? (
+                  <div style={{ width: "300%", marginLeft: "190%" }}>
+                    <CircularProgress />
+                  </div>
+                ) :
+                lists?.data?.map((list, idx) => (
+                  <Grid item key={idx} >
+                    <ListCard list={list} />
+                  </Grid>
+                ))
+              }  
+            
             </div>
-          ) :
-          lists?.data?.map((list, idx) => (
-            <Grid item key={idx} >
-              <ListCard list={list} />
-            </Grid>
-          ))
-        }  
+         )
+      }
       
-      </div>
 
       <div style={{marginTop: "50px", marginLeft: "40%"}}>
         <Pagination

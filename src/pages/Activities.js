@@ -197,26 +197,28 @@ const Activities = () => {
 
   useEffect(() => {
 
-    if (fetchData) {
+    if (sortOption) {
       getSortedActivities(sortOption)
-      setFetchData(false)
+      //setFetchData(false)
     }
     
-  }, [sortOption, fetchData])
+  }, [sortOption])
 
   useEffect(()=> {
     if (searchQuery.length === 3){
       getSearchResult()
+    } else if (searchQuery.length === 0) {
+      dispatch(setSortOptionValue({option: "all"}))
     }
   }, [searchQuery])
 
   const setSortOption =  (value) => {
-    setFetchData(true)
+    //setFetchData(true)
     dispatch(setSortOptionValue({option: value}))
   }
 
   const closeSearch =  () => {
-    setSearchQuery("")
+    //setSearchQuery("")
     setShowSearch(false)
   }
 

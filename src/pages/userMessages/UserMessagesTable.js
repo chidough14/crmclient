@@ -16,7 +16,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { Alert, Chip, CircularProgress, Pagination, Snackbar, TableHead, Typography } from '@mui/material';
-import { DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
+import { ContentPasteOff, DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
@@ -137,65 +137,77 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
               <TableCell >Actions</TableCell>
             </TableRow>
           </TableHead>
-        <TableBody>
-          {
-            loading ? (
-              <div style={{ marginLeft: "200%", marginTop: "70px" }}>
-              {/* <CircularProgress /> */}
-              <Typography variant='h7'>
-                  <b>Loading...</b>
-                </Typography>
-            </div>
-            ) :
-            messages?.data?.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.subject}
-              </TableCell>
-
-              {
-                isInbox &&
-                <TableCell style={{ width: 160 }} >
-                  {allUsers?.find((a) => a.id === row.sender_id)?.name}
-                </TableCell>
-              }
-            
-              {
-                !isInbox &&
-                <TableCell style={{ width: 160 }} >
-                  {allUsers?.find((a) => a.id === row.receiver_id)?.name}
-                </TableCell>
-              }
-
-              { isInbox &&
-                <TableCell style={{ width: 160 }} >
-                  {row.isRead ?  <Chip  size="small" label="Read" color="secondary" /> :  <Chip  size="small" label="Not Read" color="primary" />}
-                </TableCell>
-              }
-             
-              <TableCell style={{ width: 160 }} >
-                {moment(row.created_at).format("MMMM Do YYYY")}
-              </TableCell>
-              <TableCell style={{ width: 160 }} >
-                <div style={{display: "flex", justifyContent: "space-between"}}>
-                  <ReadMoreOutlined
-                    style={{cursor: "pointer"}}
-                    onClick={()=> navigate(`/messages/${row.id}`, {state: {isInbox, isRead: row.isRead, auto: !row.sender_id ? true : false}})}
-                  />
-
-                  {
-                     !isInbox &&
-                     <DeleteOutlined
-                      style={{cursor: "pointer"}}
-                      onClick={()=> deleteMessage(row)}
-                     />
-                  }
-                
+          <TableBody>
+            {
+              !messages?.data?.length ? (
+                <div style={{marginTop: "50px", marginLeft: "150%"}}>
+                  <ContentPasteOff sx={{fontSize: "64px"}}/>
+                  <Typography variant='h7' sx={{display: "flex", width: "150px"}}>No Messages</Typography>
                 </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+              ) : (
+                <>
+                 {
+                    loading ? (
+                      <div style={{ marginLeft: "200%", marginTop: "70px" }}>
+                        <Typography variant='h7'>
+                            <b>Loading...</b>
+                          </Typography>
+                      </div>
+                    ) :
+                    messages?.data?.map((row) => (
+                      <TableRow key={row.name}>
+                        <TableCell component="th" scope="row">
+                          {row.subject}
+                        </TableCell>
+
+                        {
+                          isInbox &&
+                          <TableCell style={{ width: 160 }} >
+                            {allUsers?.find((a) => a.id === row.sender_id)?.name}
+                          </TableCell>
+                        }
+                      
+                        {
+                          !isInbox &&
+                          <TableCell style={{ width: 160 }} >
+                            {allUsers?.find((a) => a.id === row.receiver_id)?.name}
+                          </TableCell>
+                        }
+
+                        { isInbox &&
+                          <TableCell style={{ width: 160 }} >
+                            {row.isRead ?  <Chip  size="small" label="Read" color="secondary" /> :  <Chip  size="small" label="Not Read" color="primary" />}
+                          </TableCell>
+                        }
+                      
+                        <TableCell style={{ width: 160 }} >
+                          {moment(row.created_at).format("MMMM Do YYYY")}
+                        </TableCell>
+                        <TableCell style={{ width: 160 }} >
+                          <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <ReadMoreOutlined
+                              style={{cursor: "pointer"}}
+                              onClick={()=> navigate(`/messages/${row.id}`, {state: {isInbox, isRead: row.isRead, auto: !row.sender_id ? true : false}})}
+                            />
+
+                            {
+                              !isInbox &&
+                              <DeleteOutlined
+                                style={{cursor: "pointer"}}
+                                onClick={()=> deleteMessage(row)}
+                              />
+                            }
+                          
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  }
+                </>
+              )
+            }
+           
+          </TableBody>
       </Table>
     </TableContainer>
 

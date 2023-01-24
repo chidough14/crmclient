@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addActivity, editActivity } from '../../features/ActivitySlice';
 import { addActivityToCompany, setCompany } from '../../features/companySlice';
-import { setProducts } from '../../features/ProductSlice';
+import { setProducts, setProductsAll } from '../../features/ProductSlice';
 import instance from '../../services/fetchApi';
 import SearchBar from '../SearchBar';
 
@@ -33,7 +33,7 @@ const AddProductToInvoiceModal = ({open, setOpen, setProductId, quantity, setQua
   const [searchQuery, setSearchQuery] = useState("");
   const [companyId, setCompanyId] = useState();
   const [data, setData] = useState([]);
-  const {products} = useSelector((state) => state.product)
+  const {productsAll} = useSelector((state) => state.product)
   const dispatch = useDispatch()
 
   const handleCloseAlert = (event, reason) => {
@@ -57,9 +57,9 @@ const AddProductToInvoiceModal = ({open, setOpen, setProductId, quantity, setQua
 
   useEffect(() => {
     const fetchProducts = async () => {
-      await instance.get(`products`)
+      await instance.get(`products-all`)
       .then((res) => {
-        dispatch(setProducts({products: res.data.products}))
+        dispatch(setProductsAll({products: res.data.products}))
       })
     }
 
@@ -104,10 +104,10 @@ const AddProductToInvoiceModal = ({open, setOpen, setProductId, quantity, setQua
               )}
               onInputChange={(e)=> {
                 if(e.target.value.length === 3){
-                  // filter out products that are already in the activity
+                  // filter out products that are already in the invoice
                   let ids = productsinInvoice?.map((a) => a.id)
                  
-                  let pr = products.map((a) => {
+                  let pr = productsAll.map((a) => {
                     if (ids.includes(a.id)) {
 
                     } else {

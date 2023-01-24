@@ -85,15 +85,28 @@ export default function UploadModal({open, setOpen}) {
     setFilesToUpload([ ...files ])
   };
 
+  const uploadList = async (arr) => {
+    let body = {
+      name: filesToUpload[0].name,
+      companies: arr
+    }
+    await instance.post(`upload-list`, body)
+    .then((res) => {
+       dispatch(addList({list: res.data.list}))
+       setOpenAlert(true)
+       setAlertMessage("List uploaded")
+       handleClose()
+    })
+  }
+
   const uploadFiles = async () => {
     if (filesToUpload.length > 1) {
       setShowWarning(true)
     } else {
       if (filesToUpload[0].type === "text/csv") {
         Papa.parse(filesToUpload[0], {
-          complete: async (results) => {
-            let yy = []
-            console.log("Finished:", results.data);
+          complete: (results) => {
+            let arr = []
   
             let xx = results.data.map((a) => {
               return a.filter((b)=> b !== "")
@@ -102,43 +115,22 @@ export default function UploadModal({open, setOpen}) {
   
             
             xx.map((d) => {
-              yy.push({
+              arr.push({
                 name: d[0],
                 email: d[1]
               })
             })
 
-            yy.shift()
-  
-            console.log(yy);
-            let body = {
-              name: filesToUpload[0].name,
-              companies: yy
-            }
-            await instance.post(`upload-list`, body)
-            .then((res) => {
-               dispatch(addList({list: res.data.list}))
-               setOpenAlert(true)
-               setAlertMessage("List uploaded")
-               handleClose()
-            })
+            arr.shift()
+
+            uploadList(arr)
           }}
         )
         
       } else {
         const object = await parseJsonFile(filesToUpload[0])
         
-        let body = {
-          name: filesToUpload[0].name,
-          companies: object
-        }
-        await instance.post(`upload-list`, body)
-        .then((res) => {
-           dispatch(addList({list: res.data.list}))
-           setOpenAlert(true)
-           setAlertMessage("List uploaded")
-           handleClose()
-        })
+        uploadList(object)
       }  
     }
 
