@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
+import { ContentPasteOff, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import { Alert, Box, Button, Chip, Snackbar, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import moment from 'moment';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -76,7 +76,12 @@ const MeetingsTable = ({meetings, showModal, user}) => {
             {
             !meetings?.length ? (
               <TableRow   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <Typography variant='h5' style={{marginLeft: "140%", marginTop: "70px", width: "150px"}}>No Meetings</Typography>
+                <div style={{marginTop: "50px", marginLeft: "170%"}}>
+                  <ContentPasteOff sx={{fontSize: "64px"}}/>
+                  <Typography variant='h7' sx={{display: "flex", width: "150px"}}>No Meetings</Typography>
+                </div>
+                 
+
               </TableRow>
             
             ) :

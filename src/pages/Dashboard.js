@@ -11,6 +11,28 @@ import instance from '../services/fetchApi';
 import { setLoadingDashboard } from '../features/userSlice';
 
 
+// let arr = [
+//   { "January": 4976097 },
+//   { "December": 520000 },
+//   { "March": 520000 },
+//   { "April": 520000 }
+// ];
+
+// arr.sort(function(a, b) {
+// var monthA = Object.keys(a)[0];
+// var monthB = Object.keys(b)[0];
+// if (monthA < monthB) {
+//   return -1;
+// }
+// if (monthA > monthB) {
+//   return 1;
+// }
+// return 0;
+// });
+
+// console.log(arr)
+
+
 const Dashboard = () => {
   const navigate = useNavigate()
   const token = getToken()
@@ -20,6 +42,9 @@ const Dashboard = () => {
   const { setting, loadingDashboard } = useSelector(state => state.user)
   const [events, setEvents] = useState([])
   const [list, setList] = useState()
+  const [results, setResults] = useState([])
+  const [owner, setOwner] = useState(setting?.product_sales_mode)
+  const [doughnutResults, setDoughnutResults] = useState([])
   //const [activitySummary, setActivitySummary] = useState()
   const dispatch = useDispatch()
 
@@ -28,6 +53,10 @@ const Dashboard = () => {
       navigate('/login')
     }
   }, [token])
+
+  useEffect(() => {
+    setOwner(setting?.product_sales_mode)
+  }, [setting?.product_sales_mode])
 
   // Store User Data in Local State
   // useEffect(() => {
@@ -38,6 +67,20 @@ const Dashboard = () => {
   //     })
   //   }
   // }, [data, isSuccess])
+  const getTotalProductsSales = async (url) => {
+    await  instance.get(`${url}`)
+    .then((res) => {
+      setResults(res.data.results)
+    })
+  }
+
+  useEffect(() => {
+    if (owner === 'allusers') {
+      getTotalProductsSales('dashboard-total-products/allusers')
+    } else {
+      getTotalProductsSales('dashboard-total-products/mine')
+    }
+  }, [owner])
 
   useEffect(() => {
 
@@ -50,6 +93,10 @@ const Dashboard = () => {
       instance.get(`mylists-dashboard`)
       .then((res) => {
         setList(res.data.list)
+      }),
+      instance.get(`dashboard-total-sales-users`)
+      .then((res) => {
+        setDoughnutResults(res.data.results)
       }),
       // instance.get(`activities-summary`)
       // .then((res) => {
@@ -116,10 +163,10 @@ const Dashboard = () => {
                 setting?.dashboard_mode === "show_graphs" && (
                   <>
                   <div style={{width: "50%"}}>
-                    <BarChart />
+                    <BarChart results={results} owner={owner} setOwner={setOwner} />
                   </div>
                   <div style={{width: "30%"}}>
-                    <DoughnutChart />
+                    <DoughnutChart results={doughnutResults} />
                   </div>
                   </>
                 )

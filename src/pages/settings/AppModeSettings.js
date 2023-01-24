@@ -12,6 +12,7 @@ const AppModeSettings = () => {
   const initialState = {
     dashboard_mode: "",
     calendar_mode: "",
+    product_sales_mode: "",
     openAlert: false
   };
 
@@ -28,7 +29,8 @@ const AppModeSettings = () => {
     if (user?.setting) {
       updateData({
         dashboard_mode: user?.setting?.dashboard_mode,
-        calendar_mode: user?.setting?.calendar_mode
+        calendar_mode: user?.setting?.calendar_mode,
+        product_sales_mode: user?.setting?.product_sales_mode
       })
     }
   }, [user?.setting])
@@ -37,7 +39,8 @@ const AppModeSettings = () => {
     let body = {
       user_id: user?.id,
       dashboard_mode: data.dashboard_mode,
-      calendar_mode: data.calendar_mode
+      calendar_mode: data.calendar_mode,
+      product_sales_mode: data.product_sales_mode
     }
 
     await instance.patch(`settings`, body)
@@ -80,6 +83,22 @@ const AppModeSettings = () => {
         <MenuItem value="week">Week</MenuItem>
         <MenuItem value="month">Month</MenuItem>
         <MenuItem value="agenda">Agenda</MenuItem>
+      </Select>
+      <p></p>
+
+      <InputLabel id="demo-select-small">Produc Total Sales Default Graph Mode</InputLabel>
+      <Select
+        id='product_sales_mode'
+        name="product_sales_mode"
+        label="Product Sales Graph Mode"
+        size='small'
+        style={{width: "50%"}}
+        //fullWidth
+        value={data.product_sales_mode}
+        onChange={(e)=> updateData({product_sales_mode: e.target.value})}
+      >
+        <MenuItem value="allusers">All Users</MenuItem>
+        <MenuItem value="mine">Mine</MenuItem>
       </Select>
       <p></p>
 
