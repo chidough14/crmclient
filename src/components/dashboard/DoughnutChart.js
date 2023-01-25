@@ -1,26 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Typography } from '@mui/material';
+import { FormControl, MenuItem, Select, Typography } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export function DoughnutChart({results}) {
+export function DoughnutChart({results, measurement, setMeasurement}) {
+  const [keys, setKeys] = useState([])
+  const [values, setValues] = useState([])
 
-  // Sort the array of objects by their values in descending order
-  results.sort((a, b) => {
-    return Object.values(b)[0] - Object.values(a)[0];
-  });
-
-  // Initialize empty arrays to store keys and values
-  let keys = [];
-  let values = [];
-
-  // Push the keys and values in the separate arrays
-  results.forEach(item => {
-    keys.push(Object.keys(item)[0]);
-    values.push(Object.values(item)[0]);
-  });
+  useEffect(() => {
+    if (results) {
+      setKeys(results.map(item => item.name))
+      setValues(results.map(item => item.total))
+    }
+   
+  }, [results])
+ 
 
   let data = {
     labels: keys,
@@ -49,8 +45,39 @@ export function DoughnutChart({results}) {
     ],
   };
 
+  const config = {
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      }
+    },
+  };
+
+  const handleChange = (event) => {
+    setMeasurement(event.target.value);
+  };
+
   return <>
-    <Typography variant='h7' ><b>Top Salespersons</b></Typography>
-    <Doughnut data={data} />
+    <Typography variant='h7' ><b>Top Salespersons/Products</b></Typography>
+    <div style={{ width: "50%", float: "right"}}>
+      <FormControl fullWidth>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={measurement}
+          // label="Products Total Sales ($)"
+          onChange={handleChange}
+          size="small"
+          sx={{borderRadius: "30px"}}
+        >
+          <MenuItem value="sales_persons">Sales Persons</MenuItem>
+          <MenuItem value="products">Products</MenuItem>
+        </Select>
+      </FormControl>
+    </div>
+    <Doughnut data={data} options={config.options} />
   </>;
 }

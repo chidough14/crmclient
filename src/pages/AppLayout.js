@@ -178,7 +178,6 @@ export default function AppLayout() {
         url: `companies/search?query=${searchQuery}`,
         method: "GET",
       }).then((res) => {
-        console.log(res);
 
         dispatch(setSearchResults({companies: res.data.companies}))
       });
@@ -205,7 +204,7 @@ export default function AppLayout() {
     }
 
     getNotifications()
-  }, [inbox, invitedMeetings])
+  }, [inbox, invitedMeetings, loggedIn])
 
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)
@@ -237,7 +236,13 @@ export default function AppLayout() {
                 />
             )
           }
-          <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
+
+          {
+              loggedIn && (
+                <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
+              )
+          }
+        
           
 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
