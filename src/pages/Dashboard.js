@@ -44,7 +44,8 @@ const Dashboard = () => {
   const [list, setList] = useState()
   const [results, setResults] = useState([])
   const [owner, setOwner] = useState(setting?.product_sales_mode)
-  const [doughnutResults, setDoughnutResults] = useState([])
+  const [doughnutResults, setDoughnutResults] = useState()
+  const [measurement, setMeasurement] = useState("sales_persons")
   //const [activitySummary, setActivitySummary] = useState()
   const dispatch = useDispatch()
 
@@ -67,6 +68,13 @@ const Dashboard = () => {
   //     })
   //   }
   // }, [data, isSuccess])
+  const getDoughnutChartResults = async (url) => {
+    await  instance.get(`${url}`)
+    .then((res) => {
+      setDoughnutResults(res.data.results)
+    })
+  }
+
   const getTotalProductsSales = async (url) => {
     await  instance.get(`${url}`)
     .then((res) => {
@@ -77,10 +85,22 @@ const Dashboard = () => {
   useEffect(() => {
     if (owner === 'allusers') {
       getTotalProductsSales('dashboard-total-products/allusers')
-    } else {
+    } 
+
+    if(owner === 'mine') {
       getTotalProductsSales('dashboard-total-products/mine')
     }
   }, [owner])
+
+  useEffect(() => {
+    if (measurement === 'sales_persons') {
+      getDoughnutChartResults('dashboard-total-sales-users')
+    } 
+
+    if(measurement === 'products') {
+      getDoughnutChartResults('dashboard-total-sales-topproducts')
+    }
+  }, [measurement])
 
   useEffect(() => {
 
@@ -93,10 +113,6 @@ const Dashboard = () => {
       instance.get(`mylists-dashboard`)
       .then((res) => {
         setList(res.data.list)
-      }),
-      instance.get(`dashboard-total-sales-users`)
-      .then((res) => {
-        setDoughnutResults(res.data.results)
       }),
       // instance.get(`activities-summary`)
       // .then((res) => {
@@ -165,8 +181,8 @@ const Dashboard = () => {
                   <div style={{width: "50%"}}>
                     <BarChart results={results} owner={owner} setOwner={setOwner} />
                   </div>
-                  <div style={{width: "30%"}}>
-                    <DoughnutChart results={doughnutResults} />
+                  <div style={{width: "35%"}}>
+                    <DoughnutChart results={doughnutResults} measurement={measurement} setMeasurement={setMeasurement} />
                   </div>
                   </>
                 )

@@ -12,6 +12,8 @@ import { setInboxMessages, setOutboxMessages } from '../../features/MessagesSlic
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
+import { CreateOutlined, InboxOutlined, OutboxOutlined, PhoneOutlined, SendOutlined } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -104,9 +106,9 @@ const UserMessages = () => {
           aria-label="Vertical tabs example"
           sx={{ borderRight: 1, borderColor: 'divider' }}
         >
-          <Tab label="Inbox" {...a11yProps(0)} />
-          <Tab label="Outbox" {...a11yProps(1)} />
-          <Tab label="Compose" {...a11yProps(2)} />
+          <Tab icon={<Tooltip title="Inbox"><InboxOutlined /></Tooltip>}  {...a11yProps(0)} />
+          <Tab icon={<Tooltip title="Outbox"><OutboxOutlined /></Tooltip>}  {...a11yProps(1)} />
+          <Tab icon={<Tooltip title="Compose"><CreateOutlined /></Tooltip>} {...a11yProps(2)} />
         </Tabs>
         <TabPanel value={value} index={0}>
           <UserMessagesTable messages={inbox} isInbox={true} getInboxMessages={getInboxMessages} loading={inboxLoading} />
