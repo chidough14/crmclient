@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Chip, CircularProgress, Pagination, Snackbar, TableHead, Typography } from '@mui/material';
+import { Chip, CircularProgress, Pagination, Snackbar, TableHead, Typography } from '@mui/material';
 import { ContentPasteOff, DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -23,6 +23,12 @@ import { useNavigate } from 'react-router-dom';
 import DeleteDialog from './DeleteDialog';
 import instance from '../../services/fetchApi';
 import { removeMessage } from '../../features/MessagesSlice';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function TablePaginationActions(props) {
   const theme = useTheme();

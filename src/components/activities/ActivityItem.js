@@ -1,6 +1,6 @@
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
-import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar, Alert } from '@mui/material';
+import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import moment from 'moment';
@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteEvent } from '../../features/EventSlice';
 import ActivityTransferModal from './ActivityTransferModal';
+import MuiAlert from '@mui/material/Alert';
 
 const showIcon = (type) => {
   if (type === "Call") {
@@ -27,54 +28,9 @@ const showIcon = (type) => {
   }
 }
 
-// const ActivityCard = (activity) => (
-//   <Card sx={{  width: "90%", }}>
-//     <CardContent>
-//       <div>
-//         <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
-//           {moment(activity.created_at).format("MMMM Do YYYY")}
-//         </Typography>
-
-//         <IconButton 
-//           aria-label="settings"
-//           id="basic-button"
-//           aria-controls={open ? 'basic-menu' : undefined}
-//           aria-haspopup="true"
-//           aria-expanded={open ? 'true' : undefined}
-//           onClick={handleClick}
-//         >
-//           <MoreVert />
-//         </IconButton>
-
-//         <Menu
-//           id="basic-menu"
-//           anchorEl={anchorEl}
-//           open={open}
-//           onClose={handleClose}
-//           MenuListProps={{
-//             'aria-labelledby': 'basic-button',
-//           }}
-//         >
-//           <MenuItem onClick={showEditModal}>Edit</MenuItem>
-//           <MenuItem onClick={handleClickOpen}>Delete</MenuItem>
-//         </Menu>
-//       </div>
-     
-//       <Typography sx={{ mb: 0.5 }} color="text.primary">
-//         <b>{activity.label}</b>
-//       </Typography>
-//       <div style={{display: "flex", justifyContent: "space-between"}}>
-//         <Typography variant="body2">
-//           {activity.description}
-//         </Typography>
-//         {showIcon(activity.type)}
-//       </div>
-//       <Typography sx={{ fontSize: 14, mb: -2, color: "blue" }} >
-//           ${activity.earningEstimate}
-//       </Typography>
-//     </CardContent>
-//   </Card>
-// )
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const ActivityItem = ({activity, index}) => {
   const dispatch = useDispatch()
@@ -157,7 +113,7 @@ const ActivityItem = ({activity, index}) => {
 
             <Card sx={{  width: "96%", margin: "auto", marginTop: "-15px"}}>
               <CardContent>
-                <div style={{display: "flex", justifyContent: "space-between"}}>
+                <div style={{display: "flex", justifyContent: "space-between", marginBottom: "-15px"}}>
                   <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
                     {moment(activity.created_at).format("MMMM Do YYYY")}
                   </Typography>
@@ -190,7 +146,7 @@ const ActivityItem = ({activity, index}) => {
                   </Menu>
                 </div>
               
-                <Typography sx={{ mb: 0.5 }} color="text.primary">
+                <Typography sx={{ mb: -0.5 }} color="text.primary">
                   <b>{activity.label}</b>
                 </Typography>
                 <div style={{display: "flex", justifyContent: "space-between"}}>

@@ -11,28 +11,6 @@ import instance from '../services/fetchApi';
 import { setLoadingDashboard } from '../features/userSlice';
 
 
-// let arr = [
-//   { "January": 4976097 },
-//   { "December": 520000 },
-//   { "March": 520000 },
-//   { "April": 520000 }
-// ];
-
-// arr.sort(function(a, b) {
-// var monthA = Object.keys(a)[0];
-// var monthB = Object.keys(b)[0];
-// if (monthA < monthB) {
-//   return -1;
-// }
-// if (monthA > monthB) {
-//   return 1;
-// }
-// return 0;
-// });
-
-// console.log(arr)
-
-
 const Dashboard = () => {
   const navigate = useNavigate()
   const token = getToken()
@@ -45,7 +23,8 @@ const Dashboard = () => {
   const [results, setResults] = useState([])
   const [owner, setOwner] = useState(setting?.product_sales_mode)
   const [doughnutResults, setDoughnutResults] = useState()
-  const [measurement, setMeasurement] = useState("sales_persons")
+  const [measurement, setMeasurement] = useState(setting?.top_sales_mode)
+
   //const [activitySummary, setActivitySummary] = useState()
   const dispatch = useDispatch()
 
@@ -58,6 +37,11 @@ const Dashboard = () => {
   useEffect(() => {
     setOwner(setting?.product_sales_mode)
   }, [setting?.product_sales_mode])
+
+  
+  useEffect(() => {
+    setMeasurement(setting?.top_sales_mode)
+  }, [setting?.top_sales_mode])
 
   // Store User Data in Local State
   // useEffect(() => {
@@ -93,7 +77,7 @@ const Dashboard = () => {
   }, [owner])
 
   useEffect(() => {
-    if (measurement === 'sales_persons') {
+    if (measurement === 'salespersons') {
       getDoughnutChartResults('dashboard-total-sales-users')
     } 
 
@@ -192,7 +176,7 @@ const Dashboard = () => {
                 setting?.dashboard_mode === "show_bar_graph" && (
                   <>
                   <div style={{width: "50%"}}>
-                    <BarChart />
+                    <BarChart results={results} owner={owner} setOwner={setOwner} />
                   </div>
                   <div style={{width: "30%"}}>
                     
@@ -205,7 +189,7 @@ const Dashboard = () => {
                 setting?.dashboard_mode === "show_doughnut_graph" && (
                   <>
                   <div style={{width: "40%"}}>
-                    <DoughnutChart />
+                    <DoughnutChart results={doughnutResults} measurement={measurement} setMeasurement={setMeasurement} />
                   </div>
                   <div style={{width: "30%"}}>
                   

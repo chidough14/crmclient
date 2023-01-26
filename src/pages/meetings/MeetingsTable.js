@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { ContentPasteOff, DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import { Alert, Box, Button, Chip, Snackbar, Tab, Tabs, Tooltip, Typography } from '@mui/material';
+import {  Box, Button, Chip, Snackbar, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import moment from 'moment';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,12 @@ import { Link } from 'react-router-dom';
 import DeleteDialog from '../userMessages/DeleteDialog';
 import instance from '../../services/fetchApi';
 import { removeMeeting } from '../../features/MeetingSlice';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 

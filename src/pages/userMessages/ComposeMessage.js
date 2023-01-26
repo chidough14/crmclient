@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Chip, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Select, Snackbar, Switch, TextField, Typography } from '@mui/material'
+import {  Box, Button, Chip, FormControlLabel, InputLabel, MenuItem, OutlinedInput, Select, Snackbar, Switch, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -7,6 +7,12 @@ import instance from '../../services/fetchApi';
 import { useState } from 'react';
 import { addNewMessage } from '../../features/MessagesSlice';
 import { useEffect } from 'react';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

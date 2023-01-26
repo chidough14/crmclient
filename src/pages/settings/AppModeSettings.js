@@ -1,8 +1,14 @@
-import { InputLabel, Select, MenuItem, Button, Snackbar, Alert } from '@mui/material'
+import { InputLabel, Select, MenuItem, Button, Snackbar } from '@mui/material'
 import React, { useEffect, useReducer, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUserSettings } from '../../features/userSlice'
 import instance from '../../services/fetchApi'
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const AppModeSettings = () => {
   const user = useSelector(state => state.user)
@@ -13,6 +19,7 @@ const AppModeSettings = () => {
     dashboard_mode: "",
     calendar_mode: "",
     product_sales_mode: "",
+    top_sales_mode: "",
     openAlert: false
   };
 
@@ -30,7 +37,8 @@ const AppModeSettings = () => {
       updateData({
         dashboard_mode: user?.setting?.dashboard_mode,
         calendar_mode: user?.setting?.calendar_mode,
-        product_sales_mode: user?.setting?.product_sales_mode
+        product_sales_mode: user?.setting?.product_sales_mode,
+        top_sales_mode: user?.setting?.top_sales_mode
       })
     }
   }, [user?.setting])
@@ -40,7 +48,8 @@ const AppModeSettings = () => {
       user_id: user?.id,
       dashboard_mode: data.dashboard_mode,
       calendar_mode: data.calendar_mode,
-      product_sales_mode: data.product_sales_mode
+      product_sales_mode: data.product_sales_mode,
+      top_sales_mode: data.top_sales_mode
     }
 
     await instance.patch(`settings`, body)
@@ -86,7 +95,7 @@ const AppModeSettings = () => {
       </Select>
       <p></p>
 
-      <InputLabel id="demo-select-small">Produc Total Sales Default Graph Mode</InputLabel>
+      <InputLabel id="demo-select-small">Bar Graph Default Mode</InputLabel>
       <Select
         id='product_sales_mode'
         name="product_sales_mode"
@@ -99,6 +108,23 @@ const AppModeSettings = () => {
       >
         <MenuItem value="allusers">All Users</MenuItem>
         <MenuItem value="mine">Mine</MenuItem>
+      </Select>
+      <p></p>
+
+      
+      <InputLabel id="demo-select-small">Doughnut Graph Default Mode</InputLabel>
+      <Select
+        id='top_sales_mode'
+        name="top_sales_mode"
+        label="Top Sales Persons/Products Graph Mode"
+        size='small'
+        style={{width: "50%"}}
+        //fullWidth
+        value={data.top_sales_mode}
+        onChange={(e)=> updateData({top_sales_mode: e.target.value})}
+      >
+        <MenuItem value="salespersons">Sales Persons</MenuItem>
+        <MenuItem value="products">Products</MenuItem>
       </Select>
       <p></p>
 

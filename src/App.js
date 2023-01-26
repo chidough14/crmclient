@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Lists from "./pages/Lists";
 import { useEffect, useState } from "react";
 import { getToken } from "./services/LocalStorageService";
-import ChangePassword from "./pages/auth/ChangePassword";
 import { setAllUsersData, setLoadingDashboard, setUserInfo } from "./features/userSlice";
 import { useGetLoggedUserQuery } from "./services/userAuthApi";
 import Activities from "./pages/Activities";
@@ -32,6 +31,7 @@ import { setInvitedMeetings, setMeetings } from "./features/MeetingSlice";
 import AppLayout from "./pages/AppLayout";
 import { setUserToken } from "./features/authSlice";
 import Orders from "./pages/orders/Orders";
+import MyAccount from "./pages/auth/MyAccount";
 
 // import socketIO from 'socket.io-client';
 // const socket = socketIO.connect('http://localhost:4000');
@@ -53,11 +53,14 @@ function App() {
 
 
   useEffect(() => {
+    console.log(data);
     if (data && isSuccess) {
       dispatch(setUserInfo({
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
+        created_at: data.user.created_at,
+        profile_pic: data.user.profile_pic,
         setting: data.user.setting,
       }))
     }
@@ -156,7 +159,7 @@ function App() {
             <Route path="/companies/:id" element={<Company />} />
             <Route path="/activities" element={<Activities />} />
             <Route path="/activities/:id" element={<ActivityDetails />} />
-            <Route path="/changepassword" element={<ChangePassword />} />
+            <Route path="/myaccount" element={<MyAccount />} />
             <Route path="/events" element={<CalendarEvents />} />
             {/* <Route path="/messages" element={<Messages socket={socket} />} /> */}
             <Route path="/settings" element={<Settings />} />

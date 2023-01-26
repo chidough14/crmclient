@@ -5,7 +5,7 @@ import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Alert,  Snackbar } from '@mui/material';
+import {  Snackbar } from '@mui/material';
 import instance from '../services/fetchApi.js';
 import { useDispatch, useSelector } from 'react-redux';
 import {  setEvents, updateEvent } from '../features/EventSlice.js';
@@ -14,6 +14,12 @@ import ViewEventModal from '../components/events/ViewEventModal.js';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../services/LocalStorageService.js';
 import "./event.css"
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const DnDCalendar = withDragAndDrop(Calendar)

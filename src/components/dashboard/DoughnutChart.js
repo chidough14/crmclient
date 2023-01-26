@@ -73,7 +73,7 @@ export function DoughnutChart({results, measurement, setMeasurement}) {
           size="small"
           sx={{borderRadius: "30px"}}
         >
-          <MenuItem value="sales_persons">Sales Persons</MenuItem>
+          <MenuItem value="salespersons">Sales Persons</MenuItem>
           <MenuItem value="products">Products</MenuItem>
         </Select>
       </FormControl>
