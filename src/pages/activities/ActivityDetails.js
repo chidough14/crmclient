@@ -115,7 +115,7 @@ const ActivityDetails = () => {
 
   useEffect(()=> {
     let arr = []
-    activity?.products.map((a) => {
+    activity?.products?.map((a) => {
        let total = a.price * a.pivot.quantity
        arr.push(total)
     })

@@ -147,7 +147,7 @@ export default function AppLayout() {
   const [open, setOpen] = React.useState(false);
 
   const token = getToken()
-  const {name, allUsers} = useSelector(state => state.user)
+  const {name, allUsers, profile_pic} = useSelector(state => state.user)
   const {list, loadingCompanies} = useSelector(state => state.list)
   const [loggedIn, setLoggedIn] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -235,23 +235,23 @@ export default function AppLayout() {
                   navigate={navigate}
                 />
             )
-          }
+          }&nbsp;&nbsp;&nbsp;&nbsp;
 
           {
               loggedIn && (
                 <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
               )
-          }
+          }&nbsp;&nbsp;&nbsp;&nbsp;
         
           
-
+{/* 
           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
 
-          <Button component={NavLink} to='/contact' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>Contact</Button>
+          <Button component={NavLink} to='/contact' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>Contact</Button> */}
 
           {
             loggedIn ? 
-            <UserAccountsCircle name={name} /> : 
+            <UserAccountsCircle name={name} profile_pic={profile_pic} /> : 
             <Button 
               component={NavLink} 
               to='/login' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} 

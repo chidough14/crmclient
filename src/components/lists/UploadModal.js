@@ -14,7 +14,13 @@ import instance from '../../services/fetchApi';
 import { useDispatch } from 'react-redux';
 import { addList } from '../../features/listSlice';
 import Papa from "papaparse";
-import { Alert, Snackbar } from '@mui/material';
+import {  Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -25,6 +31,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
+
 
 function BootstrapDialogTitle(props) {
   const { children, onClose, ...other } = props;

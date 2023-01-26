@@ -3,8 +3,9 @@ import MuiAlert from '@mui/material/Alert';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { addActivity, editActivity, setSingleActivity } from '../../features/ActivitySlice';
+import { addActivity, editActivity, setOpenPrompt, setSingleActivity } from '../../features/ActivitySlice';
 import { addActivityToCompany, setCompany, setSearchResults } from '../../features/companySlice';
 import { addEvent } from '../../features/EventSlice';
 import instance from '../../services/fetchApi';
@@ -50,11 +51,13 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [companyId, setCompanyId] = useState();
+  const [formerPobability, setFormerProbability] = useState(activity?.probability);
 
   const handleClose = () => setOpen(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
   const {searchResults} = useSelector(state=> state.company)
+  const navigate = useNavigate()
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -75,6 +78,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
   useEffect(() => {
     if (editMode && activity) {
       formik.setValues(activity)
+      setFormerProbability(activity?.probability)
     }
    
   }, [open, activity])
@@ -124,6 +128,13 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
           dispatch(editActivity({activity: res.data.activity}))
 
           dispatch(setSingleActivity({activity: res.data.activity}))
+          console.log(formerPobability);
+
+          if (formerPobability === "High" && res.data.activity.probability === "Closed") {
+           
+            navigate(`/activities/${res.data.activity.id}`)
+            dispatch(setOpenPrompt({value: true}))
+          }
   
           handleClose()
           resetForm();
@@ -252,6 +263,11 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
               <MenuItem value="Low">Low</MenuItem>
               <MenuItem value="Medium">Medium</MenuItem>
               <MenuItem value="High">High</MenuItem>
+              {
+                editMode && (
+                  <MenuItem value="Closed">Closed</MenuItem>
+                )
+              }
             </Select>
             <p></p>
             <InputLabel id="demo-select-small">Type</InputLabel>

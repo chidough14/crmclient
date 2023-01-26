@@ -26,7 +26,7 @@ const UserLogin = () => {
     }
     if (actualData.email && actualData.password) {
       const res = await loginUser(actualData)
-      console.log(res)
+      
       if (res.data && res.data.status === "success") {
         // Store Token Code here
         storeToken(res.data.token)

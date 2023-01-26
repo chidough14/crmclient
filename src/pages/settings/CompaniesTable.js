@@ -15,13 +15,19 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Button, CircularProgress, Pagination, Snackbar, TableHead } from '@mui/material';
+import {  Button, CircularProgress, Pagination, Snackbar, TableHead } from '@mui/material';
 import { AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import AddCompanyModal from './modals/AddCompanyModal';
 import AlertDialog from './modals/AlertDialog';
 import instance from '../../services/fetchApi';
 import { removeCompany } from '../../features/companySlice';
 import { useDispatch } from 'react-redux';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function TablePaginationActions(props) {
   const theme = useTheme();

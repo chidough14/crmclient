@@ -1,5 +1,5 @@
 
-import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem, Snackbar, Alert } from '@mui/material'
+import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem, Snackbar } from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
@@ -8,6 +8,11 @@ import * as yup from 'yup';
 import { addInvoiceToActivity } from '../../features/ActivitySlice';
 import { setInvoice } from '../../features/InvoiceSlice';
 import instance from '../../services/fetchApi';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const style = {
   // position: 'absolute',
