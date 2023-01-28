@@ -1,9 +1,31 @@
-import { CircularProgress, Typography } from '@mui/material'
+import { InfoOutlined } from '@mui/icons-material'
+import { CircularProgress, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import ActivityItem from './ActivityItem'
 
 const ActivityColumn = ({ col: { list, id, total }, loading }) => {
+
+  const getInfo = (id) => {
+    let text
+    if (id === "Low") {
+      text = "Total is calculated based on toal cost of products multiplied by 20%"
+    }
+
+    if (id === "Medium") {
+      text = "Total is calculated based on toal cost of products multiplied by 40%"
+    }
+
+    if (id === "High") {
+      text = "Total is calculated based on toal cost of products multiplied by 80%"
+    }
+
+    if (id === "Closed") {
+      text = "Total is calculated based on toal cost of products in the latest invoice"
+    }
+
+    return text
+  }
 
   return (
     <Droppable droppableId={id}>
@@ -16,14 +38,17 @@ const ActivityColumn = ({ col: { list, id, total }, loading }) => {
             backgroundColor: id === "Low" ? ' 	#E8E8E8' :
                             id === "Medium" ? "#DCDCDC" :
                             id === "High" ? "#D3D3D3" : "#C0C0C0"
-            // backgroundColor: id === "Low" ? ' #FFC8FF' :
-            //                  id === "Medium" ? "#FFB4FF" :
-            //                  id === "High" ? "#dda0dd" : "#90EE90"
           }}
         >
-          <p style={{textAlign: "center", fontSize: "14px", marginBottom: "30px"}}>
-            <b>{id}</b> <br></br> ${total}
+
+          <p style={{textAlign: "center", fontSize: "14px", marginBottom: "20px"}}>
+            <b>{id}</b> 
+            <Tooltip placement='top' title={getInfo(id)}>
+              <InfoOutlined sx={{fontSize: "14px", marginLeft: "10px"}} />
+            </Tooltip>
+            <br></br> ${total}
           </p>
+          
 
           {
             loading ? (

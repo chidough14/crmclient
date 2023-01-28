@@ -22,6 +22,11 @@ export const ActivitySlice = createSlice({
       idx = state.activities.findIndex((a) => a.id === action.payload.activity.id)
       state.activities[idx] = action.payload.activity
     },
+    editActivityProbability: (state, action) => {
+      let idx
+      idx = state.activities.findIndex((a) => a.id === action.payload.activity.id)
+      state.activities[idx].probability = action.payload.activity.probability
+    },
     removeActivity: (state, action) => {
       state.activities = state.activities.filter((a) => a.id !== action.payload.activityId)
     },
@@ -82,7 +87,8 @@ export const {
   setClosePrompt,
   addInvoiceToActivity,
   removeInvoiceFromActivity,
-  setSortOptionValue
+  setSortOptionValue,
+  editActivityProbability
 } = ActivitySlice.actions
 
 export default ActivitySlice.reducer

@@ -49,22 +49,22 @@ export default function DashboardCard({type, events, list}) {
       
       setLowActivities({
         count: low?.length,
-        amount: low?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.2
+        amount: low?.map((a) => a.total).reduce((prev, curr) => prev + curr, 0) * 0.2
       })
   
       setMediumActivities({
         count:  medium?.length,
-        amount:  medium?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.4
+        amount:  medium?.map((a) => a.total).reduce((prev, curr) => prev + curr, 0) * 0.4
       })
   
       setHighActivities({
         count:  high?.length,
-        amount:  high?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0) * 0.8
+        amount:  high?.map((a) => a.total).reduce((prev, curr) => prev + curr, 0) * 0.8
       })
   
       setClosedActivities({
         count:  closed?.length,
-        amount:  closed?.map((a) => a.earningEstimate).reduce((prev, curr) => prev + curr, 0)
+        amount:  closed?.map((a) => a.total).reduce((prev, curr) => prev + curr, 0)
       })
     }
   

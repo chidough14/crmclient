@@ -39,10 +39,16 @@ export const userSlice = createSlice({
     },
     setLoadingDashboard: (state, action) => {
       state.loadingDashboard = action.payload.value
+    }, 
+    updateAllUsers: (state, action) => {
+      let idx = state.allUsers.findIndex((a) => a.id === action.payload.user.id)
+      let arr = [...state.allUsers]
+      arr[idx].profile_pic = action.payload.user.profile_pic
+      state.allUsers = arr
     }
   },
 })
 
-export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard } = userSlice.actions
+export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard, updateAllUsers } = userSlice.actions
 
 export default userSlice.reducer

@@ -129,7 +129,7 @@ const UserAccountsCircle = ({name, profile_pic}) => {
         <MenuItem>
           <Avatar /> My account
         </MenuItem> */}
-        <MenuItem onClick={() => navigate("/myaccount")}>
+        <MenuItem onClick={() => navigate("/profile/mine")}>
           <ListItemIcon>
             <Avatar />
           </ListItemIcon>
