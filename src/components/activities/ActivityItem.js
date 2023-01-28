@@ -113,7 +113,7 @@ const ActivityItem = ({activity, index}) => {
 
             <Card sx={{  width: "96%", margin: "auto", marginTop: "-15px"}}>
               <CardContent>
-                <div style={{display: "flex", justifyContent: "space-between", marginBottom: "-15px"}}>
+                <div style={{display: "flex", justifyContent: "space-between", marginBottom: "-15px", marginTop: "-10px"}}>
                   <Typography sx={{ fontSize: 12 }} color="text.secondary" gutterBottom>
                     {moment(activity.created_at).format("MMMM Do YYYY")}
                   </Typography>
@@ -156,7 +156,7 @@ const ActivityItem = ({activity, index}) => {
                   {showIcon(activity.type)}
                 </div>
                 <Typography sx={{ fontSize: 14, mb: -2, color: "blue" }} >
-                    ${activity.earningEstimate}
+                    ${activity.total}
                 </Typography>
               </CardContent>
             </Card>

@@ -53,7 +53,6 @@ function App() {
 
 
   useEffect(() => {
-    console.log(data);
     if (data && isSuccess) {
       dispatch(setUserInfo({
         id: data.user.id,
@@ -159,7 +158,7 @@ function App() {
             <Route path="/companies/:id" element={<Company />} />
             <Route path="/activities" element={<Activities />} />
             <Route path="/activities/:id" element={<ActivityDetails />} />
-            <Route path="/myaccount" element={<MyAccount />} />
+            <Route path="/profile/:id" element={<MyAccount />} />
             <Route path="/events" element={<CalendarEvents />} />
             {/* <Route path="/messages" element={<Messages socket={socket} />} /> */}
             <Route path="/settings" element={<Settings />} />

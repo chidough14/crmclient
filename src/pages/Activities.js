@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import ActivityColumn from '../components/activities/ActivityColumn'
 import ActivityModal from '../components/activities/ActivityModal'
-import { editActivity, setActivities, setOpenPrompt, setSortOptionValue } from '../features/ActivitySlice'
+import { editActivity, editActivityProbability, setActivities, setOpenPrompt, setSortOptionValue } from '../features/ActivitySlice'
 import instance from '../services/fetchApi'
 import { getToken } from '../services/LocalStorageService'
 import SortButton from './orders/SortButton'
@@ -48,22 +48,22 @@ const Activities = () => {
       Low: {
         id: 'Low',
         list: activities.filter((a) => a.probability === "Low"),
-        total: activities.filter((a) => a.probability === "Low").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.2,
+        total: activities.filter((a) => a.probability === "Low").reduce((n, {total}) => n + total, 0) * 0.2,
       },
       Medium: {
         id: 'Medium',
         list: activities.filter((a) => a.probability === "Medium"),
-        total: activities.filter((a) => a.probability === "Medium").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.4,
+        total: activities.filter((a) => a.probability === "Medium").reduce((n, {total}) => n + total, 0) * 0.4,
       },
       High: {
         id: 'High',
         list: activities.filter((a) => a.probability === "High"),
-        total: activities.filter((a) => a.probability === "High").reduce((n, {earningEstimate}) => n + earningEstimate, 0) * 0.8,
+        total: activities.filter((a) => a.probability === "High").reduce((n, {total}) => n + total, 0) * 0.8,
       },
       Closed: {
         id: 'Closed',
         list: activities.filter((a) => a.probability === "Closed"),
-        total: activities.filter((a) => a.probability === "Closed").reduce((n, {earningEstimate}) => n + earningEstimate, 0),
+        total: activities.filter((a) => a.probability === "Closed").reduce((n, {total}) => n + total, 0),
       },
     
     }
@@ -84,7 +84,7 @@ const Activities = () => {
 
     await instance.patch(`activities/${activityId}`, body)
     .then((res) => {
-      dispatch(editActivity({activity: res.data.activity}))
+      dispatch(editActivityProbability({activity: res.data.activity}))
     })
   }
 
@@ -126,7 +126,6 @@ const Activities = () => {
       setColumns(state => ({ ...state, [newCol.id]: newCol }))
       return null
     } else {
-      console.log("222", source, destination);
       // If start is different from end, we need to update multiple columns
       // Filter the start list like before
       const newStartList = start.list.filter(
@@ -228,7 +227,7 @@ const Activities = () => {
         <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >My Activities</Typography>
 
         <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >
-          Total : ${columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
+          Total : ${isNaN(columns?.Low?.total + columns?.High?.total + columns?.Medium?.total) ? "" : columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
         </Typography>
 
 

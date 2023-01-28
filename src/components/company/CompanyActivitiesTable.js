@@ -13,8 +13,10 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import avatar from '../../assets/avtar9.jpg';
 
 
 const activityItems = [
@@ -38,10 +40,23 @@ const activityItems = [
   }
 ]
 
+const getInitials = (string) => {
+  let names = string?.split(' '),
+      initials = names[0].substring(0, 1).toUpperCase();
+  
+  if (names.length > 1) {
+      initials += names[names.length - 1].substring(0, 1).toUpperCase();
+  }
+  return initials;
+}
+
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate()
+  const {allUsers} = useSelector(state => state.user)
+
+  let image_src = allUsers?.find((a)=> a.id === row.user_id)?.profile_pic
 
   return (
     <React.Fragment>
@@ -61,7 +76,54 @@ function Row(props) {
         <TableCell >{row.description}</TableCell>
         <TableCell >{row.assignedTo}</TableCell>
         <TableCell >{row.probability}</TableCell>
-        <TableCell >{row.earningEstimate}</TableCell>
+        <TableCell >
+        
+          
+          <Tooltip title={allUsers?.find((a)=> a.id === row.user_id)?.name}>
+            {
+              ( image_src === ""  || image_src === null) ? (
+                <div 
+                  style={{
+                    display: "inline-block",
+                    backgroundColor: "gray" ,
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    // width: "30px",
+                    // height: "30px",
+                    //margin: "10px",
+                  }}
+                  onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.user_id)?.id}`)}
+                >
+                  <p 
+                    style={{
+                      color: "white",
+                      display: "table-cell",
+                      verticalAlign: "middle",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      height: "30px",
+                      width: "30px",
+                      fontSize: "15px"
+                    }}
+                  >
+                    {getInitials(allUsers?.find((a)=> a.id === row.user_id)?.name)}
+                  </p>
+                </div>
+              ) : (
+                <img 
+                  width="30px" 
+                  height="30px" 
+                  src={image_src}  
+                  alt='profile_pic' 
+                  style={{borderRadius: "50%", cursor: "pointer"}} 
+                  onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.user_id)?.id}`)}
+                />
+              )
+            }
+          
+          </Tooltip>
+          
+        </TableCell>
         <TableCell >{row.type}</TableCell>
         <TableCell >
           <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/activities/${row.id}`)}>
@@ -131,7 +193,7 @@ const ComanyActivitiesTable = ({rows}) => {
             <TableCell>Description</TableCell>
             <TableCell>Assigned To</TableCell>
             <TableCell>Probablity</TableCell>
-            <TableCell>Estimate&nbsp;($)</TableCell>
+            <TableCell>Owner</TableCell>
             <TableCell>Type</TableCell>
             <TableCell></TableCell>
           </TableRow>
