@@ -9,19 +9,19 @@ const ActivityColumn = ({ col: { list, id, total }, loading }) => {
   const getInfo = (id) => {
     let text
     if (id === "Low") {
-      text = "Total is calculated based on toal cost of products multiplied by 20%"
+      text = "Amount is calculated based on toal cost of products multiplied by 20%"
     }
 
     if (id === "Medium") {
-      text = "Total is calculated based on toal cost of products multiplied by 40%"
+      text = "Amount is calculated based on toal cost of products multiplied by 40%"
     }
 
     if (id === "High") {
-      text = "Total is calculated based on toal cost of products multiplied by 80%"
+      text = "Amount is calculated based on toal cost of products multiplied by 80%"
     }
 
     if (id === "Closed") {
-      text = "Total is calculated based on toal cost of products in the latest invoice"
+      text = "Amount is calculated based on toal cost of products in the latest invoice"
     }
 
     return text

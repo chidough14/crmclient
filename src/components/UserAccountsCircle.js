@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
-import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getToken, removeToken } from '../services/LocalStorageService';
-import { useGetLoggedUserQuery, useLogoutUserMutation } from '../services/userAuthApi';
+import { useLogoutUserMutation } from '../services/userAuthApi';
 import { unsetUserToken } from '../features/authSlice';
 import { unsetUserInfo } from '../features/userSlice';
 
@@ -57,33 +53,38 @@ const UserAccountsCircle = ({name, profile_pic}) => {
     <>
     {
       !profile_pic ? (
-        <div 
-          style={{
-            display: "inline-block",
-            backgroundColor: "gray" ,
-            margin: "10px",
-            borderRadius: "50%",
-            cursor: "pointer"
-          }}
-          onClick={handleClick}
-        >
-          <p 
+        <Tooltip title={name}>
+          <div 
             style={{
-              color: "white",
-              display: "table-cell",
-              verticalAlign: "middle",
-              textAlign: "center",
-              textDecoration: "none",
-              height: "40px",
-              width: "40px",
-              fontSize: "15px"
+              display: "inline-block",
+              backgroundColor: "gray" ,
+              margin: "10px",
+              borderRadius: "50%",
+              cursor: "pointer"
             }}
+            onClick={handleClick}
           >
-            {getInitials(name)}
-          </p>
-        </div>
+            <p 
+              style={{
+                color: "white",
+                display: "table-cell",
+                verticalAlign: "middle",
+                textAlign: "center",
+                textDecoration: "none",
+                height: "40px",
+                width: "40px",
+                fontSize: "15px"
+              }}
+            >
+              {getInitials(name)}
+            </p>
+          </div>
+        </Tooltip>
       ) : (
-        <img src={profile_pic} alt="alt" style={{width: "35px",  cursor: "pointer", height: "35px", borderRadius: "50%"}}  onClick={handleClick}/>
+        <Tooltip title={name}>
+          <img src={profile_pic} alt="alt" style={{width: "35px",  cursor: "pointer", height: "35px", borderRadius: "50%"}}  onClick={handleClick}/>
+        </Tooltip>
+     
       )
     }
       

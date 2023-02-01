@@ -1,13 +1,13 @@
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
-import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar } from '@mui/material';
+import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar, Tooltip } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import moment from 'moment';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import ChatIcon from '@mui/icons-material/Chat';
-import {  CopyAllOutlined, DeleteOutlined, EditOutlined, MoreVert, MoveUpOutlined, ViewListOutlined } from '@mui/icons-material';
+import {  ArrowDownwardOutlined, ArrowUpwardOutlined, CopyAllOutlined, DeleteOutlined, EditOutlined, MoreVert, MoveUpOutlined, ViewListOutlined } from '@mui/icons-material';
 import { useState } from 'react';
 import ActivityModal from './ActivityModal';
 import instance from '../../services/fetchApi';
@@ -89,9 +89,10 @@ const ActivityItem = ({activity, index}) => {
   };
 
   const cloneActivity = async (value) => {
-
-    const res = await instance.get(`activities/${value.id}/clone`)
+    await instance.get(`activities/${value.id}/clone`)
     .then((res)=> {
+      res.data.clonedActivity.decreased_probability = null
+      res.data.clonedActivity.total = value.total
       dispatch(addActivity({activity: res.data.clonedActivity}))
    })
   };
@@ -103,7 +104,7 @@ const ActivityItem = ({activity, index}) => {
 
   return (
     <>
-      <Draggable draggableId={activity.id.toString()} index={index} key={activity.id.toString()}>
+      <Draggable draggableId={activity.id.toString()} index={index} key={activity.id.toString()} isDragDisabled={activity.probability === "Closed"}>
         {provided => (
           <div
             ref={provided.innerRef}
@@ -155,9 +156,35 @@ const ActivityItem = ({activity, index}) => {
                   </Typography>
                   {showIcon(activity.type)}
                 </div>
-                <Typography sx={{ fontSize: 14, mb: -2, color: "blue" }} >
-                    ${activity.total}
-                </Typography>
+
+                <div 
+                  style={{
+                    display: "flex", 
+                    justifyContent: "space-between", 
+                    marginBottom: Boolean(activity.decreased_probability) ||  
+                                  ( activity.decreased_probability !== null && !Boolean(activity.decreased_probability) )  ? "-18px" : null}}
+                >
+                  <Typography sx={{ fontSize: 14, mb: -2, color: "blue" }} >
+                      ${activity.total}
+                  </Typography>
+
+                  {
+                    Boolean(activity.decreased_probability)  && (
+                      <Tooltip title='Decreased Probability'>
+                        <ArrowDownwardOutlined sx={{color: "red"}} />
+                      </Tooltip>
+                    )
+                  }
+
+                  {
+                  ( activity.decreased_probability !== null && !Boolean(activity.decreased_probability) ) && (
+                      <Tooltip title='Increadsed Probability'>
+                        <ArrowUpwardOutlined sx={{color: "green"}} />
+                      </Tooltip>
+                    )
+                  }
+                
+                </div>
               </CardContent>
             </Card>
             <br></br>

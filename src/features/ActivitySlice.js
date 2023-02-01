@@ -20,12 +20,16 @@ export const ActivitySlice = createSlice({
     editActivity: (state, action) => {
       let idx
       idx = state.activities.findIndex((a) => a.id === action.payload.activity.id)
+      
+      let total = state.activities[idx].total
       state.activities[idx] = action.payload.activity
+      state.activities[idx].total = total
     },
     editActivityProbability: (state, action) => {
       let idx
       idx = state.activities.findIndex((a) => a.id === action.payload.activity.id)
       state.activities[idx].probability = action.payload.activity.probability
+      state.activities[idx].decreased_probability = action.payload.activity.decreased_probability
     },
     removeActivity: (state, action) => {
       state.activities = state.activities.filter((a) => a.id !== action.payload.activityId)

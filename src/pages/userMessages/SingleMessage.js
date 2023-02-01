@@ -73,6 +73,67 @@ const SingleMessage = () => {
   
   }, [singleMessage])
 
+  const getInitials = (string) => {
+    let names = string?.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  }
+
+  const getImage = (id) => {
+
+    let image_src
+    image_src = allUsers?.find((a)=> a.id === id)?.profile_pic
+
+    if ( image_src === ""  || image_src === null) {
+      return (
+        <div 
+          style={{
+            display: "inline-block",
+            backgroundColor: "gray" ,
+            borderRadius: "50%",
+            cursor: "pointer",
+            marginBottom: "-5px"
+          }}
+          onClick={() => {
+            navigate(`/profile/${allUsers?.find((a)=> a.id === id)?.id}`)
+          }}
+        >
+          <p 
+            style={{
+              color: "white",
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              textDecoration: "none",
+              height: "30px",
+              width: "30px",
+              fontSize: "15px"
+            }}
+          >
+            {getInitials(allUsers?.find((a)=> a.id === id)?.name) }
+          </p>
+        </div>
+      )
+    } else {
+      return (
+        <img 
+          width="30px" 
+          height="30px" 
+          src={image_src}  
+          alt='profile_pic' 
+          style={{borderRadius: "50%", cursor: "pointer", marginBottom: "-5px"}} 
+          onClick={() => {
+            navigate(`/profile/${allUsers?.find((a)=> a.id === id)?.id}`)
+          }}
+        />
+      )
+    }
+  }
+
   return (
     <>
       {
@@ -121,7 +182,10 @@ const SingleMessage = () => {
                     </Typography>
                     ) : (
                     <Typography variant='h7'>
-                      <b>Sent By</b> : {allUsers?.find((a) => a.id === singleMessage?.sender_id)?.name} ({allUsers?.find((a) => a.id === singleMessage?.sender_id)?.email})
+                      <b>Sent By</b> : &nbsp;&nbsp;
+                      { getImage(singleMessage?.sender_id) } &nbsp;&nbsp;
+                      {allUsers?.find((a) => a.id === singleMessage?.sender_id)?.name}
+                      ({allUsers?.find((a) => a.id === singleMessage?.sender_id)?.email})
                     </Typography>
                     )
                   }

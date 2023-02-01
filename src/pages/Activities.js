@@ -1,4 +1,4 @@
-import { AddOutlined, SearchOutlined } from '@mui/icons-material'
+import { AddOutlined, InfoOutlined, SearchOutlined } from '@mui/icons-material'
 import { Button, CircularProgress, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import {DragDropContext} from 'react-beautiful-dnd'
@@ -227,7 +227,11 @@ const Activities = () => {
         <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >My Activities</Typography>
 
         <Typography variant='h6'  component="div" sx={{ flexGrow: 2 }} >
-          Total : ${isNaN(columns?.Low?.total + columns?.High?.total + columns?.Medium?.total) ? "" : columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}
+          Total 
+          <Tooltip placement='top' title="Total amount for the low, medium and high columns">
+            <InfoOutlined sx={{fontSize: "14px", marginLeft: "4px", marginBottom: "7px"}} />
+          </Tooltip>  
+           : <span  style={{color: "green"}}>${isNaN(columns?.Low?.total + columns?.High?.total + columns?.Medium?.total) ? "" : columns?.Low?.total + columns?.High?.total + columns?.Medium?.total}</span>
         </Typography>
 
 

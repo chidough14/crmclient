@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Chip, CircularProgress, Pagination, Snackbar, TableHead, Typography } from '@mui/material';
+import { Chip, CircularProgress, Pagination, Snackbar, TableHead, Tooltip, Typography } from '@mui/material';
 import { ContentPasteOff, DeleteOutlined, EditOutlined, ReadMoreOutlined } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -93,7 +93,7 @@ TablePaginationActions.propTypes = {
 
 const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessages, loading}) => {
 
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const {allUsers} = useSelector(state => state.user)
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -101,17 +101,25 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
   const dispatch = useDispatch()
   const [openAlert, setOpenAlert] = React.useState(false)
 
+  // React.useEffect(() => {
+  //   setPage(messages?.current_page)
+  // }, [messages?.current_page])
+
+  React.useEffect(() => {
+    if(isInbox){
+      getInboxMessages(page)
+    } else {
+      getOutboxMessages(page)
+    }
+  }, [page])
+
 
   const handleCloseAlert = () => {
     setOpenAlert(false)
   }
 
   const handleChangePage = (event, newPage) => {
-    if(isInbox){
-      getInboxMessages(newPage)
-    } else {
-      getOutboxMessages(newPage)
-    }
+    setPage(newPage)
   };
 
   const deleteMessage = (message) => {
@@ -127,6 +135,69 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
       setOpenDialog(false)
     })
   };
+
+  const getInitials = (string) => {
+    let names = string?.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  }
+
+  const getImage = (row) => {
+
+    let image_src = allUsers?.find((a)=> a.id === row.sender_id)?.profile_pic
+
+    if ( image_src === ""  || image_src === null) {
+      return (
+        <div 
+          style={{
+            display: "inline-block",
+            backgroundColor: "gray" ,
+            borderRadius: "50%",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.sender_id)?.id}`)}
+        >
+          <p 
+            style={{
+              color: "white",
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              textDecoration: "none",
+              height: "30px",
+              width: "30px",
+              fontSize: "15px"
+            }}
+          >
+            {getInitials(allUsers?.find((a)=> a.id === row.sender_id)?.name)}
+          </p>
+        </div>
+      )
+    } else {
+      if (!image_src) {
+         return (
+          <p>Auto Generated</p>
+         )
+      } else {
+        return (
+          <img 
+            width="30px" 
+            height="30px" 
+            src={image_src}  
+            alt='profile_pic' 
+            style={{borderRadius: "50%", cursor: "pointer"}} 
+            onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.sender_id)?.id}`)}
+          />
+        )
+      }
+    }
+  }
+
+
 
   return (
     <>
@@ -169,7 +240,10 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
                         {
                           isInbox &&
                           <TableCell style={{ width: 160 }} >
-                            {allUsers?.find((a) => a.id === row.sender_id)?.name}
+                            {/* {allUsers?.find((a) => a.id === row.sender_id)?.name} */}
+                            <Tooltip title={allUsers?.find((a)=> a.id === row.sender_id)?.name}>
+                              {getImage(row)}
+                            </Tooltip>
                           </TableCell>
                         }
                       
@@ -221,6 +295,7 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
     <div style={{marginTop: "20px"}}>
       <Pagination
         count={ Math.ceil(messages?.total / messages?.per_page)}
+        page={page}
         onChange={(page, idx) => {
           handleChangePage(page, idx)
         }}

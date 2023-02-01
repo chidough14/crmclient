@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {LoadScript, GoogleMap } from '@react-google-maps/api'
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 import Geocode from "react-geocode";
+import axios from 'axios';
 
 const containerStyle = {
   width: '600px',
@@ -15,15 +16,15 @@ const center = {
 };
 
 
-Geocode.setApiKey("AIzaSyBJwct4cQyPLSk7CMXJ-NgEi7hj_mxlLh4");
-Geocode.setLanguage("en");
-Geocode.setRegion("es");
-Geocode.setLocationType("ROOFTOP");
-Geocode.enableDebug();
+// Geocode.setApiKey("AIzaSyBJwct4cQyPLSk7CMXJ-NgEi7hj_mxlLh4");
+// Geocode.setLanguage("en");
+// Geocode.setRegion("es");
+// Geocode.setLocationType("ROOFTOP");
+// Geocode.enableDebug();
 
 
 const Map = () => {
-  // const [center, setCenter] = useState()
+  const [center, setCenter] = useState()
 
   // Geocode.fromAddress("Diamantvagen 20, Skovde").then(
   //   (response) => {
@@ -37,6 +38,27 @@ const Map = () => {
   //     console.error(error);
   //   }
   // );
+
+  // const getAddress = async () => {
+  //   const address = "Diamantvagen 20, Skovde";
+  //   await axios.get(`https://nominatim.openstreetmap.org/search?q=${address}&format=json`)
+  //       .then(response => {
+  //           const lat = response.data[0].lat;
+  //           const lng = response.data[0].lon;
+  //           console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+  //           setCenter({
+  //             lat, lng
+  //           })
+  //       });
+  // }
+
+  // useEffect(() => {
+  //   getAddress()
+  // }, [])
+
+
+
+ 
   return (
     <Card sx={{ minWidth: 275 }}>
       {/* <LoadScript
