@@ -9,36 +9,11 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Button, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import avatar from '../../assets/avtar9.jpg';
 
-
-const activityItems = [
-  {
-    id: 1,
-    name: "Office Chairs",
-    price: 2000,
-    quantity: 10
-  },
-  {
-    id: 2,
-    name: "44 inch Monitors",
-    price: 10000,
-    quantity: 20
-  },
-  {
-    id: 3,
-    name: "WiFi Routers",
-    price: 12000,
-    quantity: 15
-  }
-]
 
 const getInitials = (string) => {
   let names = string?.split(' '),
@@ -52,7 +27,6 @@ const getInitials = (string) => {
 
 function Row(props) {
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate()
   const {allUsers} = useSelector(state => state.user)
 
@@ -61,15 +35,6 @@ function Row(props) {
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
         <TableCell component="th" scope="row">
           {row.label}
         </TableCell>
@@ -129,42 +94,6 @@ function Row(props) {
           <Button style={{borderRadius: "30px"}} onClick={() => navigate(`/activities/${row.id}`)}>
           View Activity
           </Button>
-        </TableCell>
-      </TableRow>
-      {/* Collapsible */}
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h7" gutterBottom component="div">
-                <b>Activity Items</b>
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell align="right">Quantity</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {activityItems?.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell component="th" scope="row">
-                        {item.name}
-                      </TableCell>
-                      <TableCell>{item.price}</TableCell>
-                      <TableCell align="right">{item.quantity}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(item.quantity * item.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
         </TableCell>
       </TableRow>
     </React.Fragment>

@@ -80,20 +80,22 @@ const MyMeetings = () => {
     <>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="My Meetings" {...a11yProps(0)} />
-            <Tab label="Invited" {...a11yProps(1)} />
+            <Tab label="Invited" {...a11yProps(0)} />
+            <Tab label="My meetings" {...a11yProps(1)} />
           </Tabs>
         </Box>
 
         <TabPanel value={value} index={0}>
-          <MeetingsTable meetings={meetings}  showModal={showModal}user={user} />
-        
+          <MeetingsTable meetings={invitedMeetings} showModal={showModal} user={user} own={false}/>
+       
         </TabPanel>
 
         <TabPanel value={value} index={1}>
-          <MeetingsTable meetings={invitedMeetings} showModal={showModal} user={user}/>
-       
+          <MeetingsTable meetings={meetings}  showModal={showModal} user={user} own={true} />
+        
         </TabPanel>
+
+        
 
         {
           showEditMeetingModal &&

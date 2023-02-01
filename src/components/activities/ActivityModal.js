@@ -119,6 +119,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
     onSubmit: async (values, {resetForm}) => {
       if (editMode) {
         values.earningEstimate = parseInt(values.earningEstimate)
+        delete values.decreased_probability
         
         await instance.patch(`activities/${activity.id}`, values)
         .then((res) => {
@@ -259,6 +260,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
               onChange={formik.handleChange}
               error={formik.touched.probability && Boolean(formik.errors.probability)}
               helpertext={formik.touched.probability && formik.errors.probability}
+              disabled={activity?.probability === "Closed"}
             >
               <MenuItem value="Low">Low</MenuItem>
               <MenuItem value="Medium">Medium</MenuItem>

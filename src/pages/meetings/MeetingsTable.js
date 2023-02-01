@@ -6,12 +6,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { ContentPasteOff, DeleteOutlined, EditOutlined } from '@mui/icons-material';
-import {  Box, Button, Chip, Snackbar, Tab, Tabs, Tooltip, Typography } from '@mui/material';
+import { ContentPasteOff, DeleteOutlined, EditOutlined, ViewListOutlined } from '@mui/icons-material';
+import {  Box, Button, Chip, Popover, Snackbar, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import moment from 'moment';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DeleteDialog from '../userMessages/DeleteDialog';
 import instance from '../../services/fetchApi';
 import { removeMeeting } from '../../features/MeetingSlice';
@@ -25,12 +25,27 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 
 
-const MeetingsTable = ({meetings, showModal, user}) => {
+const MeetingsTable = ({meetings, showModal, user, own}) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [recordId, setRecordId] = React.useState();
   const dispatch = useDispatch()
   const [openAlert, setOpenAlert] = React.useState(false)
+  const navigate = useNavigate()
 
+  //popover//////
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+/////////
 
   const handleCloseAlert = () => {
     setOpenAlert(false)
@@ -62,6 +77,89 @@ const MeetingsTable = ({meetings, showModal, user}) => {
     })
   };
 
+  const getInitials = (string) => {
+    let names = string?.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  }
+
+  const getImage = (row, type) => {
+
+    let image_src
+    if (type === "sender") {
+      image_src = user?.allUsers?.find((a)=> a.id === row.user_id)?.profile_pic
+    } else if (type === "invited") {
+      image_src = user?.allUsers?.find((a)=> a.email === row)?.profile_pic
+    }
+
+    if ( image_src === ""  || image_src === null) {
+      return (
+        <div 
+          style={{
+            display: "inline-block",
+            backgroundColor: "gray" ,
+            borderRadius: "50%",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            if (type === "sender") {
+              navigate(`/profile/${user?.allUsers?.find((a)=> a.id === row.user_id)?.id}`)
+            }else if (type === "invited") {
+              navigate(`/profile/${user?.allUsers?.find((a)=> a.email === row)?.id}`)
+            }
+          }}
+        >
+          <p 
+            style={{
+              color: "white",
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              textDecoration: "none",
+              height: "30px",
+              width: "30px",
+              fontSize: "15px"
+            }}
+          >
+            {type === "sender" ? getInitials(user?.allUsers?.find((a)=> a.id === row.user_id)?.name) : getInitials(user?.allUsers?.find((a)=> a.email === row)?.name)}
+          </p>
+        </div>
+      )
+    } else {
+      return (
+        <img 
+          width="30px" 
+          height="30px" 
+          src={image_src}  
+          alt='profile_pic' 
+          style={{borderRadius: "50%", cursor: "pointer"}} 
+          onClick={() => {
+            if (type === "sender") {
+              navigate(`/profile/${user?.allUsers?.find((a)=> a.id === row.user_id)?.id}`)
+            } else if (type === "invited") {
+              navigate(`/profile/${user?.allUsers?.find((a)=> a.email === row)?.id}`)
+            }
+          }}
+        />
+      )
+    }
+  }
+
+  const mapInvitedUsers = (arr) => {
+    return arr.map((a) => (
+      <>
+        <Tooltip title={user?.allUsers?.find((b)=> b.email === a)?.name}>
+        {getImage(a, "invited")}
+        </Tooltip>&nbsp;&nbsp;&nbsp;
+      </>
+    ))
+  }
+  
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -70,7 +168,9 @@ const MeetingsTable = ({meetings, showModal, user}) => {
             <TableRow>
               {/* <TableCell>Title</TableCell> */}
               <TableCell >Meeting Name</TableCell>
-              <TableCell >ID</TableCell>
+
+             { !own && <TableCell >Host</TableCell>}
+
               <TableCell >Type</TableCell>
               <TableCell >Date</TableCell>
               <TableCell >Status</TableCell>
@@ -100,7 +200,18 @@ const MeetingsTable = ({meetings, showModal, user}) => {
                 <TableCell component="th" scope="row">
                   {row.meetingName}
                 </TableCell>
-                <TableCell >{row.meetingId}</TableCell>
+
+                {
+                  !own && (
+                    <TableCell >
+                      <Tooltip title={user?.allUsers?.find((a)=> a.id === row.user_id)?.name}>
+                          {getImage(row, "sender")}
+                      </Tooltip>
+                    </TableCell>
+                  )
+                }
+               
+
                 <TableCell >{row.meetingType}</TableCell>
                 <TableCell >{moment(row.event.start).format("MMMM Do YYYY, h:mm a")}</TableCell>
 
@@ -109,7 +220,42 @@ const MeetingsTable = ({meetings, showModal, user}) => {
 
                 </TableCell>
 
-                <TableCell >{row.invitedUsers.map((a) => <p>{a}</p>)}</TableCell>
+                <TableCell >
+                  {
+                  row.invitedUsers.length > 2 ? (
+                    <>
+                      { 
+                        mapInvitedUsers(row.invitedUsers.slice(0, 2))
+                      }
+                      <span>
+                        <Tooltip title="See all">
+                          <Button aria-describedby={id} size='small' onClick={handleClick}>
+                            <ViewListOutlined />
+                          </Button>
+                        </Tooltip>
+
+
+                        <Popover
+                          id={id}
+                          open={open}
+                          anchorEl={anchorEl}
+                          onClose={handleClose}
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                        >
+                          {
+                           mapInvitedUsers(row.invitedUsers)
+                          }
+                        </Popover>
+                       
+                      </span>
+                    </>
+                  ) :
+                  mapInvitedUsers(row.invitedUsers)
+                }
+                </TableCell>
 
                 <TableCell align='right'>
                   <Tooltip title="Edit" placement="top">
