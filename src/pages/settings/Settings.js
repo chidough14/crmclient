@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
+import { Box, CircularProgress, Snackbar, Tab, Tabs, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import instance from '../../services/fetchApi';
 import { useState } from 'react';
@@ -10,6 +10,12 @@ import { setCompany } from '../../features/companySlice';
 import AppModeSettings from './AppModeSettings';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
+import UserManagementTable from './UserManagementTable';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 function TabPanel(props) {
@@ -43,10 +49,23 @@ const Settings = () => {
   const dispatch = useDispatch()
   const {products} = useSelector((state) => state.product) 
   const {companies} = useSelector((state) => state.company) 
+  const user = useSelector(state => state.user)
   const [value, setValue] = useState(0)
   const [loading, setLoading] = useState(false)
   const token = getToken()
   const navigate = useNavigate()
+  const [openSnackAlert, setOpenSnackAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
+
+  
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackAlert(false);
+  };
 
   React.useEffect(() => {
     if (!token) {
@@ -96,7 +115,9 @@ const Settings = () => {
         //setLoading(false)
       })
       .catch((err)=> {
-        console.log(err);
+        setAlertMessage("Ooops an error was encountered")
+        setSeverity("error")
+        setOpenSnackAlert(true)
       })
     }
 
@@ -116,22 +137,38 @@ const Settings = () => {
           <Tab label="App Settings" {...a11yProps(0)} />
           <Tab label="Companies" {...a11yProps(1)} />
           <Tab label="Products" {...a11yProps(2)} />
+          {
+            user?.role === "admin"  && (
+              <Tab label="User management" {...a11yProps(3)} />
+            )
+          }
         </Tabs>
       </Box>
 
       <TabPanel value={value} index={0}>
       
-        <AppModeSettings />
+        <AppModeSettings user={user} />
       
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <CompaniesTable rows={companies} getCompanies={getCompanies} loading={loading}/>
+        <CompaniesTable rows={companies} getCompanies={getCompanies} loading={loading} user={user} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ProductsTable rows={products} getProducts={getProducts} loading={loading}/> 
+        <ProductsTable rows={products} getProducts={getProducts} loading={loading}  user={user}/> 
       </TabPanel>
+
+      <TabPanel value={value} index={3}>
+        <UserManagementTable rows={user?.allUsers} />
+      </TabPanel>
+
+
+      <Snackbar open={openSnackAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
  
   );

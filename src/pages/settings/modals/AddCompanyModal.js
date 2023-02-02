@@ -41,7 +41,7 @@ const validationSchema = yup.object({
     .required('Contact is required'),
 });
 
-const AddCompanyModal = ({open, setOpen, setOpenAlert, setAlertMessage, editMode, company}) => {
+const AddCompanyModal = ({open, setOpen, setOpenAlert, setAlertMessage, editMode, company, setSeverity}) => {
   const handleClose = () => setOpen(false);
   const dispatch = useDispatch()
 
@@ -74,8 +74,16 @@ const AddCompanyModal = ({open, setOpen, setOpenAlert, setAlertMessage, editMode
         await instance.patch(`companies/${company.id}`, body)
         .then((res) => {
           setOpenAlert(true)
+          setSeverity("success")
           setAlertMessage("Company Updated")
           dispatch(updateCompany({company: res.data.company}))
+          handleClose()
+          resetForm()
+        })
+        .catch((err) => {
+          setOpenAlert(true)
+          setSeverity("error")
+          setAlertMessage("Ooops an error was encountered")
           handleClose()
           resetForm()
         })
@@ -83,8 +91,16 @@ const AddCompanyModal = ({open, setOpen, setOpenAlert, setAlertMessage, editMode
         await instance.post(`companies`, values)
         .then((res) => {
           setOpenAlert(true)
+          setSeverity("success")
           setAlertMessage("Company Added")
           dispatch(addCompany({company: res.data.company}))
+          handleClose()
+          resetForm()
+        })
+        .catch((err) => {
+          setOpenAlert(true)
+          setSeverity("error")
+          setAlertMessage("Ooops an error was encountered")
           handleClose()
           resetForm()
         })

@@ -7,6 +7,7 @@ const initialState = {
   created_at: "",
   profile_pic: "",
   setting: undefined,
+  role: "",
   allUsers: [],
   loadingDashboard: false
 }
@@ -22,6 +23,7 @@ export const userSlice = createSlice({
       state.created_at = action.payload.created_at
       state.profile_pic = action.payload.profile_pic
       state.setting = action.payload.setting
+      state.role = action.payload.role
     },
     unsetUserInfo: (state, action) => {
       state.id = action.payload.id
@@ -30,6 +32,7 @@ export const userSlice = createSlice({
       state.created_at = action.payload.created_at
       state.profile_pic = action.payload.profile_pic
       state.setting = action.payload.setting
+      state.role = action.payload.role
     },
     setAllUsersData : (state, action) => {
       state.allUsers = action.payload.users
@@ -44,11 +47,15 @@ export const userSlice = createSlice({
       let idx = state.allUsers.findIndex((a) => a.id === action.payload.user.id)
       let arr = [...state.allUsers]
       arr[idx].profile_pic = action.payload.user.profile_pic
+      arr[idx].role = action.payload.user.role
       state.allUsers = arr
-    }
+    },
+    removeUser: (state, action) => {
+      state.allUsers = state.allUsers.filter((a) => a.id !== action.payload.id)
+    },
   },
 })
 
-export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard, updateAllUsers } = userSlice.actions
+export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard, updateAllUsers, removeUser } = userSlice.actions
 
 export default userSlice.reducer

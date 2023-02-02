@@ -7,9 +7,9 @@ import * as yup from 'yup';
 import { addProduct, updateProduct } from '../../../features/ProductSlice';
 import instance from '../../../services/fetchApi';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+// const Alert = React.forwardRef(function Alert(props, ref) {
+//   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+// });
 
 const style = {
   position: 'absolute',
@@ -32,7 +32,7 @@ const validationSchema = yup.object({
     .required('Price is required'),
 });
 
-const AddProductModal = ({open, setOpen, editMode, product, setOpenAlert, setAlertMessage}) => {
+const AddProductModal = ({open, setOpen, editMode, product, setOpenAlert, setAlertMessage, setSeverity}) => {
   const handleClose = () => setOpen(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
@@ -64,8 +64,16 @@ const AddProductModal = ({open, setOpen, editMode, product, setOpenAlert, setAle
         await instance.patch(`products/${product.id}`, body)
         .then((res) => {
           setOpenAlert(true)
+          setSeverity("success")
           setAlertMessage("Product Updated")
           dispatch(updateProduct({product: res.data.product}))
+          handleClose()
+          resetForm()
+        })
+        .catch((err) => {
+          setOpenAlert(true)
+          setSeverity("error")
+          setAlertMessage("Ooops an error was encountered")
           handleClose()
           resetForm()
         })
@@ -79,8 +87,16 @@ const AddProductModal = ({open, setOpen, editMode, product, setOpenAlert, setAle
         await instance.post(`products`, body)
         .then((res) => {
           setOpenAlert(true)
+          setSeverity("success")
           setAlertMessage("Product Added")
           dispatch(addProduct({product: res.data.product}))
+          handleClose()
+          resetForm()
+        })
+        .catch((err) => {
+          setOpenAlert(true)
+          setSeverity("error")
+          setAlertMessage("Ooops an error was encountered")
           handleClose()
           resetForm()
         })

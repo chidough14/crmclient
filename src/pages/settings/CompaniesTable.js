@@ -90,7 +90,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const CompaniesTable = ({rows, getCompanies, loading}) => {
+const CompaniesTable = ({rows, getCompanies, loading, user}) => {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
@@ -100,6 +100,8 @@ const CompaniesTable = ({rows, getCompanies, loading}) => {
   const [editMode, setEditMode] = React.useState(false);
   const [companyObj, setCompanyObj] = React.useState();
   const [openAlert, setOpenAlert] = React.useState(false);
+  const [severity, setSeverity] = React.useState("");
+
   const dispatch = useDispatch()
   React.useEffect(() => {
 
@@ -123,7 +125,13 @@ const CompaniesTable = ({rows, getCompanies, loading}) => {
       dispatch(removeCompany({companyId: companyObj.id}))
       setOpenAlert(false)
       setOpenSnackAlert(true)
+      setSeverity("success")
       setAlertMessage("Company Deleted")
+    })
+    .catch(()=> {
+      setOpenSnackAlert(true)
+      setSeverity("error")
+      setAlertMessage("Ooops an error was encountered")
     })
   
     //after delete set productobj to empty
@@ -139,6 +147,7 @@ const CompaniesTable = ({rows, getCompanies, loading}) => {
         setOpenModal(true)
         setEditMode(false)
       }}
+      disabled={user?.role !== "admin"}
     >
       <AddOutlined />
     </Button>
@@ -183,22 +192,33 @@ const CompaniesTable = ({rows, getCompanies, loading}) => {
                 {row.email}
               </TableCell>
               <TableCell style={{ width: 160 }}>
-                <EditOutlined
-                  style={{cursor: "pointer"}}
-                  onClick={() => {
-                    setEditMode(true)
-                    setOpenModal(true)
-                    setCompanyObj(row)
-                  }}
-                />
-
-                <DeleteOutlined 
-                  style={{cursor: "pointer"}}
-                  onClick={() => {
-                    setOpenAlert(true)
-                    setCompanyObj(row)
-                  }}
-                />
+                <Button
+                  size='small'
+                  disabled={user?.role !== "admin"}
+                >
+                  <EditOutlined
+                    style={{cursor: "pointer"}}
+                    onClick={() => {
+                      setEditMode(true)
+                      setOpenModal(true)
+                      setCompanyObj(row)
+                    }}
+                  />
+                </Button>
+               
+                <Button
+                  size='small'
+                  disabled={user?.role !== "admin"}
+                >
+                  <DeleteOutlined 
+                    style={{cursor: "pointer"}}
+                    onClick={() => {
+                      setOpenAlert(true)
+                      setCompanyObj(row)
+                    }}
+                  />
+                </Button>
+                
               </TableCell>
             </TableRow>
           ))}
@@ -227,10 +247,11 @@ const CompaniesTable = ({rows, getCompanies, loading}) => {
       setAlertMessage={setAlertMessage}
       editMode={editMode}
       company={companyObj}
+      setSeverity={setSeverity}
     />
 
     <Snackbar open={openSnackAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-      <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+      <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
         {alertMessage}
       </Alert>
     </Snackbar>

@@ -15,13 +15,18 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Alert, Button, CircularProgress, Pagination, Snackbar, TableHead } from '@mui/material';
+import {  Button, CircularProgress, Pagination, Snackbar, TableHead } from '@mui/material';
 import { Add, AddOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import AddProductModal from './modals/AddProductModal';
 import AlertDialog from './modals/AlertDialog';
 import instance from '../../services/fetchApi';
 import { useDispatch } from 'react-redux';
 import { removeProduct } from '../../features/ProductSlice';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -84,7 +89,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ProductsTable = ({rows, getProducts, loading}) => {
+const ProductsTable = ({rows, getProducts, loading, user}) => {
   const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState(false);
@@ -94,6 +99,7 @@ const ProductsTable = ({rows, getProducts, loading}) => {
   const [openSnackAlert, setOpenSnackAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
   const dispatch = useDispatch()
+  const [severity, setSeverity] = React.useState("");
 
   React.useEffect(() => {
 
@@ -106,8 +112,14 @@ const ProductsTable = ({rows, getProducts, loading}) => {
     .then(() => {
       dispatch(removeProduct({productId: productObj.id}))
       setOpenAlert(false)
+      setSeverity("success")
       setOpenSnackAlert(true)
       setAlertMessage("Product Deleted")
+    })
+    .catch(() => {
+      setSeverity("error")
+      setOpenSnackAlert(true)
+      setAlertMessage("Ooops An error was encountered")
     })
   
     //after delete set productobj to empty
@@ -131,6 +143,7 @@ const ProductsTable = ({rows, getProducts, loading}) => {
         setOpenModal(true)
         setEditMode(false)
       }}
+      disabled={user?.role !== "admin"}
     >
       <AddOutlined />
     </Button>
@@ -175,23 +188,32 @@ const ProductsTable = ({rows, getProducts, loading}) => {
                 {row.active}
               </TableCell>
               <TableCell style={{ width: 160 }}>
-                
-                <EditOutlined
-                  style={{cursor: "pointer"}}
-                  onClick={() => {
-                    setEditMode(true)
-                    setOpenModal(true)
-                    setProductObj(row)
-                  }}
-                />
-
-                <DeleteOutlined 
-                  style={{cursor: "pointer"}}
-                  onClick={() => {
-                    setOpenAlert(true)
-                    setProductObj(row)
-                  }}
-                />
+                <Button
+                  size='small'
+                  disabled={user?.role !== "admin"}
+                >
+                  <EditOutlined
+                    style={{cursor: "pointer"}}
+                    onClick={() => {
+                      setEditMode(true)
+                      setOpenModal(true)
+                      setProductObj(row)
+                    }}
+                  />
+                </Button>
+               
+                <Button
+                  size='small'
+                  disabled={user?.role !== "admin"}
+                >
+                  <DeleteOutlined 
+                    style={{cursor: "pointer"}}
+                    onClick={() => {
+                      setOpenAlert(true)
+                      setProductObj(row)
+                    }}
+                  />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -219,6 +241,7 @@ const ProductsTable = ({rows, getProducts, loading}) => {
       product={productObj}
       setOpenAlert={setOpenSnackAlert}
       setAlertMessage={setAlertMessage}
+      setSeverity={setSeverity}
     />
 
     <AlertDialog
@@ -229,7 +252,7 @@ const ProductsTable = ({rows, getProducts, loading}) => {
     />
 
     <Snackbar open={openSnackAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-      <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+      <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
         {alertMessage}
       </Alert>
     </Snackbar>
