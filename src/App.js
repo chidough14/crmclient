@@ -61,6 +61,7 @@ function App() {
         created_at: data.user.created_at,
         profile_pic: data.user.profile_pic,
         setting: data.user.setting,
+        role: data.user.role,
       }))
     }
   }, [data, isSuccess, dispatch])

@@ -10,8 +10,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const AppModeSettings = () => {
-  const user = useSelector(state => state.user)
+const AppModeSettings = ({user}) => {
+  //const user = useSelector(state => state.user)
   const dispatch = useDispatch()
 
   
@@ -20,7 +20,9 @@ const AppModeSettings = () => {
     calendar_mode: "",
     product_sales_mode: "",
     top_sales_mode: "",
-    openAlert: false
+    openAlert: false,
+    text: "",
+    severity: ""
   };
 
   const [data, updateData] = useReducer(
@@ -55,7 +57,10 @@ const AppModeSettings = () => {
     await instance.patch(`settings`, body)
     .then((res) => {
       dispatch(updateUserSettings({setting: res.data.setting}))
-      updateData({openAlert: true})
+      updateData({openAlert: true, severity: "success", text: "Sttings updated successfully"})
+    })
+    .catch(() => {
+      updateData({openAlert: true, severity: "error", text: "Ooops an error was encountered"})
     })
   }
 
@@ -140,8 +145,8 @@ const AppModeSettings = () => {
 
 
       <Snackbar open={data.openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-          Settings updated
+        <Alert onClose={handleCloseAlert} severity={data.severity} sx={{ width: '100%' }}>
+          {data.text}
         </Alert>
       </Snackbar>
     </div>

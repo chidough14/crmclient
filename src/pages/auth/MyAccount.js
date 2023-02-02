@@ -124,7 +124,6 @@ const MyAccount = () => {
   const uploadImage = async (value) => {
     await instance.patch(`users/${id}`, {profile_pic: value})
     .then((res) => {
-console.log(res);
       dispatch(setUserInfo(res.data.user))
       dispatch(updateAllUsers({user: res.data.user}))
       setOpenAlert(true)
