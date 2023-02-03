@@ -70,6 +70,13 @@ export default function UploadModal({open, setOpen}) {
   const dispatch = useDispatch()
   const [openAlert, setOpenAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
+  const [severity, setSeverity] = React.useState("");
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
 
 
   const handleCloseAlert = (event, reason) => {
@@ -101,9 +108,12 @@ export default function UploadModal({open, setOpen}) {
     await instance.post(`upload-list`, body)
     .then((res) => {
        dispatch(addList({list: res.data.list}))
-       setOpenAlert(true)
-       setAlertMessage("List uploaded")
+      
+       showAlert("List uploaded", "success")
        handleClose()
+    })
+    .catch(()=> {
+      showAlert("Oops an error was encountered", "error")
     })
   }
 
@@ -208,7 +218,7 @@ export default function UploadModal({open, setOpen}) {
 
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

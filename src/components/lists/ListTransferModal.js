@@ -32,6 +32,7 @@ const validationSchema = yup.object({
 const ListTransferModal = ({ open, setOpen, list}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [showEmailError, setShowEmailError] = useState(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
@@ -39,6 +40,12 @@ const ListTransferModal = ({ open, setOpen, list}) => {
   const handleClose = () => {
     setOpen(false);
     setShowEmailError(false)
+  }
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
   }
   
   const handleCloseAlert = (event, reason) => {
@@ -59,8 +66,7 @@ const ListTransferModal = ({ open, setOpen, list}) => {
       .then((res)=> {
        
         if (res.data.status === "success") {
-          setOpenAlert(true);
-          setAlertMessage("List Transfered")
+          showAlert("List Transfered", "success")
           handleClose()
           resetForm()
         }
@@ -68,6 +74,9 @@ const ListTransferModal = ({ open, setOpen, list}) => {
         if (res.data.status === "error") {
           setShowEmailError(true)
         }
+      })
+      .catch(() => {
+        showAlert("Ooops an error was encountered", "error")
       })
     },
   });
@@ -128,7 +137,7 @@ const ListTransferModal = ({ open, setOpen, list}) => {
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

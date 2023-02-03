@@ -35,7 +35,7 @@ export const ActivitySlice = createSlice({
       state.activities = state.activities.filter((a) => a.id !== action.payload.activityId)
     },
     setSingleActivity: (state, action) => {
-      state.activity = action.payload.activity
+      state.activity = {...state.activity, ...action.payload.activity}
     },
     addEventToActivity: (state, action) => {
       state.activity.events = [...state.activity.events, action.payload.event]

@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { getToken } from '../services/LocalStorageService';
 import { useNavigate } from 'react-router-dom';
-import {  Button, CircularProgress, TextField, Toolbar, Tooltip, Typography } from '@mui/material';
+import {  Button, CircularProgress, Snackbar, TextField, Toolbar, Tooltip, Typography } from '@mui/material';
 import ListCard from '../components/lists/ListCard';
 import ListModal from '../components/lists/ListModal';
 import "./list.css"
@@ -16,6 +16,12 @@ import SortButton from './orders/SortButton';
 import { Box } from '@mui/system';
 import { AddOutlined, ContentPasteOff, SearchOutlined } from '@mui/icons-material';
 import UploadFile from '../components/lists/UploadFile';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -40,6 +46,23 @@ export default function Lists() {
   const [showSearch, setShowSearch] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const handleOpen = () => setOpen(true);
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [severity, setSeverity] = React.useState("");
+  const [alertMessage, setAlertMessage] = React.useState("");
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   const getListsResult = async (pageNo = 1) => {
     setLoading(true)
@@ -47,6 +70,9 @@ export default function Lists() {
     .then((res)=> {
       dispatch(setLists({lists: res.data.lists}))
       setLoading(false)
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
     })
   }
 
@@ -56,6 +82,9 @@ export default function Lists() {
     .then((res) => {
       dispatch(setLists({lists: res.data.lists}))
       setLoading(false)
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
     })
   }
 
@@ -68,7 +97,10 @@ export default function Lists() {
       dispatch(setSortOptionValue({option: ""}))
       dispatch(dispatch(setLists({lists: res.data.lists})))
       setLoading(false)
-    });
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
+    })
   }
 
   React.useEffect(() => {
@@ -206,6 +238,13 @@ export default function Lists() {
          open={open}
          setOpen={setOpen}
       />
+
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

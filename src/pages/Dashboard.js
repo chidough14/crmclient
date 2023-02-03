@@ -1,7 +1,7 @@
-import {  CircularProgress,  Typography, Box } from '@mui/material';
+import {  CircularProgress,  Typography, Box, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../services/LocalStorageService';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import DashboardCard from '../components/dashboard/DashboardCard';
 import { BarChart } from '../components/dashboard/BarChart';
@@ -9,6 +9,12 @@ import { DoughnutChart } from '../components/dashboard/DoughnutChart';
 import moment from 'moment';
 import instance from '../services/fetchApi';
 import { setLoadingDashboard } from '../features/userSlice';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const Dashboard = () => {
@@ -24,6 +30,23 @@ const Dashboard = () => {
   const [owner, setOwner] = useState(setting?.product_sales_mode)
   const [doughnutResults, setDoughnutResults] = useState()
   const [measurement, setMeasurement] = useState(setting?.top_sales_mode)
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   //const [activitySummary, setActivitySummary] = useState()
   const dispatch = useDispatch()
@@ -57,12 +80,18 @@ const Dashboard = () => {
     .then((res) => {
       setDoughnutResults(res.data.results)
     })
+    .catch(()=> {
+      showAlert("Ooops an error was encountered", "error")
+    })
   }
 
   const getTotalProductsSales = async (url) => {
     await  instance.get(`${url}`)
     .then((res) => {
       setResults(res.data.results)
+    })
+    .catch(()=> {
+      showAlert("Ooops an error was encountered", "error")
     })
   }
 
@@ -112,6 +141,7 @@ const Dashboard = () => {
       })
       .catch((err)=> {
         console.log(err);
+        showAlert("Ooops an error was encountered", "error")
       })
     }
 
@@ -202,6 +232,12 @@ const Dashboard = () => {
           </div>
         )
       }
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
    
   )

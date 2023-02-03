@@ -38,10 +38,18 @@ const ActivityItem = ({activity, index}) => {
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const [text, setText] = useState("");
+  const [severity, setSeverity] = useState("");
   const [openTransferModal, setOpenTransferModal] = useState(false);
   const [activityObj, setActivityObj] = useState();
   const handleOpen = () => setOpenModal(true);
   const user = useSelector(state => state.user)
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setText(msg)
+    setSeverity(sev)
+  }
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -78,14 +86,16 @@ const ActivityItem = ({activity, index}) => {
 
   const deleteActivity = async (id, e) => {
 
-    const res = await instance.delete(`activities/${id}`)
-
-    if (res.data.status === "success"){
-      setOpenAlert(true)
+    await instance.delete(`activities/${id}`)
+    .then(() => {
+      showAlert("Activity deleted", "success")
       handleCloseDialog()
       dispatch(removeActivity({activityId: id}))
       dispatch(deleteEvent({activityId: id}))
-    }
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered", "error")
+    })
   };
 
   const cloneActivity = async (value) => {
@@ -95,6 +105,9 @@ const ActivityItem = ({activity, index}) => {
       res.data.clonedActivity.total = value.total
       dispatch(addActivity({activity: res.data.clonedActivity}))
    })
+   .catch(() => {
+      showAlert("Ooops an error was encountered", "error")
+    })
   };
 
   const transferActivity =  (value) => {
@@ -228,8 +241,8 @@ const ActivityItem = ({activity, index}) => {
       </Dialog>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-          Activity deleted successfully
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {text}
         </Alert>
       </Snackbar>
     </>

@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Snackbar, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,6 +20,11 @@ import ActivityInvoiceTable from './ActivityInvoiceTable';
 import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal';
 import { setOpenViewInvoiceModal } from '../../features/InvoiceSlice';
 import { getToken } from '../../services/LocalStorageService';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -77,6 +82,25 @@ const ActivityDetails = () => {
   const [total, setTotal] = React.useState(0);
   const [editingInvoice, setEditingInvoice] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [openAlert, setOpenAlert] =  React.useState(false);
+  const [alertMessage, setAlertMessage] =  React.useState("");
+  const [severity, setSeverity] =  React.useState("");
+
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
+
   const navigate = useNavigate()
 
   
@@ -100,6 +124,9 @@ const ActivityDetails = () => {
       .then((res) => {
         dispatch(setSingleActivity({activity: res.data.activity}))
         setLoading(false)
+      })
+      .catch(() => {
+        showAlert("Oops an error was encountered", "error")
       })
     }
 
@@ -131,6 +158,7 @@ const ActivityDetails = () => {
     }
     await instance.post(`activities/${params.id}/addUpdateProduct`, body)
     .then((res) => {
+      showAlert("Products updated", "success")
       if (editMode) {
         dispatch(updateProductItem({product: res.data.product}))
       } else {
@@ -142,6 +170,9 @@ const ActivityDetails = () => {
       setQuantity(0)
       setProductId(undefined)
     
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
     })
   }
 
@@ -161,22 +192,28 @@ const ActivityDetails = () => {
     if (eventObj) {
       await instance.delete(`events/${eventObj.id}`)
       .then((res) => {
-     
+        showAlert("Event deleted", "success")
         dispatch(deleteActivityEvent({id: eventObj.id}))
         dispatch(deleteEvent({eventId: eventObj.id}))
         setOpen(false)
         setEventObj()
       
       })
+      .catch(()=> {
+        showAlert("Oops an error was encountered", "error")
+      })
 
     } else {
       await instance.delete(`activities/${params.id}/deleteProduct`, { data: {productId: productId}})
       .then((res) => {
-     
+        showAlert("Product deleted", "success")
         dispatch(removeProductItem({id: productId}))
         setOpen(false)
         setProductId(undefined)
       
+      })
+      .catch(()=> {
+        showAlert("Oops an error was encountered", "error")
       })
     }
   
@@ -186,19 +223,27 @@ const ActivityDetails = () => {
     if (editingInvoice) {
       await instance.delete(`invoices/${invoiceDetails.id}`)
       .then((res) => {
+        showAlert("Invoice deleted", "success")
         dispatch(removeInvoiceFromActivity({invoiceId: invoiceDetails.id}))
       
         setOpenDialogDeleteActivity(false)
       
       })
+      .catch(()=> {
+        showAlert("Oops an error was encountered", "error")
+      })
     } else {
       await instance.delete(`activities/${params.id}`)
       .then((res) => {
+        showAlert("Activity deleted", "success")
         dispatch(removeActivity({activityId: parseInt(params.id)}))
         dispatch(deleteEvent({activityId: parseInt(params.id)}))
         navigate("/activities")
         setOpenDialogDeleteActivity(false)
       
+      })
+      .catch(()=> {
+        showAlert("Oops an error was encountered", "error")
       })
     }
    
@@ -487,6 +532,13 @@ const ActivityDetails = () => {
         activity={activity}
         user={user}
       />
+
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

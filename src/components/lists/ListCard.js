@@ -49,7 +49,7 @@ const ListCard = ({list}) => {
   const [listObj, setListObj] = React.useState();
   //const [openAlert, setOpenAlert] = React.useState(false);
 
-  const {openAlert} = useSelector((state) => state.list)
+  const {openAlert, alertMessage, severity} = useSelector((state) => state.list)
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -84,11 +84,13 @@ const ListCard = ({list}) => {
   const deleteList = async (id, e) => {
 
     const res = await instance.delete(`mylists/${id}`)
-
-    if (res.data.status === "success"){
-      dispatch(showAlert())
+    .then(() => {
+      dispatch(showAlert({alertMessage: "List deleted", severity: "success"}))
       dispatch(removeList({listId: id}))
-    }
+    })
+    .catch(() => {
+      dispatch(showAlert({alertMessage: "Ooops an error was encountered", severity: "error"}))
+    })
   };
 
   const cloneList = async (list) => {
@@ -97,6 +99,10 @@ const ListCard = ({list}) => {
     .then((res)=> {
        dispatch(addList({list: res.data.clonedList}))
     })
+    .catch(() => {
+      dispatch(showAlert({alertMessage: "Ooops an error was encountered", severity: "error"}))
+    })
+    
   };
 
   const transferList =  (value) => {
@@ -219,8 +225,8 @@ const ListCard = ({list}) => {
 
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-          List deleted successfully
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
         </Alert>
       </Snackbar>
     </>

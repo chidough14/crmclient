@@ -49,6 +49,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
  
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [companyId, setCompanyId] = useState();
   const [formerPobability, setFormerProbability] = useState(activity?.probability);
@@ -58,6 +59,12 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
   const dispatch = useDispatch()
   const {searchResults} = useSelector(state=> state.company)
   const navigate = useNavigate()
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -91,7 +98,10 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
       }).then((res) => {
 
         dispatch(setSearchResults({companies: res.data.companies}))
-      });
+      })
+      .catch(()=> {
+        showAlert("Ooops an error was encountered", "error")
+      })
     }
 
     if (searchQuery.length === 3){
@@ -123,13 +133,11 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
         
         await instance.patch(`activities/${activity.id}`, values)
         .then((res) => {
-          setOpenAlert(true);
-          setAlertMessage("Activity updated successfully")
+          showAlert("Activity updated successfully", "success")
   
           dispatch(editActivity({activity: res.data.activity}))
 
           dispatch(setSingleActivity({activity: res.data.activity}))
-          console.log(formerPobability);
 
           if (formerPobability === "High" && res.data.activity.probability === "Closed") {
            
@@ -139,7 +147,10 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
   
           handleClose()
           resetForm();
-        });
+        })
+        .catch(()=> {
+          showAlert("Ooops an error was encountered", "error")
+        })
       } else {
         values.company_id = companyId
         values.user_id = user.id
@@ -148,10 +159,10 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
         
         await instance.post(`activities`, values)
         .then((res) => {
-          console.log(res);
-          setOpenAlert(true);
-          setAlertMessage("Activity created successfully")
-  
+          showAlert("Activity created successfully", "success")
+
+          res.data.activity.decreased_probability = null
+          res.data.activity.total = 0
           dispatch(addActivity({activity: res.data.activity}))
           dispatch(addEvent({event: res.data.event}))
   
@@ -160,7 +171,10 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
           }
           handleClose()
           resetForm();
-        });
+        })
+        .catch(()=> {
+          showAlert("Ooops an error was encountered", "error")
+        })
       }
       
       
@@ -314,7 +328,7 @@ const ActivityModal = ({open, setOpen, companyObject, openActivityModal, activit
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

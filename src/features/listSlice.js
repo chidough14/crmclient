@@ -4,6 +4,8 @@ const initialState = {
   //lists: [],
   lists: undefined,
   openAlert: false,
+  alertMessage: "",
+  severity: "",
   list: undefined,
   selectedCompanyId: undefined,
   loadingCompanies: false,
@@ -25,7 +27,10 @@ export const listSlice = createSlice({
     },
     removeCompanyFromList: (state, action) => {
       state.list.companies = state.list.companies.filter((a)=> a.id !== action.payload.companyId)
-      state.selectedCompanyId = state.list.companies[0].id
+      if (state.list.companies.length) {
+        state.selectedCompanyId = state.list.companies[0].id
+      }
+      
     },
     setSingleList: (state, action) => {
       state.list = action.payload.list
@@ -40,9 +45,13 @@ export const listSlice = createSlice({
     },
     showAlert: (state, action) => {
       state.openAlert = true
+      state.alertMessage = action.payload.alertMessage
+      state.severity = action.payload.severity
     },
     closeAlert: (state, action) => {
       state.openAlert = false
+      state.alertMessage = action.payload.alertMessage
+      state.severity = action.payload.severity
     },
     setSelectedCompanyId: (state, action) => {
       state.selectedCompanyId = action.payload.id
