@@ -38,6 +38,12 @@ const MyAccount = () => {
   const [profile, setProfile] = useState();
   const params = useParams()
 
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
  
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -57,6 +63,9 @@ const MyAccount = () => {
     await instance.get(`get-profile/${user_id}`)
     .then((res) => {
       setProfile(res.data.profile)
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountred", "error")
     })
   }
 
@@ -126,10 +135,11 @@ const MyAccount = () => {
     .then((res) => {
       dispatch(setUserInfo(res.data.user))
       dispatch(updateAllUsers({user: res.data.user}))
-      setOpenAlert(true)
-      setAlertMessage("Picture saved")
-      setSeverity("success")
+      showAlert("Picture saved", "success")
       setImageLoaded(false)
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountred", "error")
     })
   }
 
@@ -144,9 +154,10 @@ const MyAccount = () => {
     await instance.post(`update-profile`, body)
     .then((res) => {
       setProfile(res.data.profile)
-      setOpenAlert(true)
-      setAlertMessage("Profile saved")
-      setSeverity("success")
+      showAlert("Profile saved", "success")
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountred", "error")
     })
   }
 

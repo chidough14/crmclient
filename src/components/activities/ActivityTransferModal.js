@@ -32,9 +32,16 @@ const validationSchema = yup.object({
 const ActivityTransferModal = ({ open, setOpen, activity}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [showEmailError, setShowEmailError] = useState(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -59,8 +66,7 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
       .then((res)=> {
        
         if (res.data.status === "success") {
-          setOpenAlert(true);
-          setAlertMessage("Activity Transfered")
+          showAlert("Activity Transfered", "success")
           handleClose()
           resetForm()
         }
@@ -68,6 +74,9 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
         if (res.data.status === "error") {
           setShowEmailError(true)
         }
+      })
+      .catch(() => {
+        showAlert("Ooops an error was encountered", "error")
       })
     },
   });
@@ -128,7 +137,7 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

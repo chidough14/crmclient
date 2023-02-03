@@ -32,19 +32,26 @@ const style = {
   p: 4,
 };
 
-const validationSchema = yup.object({
-  name: yup
-    .string('Enter your name')
-    .required('Name is required'),
-});
+// const validationSchema = yup.object({
+//   name: yup
+//     .string('Enter your name')
+//     .required('Name is required'),
+// });
 
 const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [listId, setListId] = useState(undefined);
   const [listWithCompanies, setListWithCompanies] = useState([]);
-  const {lists} = useSelector((state) => state.list)
-  const user = useSelector((state) => state.user)
+  // const {lists} = useSelector((state) => state.list)
+  // const user = useSelector((state) => state.user)
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
 
   const dispatch = useDispatch()
 
@@ -71,7 +78,10 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
    await instance.post(`companies/${companyId}/lists`, {listId: listId})
    .then((res) => {
     handleClose()
-    setOpenAlert(true)
+    showAlert("Company added to list", "success")
+   })
+   .catch(()=> {
+    showAlert("Ooops an error was encountered", "error")
    })
   }
 
@@ -80,6 +90,9 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
       await instance.get(`userListsAndCompanies`)
       .then((res) => {
        setListWithCompanies(res.data.lists)
+      })
+      .catch(()=> {
+        showAlert("Ooops an error was encountered", "error")
       })
     }
 
@@ -161,8 +174,8 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-          Company added to list
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+         {alertMessage}
         </Alert>
       </Snackbar>
     </>

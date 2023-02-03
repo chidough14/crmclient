@@ -1,5 +1,5 @@
 import { AddOutlined, InfoOutlined, SearchOutlined } from '@mui/icons-material'
-import { Button, CircularProgress, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Button, CircularProgress, Snackbar, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import {DragDropContext} from 'react-beautiful-dnd'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,6 +10,12 @@ import { editActivity, editActivityProbability, setActivities, setOpenPrompt, se
 import instance from '../services/fetchApi'
 import { getToken } from '../services/LocalStorageService'
 import SortButton from './orders/SortButton'
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Activities = () => {
   const [columns, setColumns] = useState([])
@@ -23,6 +29,23 @@ const Activities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const handleOpen = () => setOpen(true);
   const navigate = useNavigate()
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   const token = getToken()
 
@@ -85,6 +108,9 @@ const Activities = () => {
     await instance.patch(`activities/${activityId}`, body)
     .then((res) => {
       dispatch(editActivityProbability({activity: res.data.activity}))
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
     })
   }
 
@@ -179,6 +205,9 @@ const Activities = () => {
       dispatch(setActivities({activities: res.data.activities}))
       setLoading(false)
     })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
+    })
   }
 
   const getSearchResult = async () => {
@@ -191,7 +220,10 @@ const Activities = () => {
       dispatch(setSortOptionValue({option: ""}))
       dispatch(setActivities({activities: res.data.activities}))
       setLoading(false)
-    });
+    })
+    .catch(() => {
+      showAlert("Oops an error was encountered", "error")
+    })
   }
 
   useEffect(() => {
@@ -288,6 +320,13 @@ const Activities = () => {
         open={open}
         setOpen={setOpen}
       />
+
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
    
   )

@@ -1,5 +1,5 @@
 import { AddOutlined, DeleteOutlined } from '@mui/icons-material'
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Snackbar, Toolbar, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,6 +13,11 @@ import { setSingleCompany } from '../features/companySlice'
 import { removeCompanyFromList } from '../features/listSlice'
 import instance from '../services/fetchApi'
 import { getToken } from '../services/LocalStorageService'
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Company = ({companyObj}) => {
   const params = useParams()
@@ -27,6 +32,24 @@ const Company = ({companyObj}) => {
   const {list} = useSelector(state => state.list)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
+
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+  
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   const isListPage = useMatch("/listsview/*", pathname)
   
@@ -37,6 +60,9 @@ const Company = ({companyObj}) => {
       .then((res)=> {
         dispatch(setSingleCompany({company: res.data.company}))
         setLoading(false)
+      })
+      .catch(() => {
+        showAlert("Ooops an error was encountered", "error")
       })
     }
 
@@ -63,8 +89,12 @@ const Company = ({companyObj}) => {
   const agree = async () => {
     await instance.delete(`companies/${selectedCompanyId}/lists`)
     .then((res) => {
+      showAlert("Company removed from list", "success")
       dispatch(removeCompanyFromList({companyId: selectedCompanyId}))
       handleClose()
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered", "error")
     })
   }
 
@@ -191,6 +221,12 @@ const Company = ({companyObj}) => {
           </div>
         )
       }
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
   </>
   )
 }

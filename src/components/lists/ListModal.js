@@ -35,10 +35,17 @@ const validationSchema = yup.object({
 const ListModal = ({list, open, setOpen}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
 
   const handleClose = () => setOpen(false);
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
 
   // const initialState = {
   //   name: "",
@@ -89,13 +96,15 @@ const ListModal = ({list, open, setOpen}) => {
         
         await instance.patch(`mylists/${list.id}`, body)
         .then((res) => {
-          setOpenAlert(true);
-          setAlertMessage("List updated successfully")
+          showAlert("List updated successfully", "success")
 
           dispatch(updateList({list: res.data.list}))
           handleClose()
           resetForm();
-        });
+        })
+        .catch(() => {
+          showAlert("Ooops an error was encountered", "error")
+        })
       } else {
         let body
         if (values.type === "") {
@@ -115,13 +124,15 @@ const ListModal = ({list, open, setOpen}) => {
 
         await instance.post(`mylists`, body)
         .then((res) => {
-          setOpenAlert(true);
-          setAlertMessage("List created successfully")
+          showAlert("List created successfully", "success")
 
           dispatch(addList({list: res.data.list}))
           handleClose()
           resetForm();
-        });
+        })
+        .catch(() => {
+          showAlert("Ooops an error was encountered", "error")
+        })
       }
 
       
@@ -212,7 +223,7 @@ const ListModal = ({list, open, setOpen}) => {
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>
