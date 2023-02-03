@@ -68,7 +68,8 @@ const generateMeetingId = () => {
 
 const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activityId}) => {
   const [openAlert, setOpenAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("Event created successfully");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
 
   const [oneOnOne, setOneOnOne] = useState(false);
@@ -96,6 +97,14 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
 
     setOpenAlert(false);
   };
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
+
   useEffect(() => {
    if (startTime) {
     formik.setFieldValue('start', startTime)
@@ -115,9 +124,11 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
     let response 
      await instance.post(`meetings`, body)
      .then((res) => {
-       console.log(res);
        dispatch(addMeeting({meeting: res.data.meeting}))
        response = res.data.meeting
+     })
+     .catch(()=> {
+      showAlert("Ooops an error was encountered", "error")
      })
 
      return response
@@ -165,7 +176,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
 
           createMeeting(meetingBody)
 
-          setOpenAlert(true);
+          showAlert("Event created successfully", "success")
           dispatch(addEvent({event: res.data.event}))
           handleClose()
           resetForm();
@@ -184,18 +195,21 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
 
           createMeeting(meetingBody)
 
-          setOpenAlert(true);
+          showAlert("Event created successfully", "success")
           dispatch(addEvent({event: res.data.event}))
           handleClose()
           resetForm();
 
         } else {
-          setOpenAlert(true);
+          showAlert("Event created successfully", "success")
           dispatch(addEvent({event: res.data.event}))
           handleClose()
           resetForm();
         }
       
+      })
+      .catch(()=> {
+        showAlert("Ooops an error was encountered", "error")
       });
     },
   });
@@ -212,7 +226,6 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
     e.preventDefault()
     await instance.get(`users`)
     .then((res) => {
-      console.log(res);
       setAllUsers(res.data.users)
     })
   }
@@ -517,7 +530,7 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

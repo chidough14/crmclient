@@ -2,7 +2,7 @@ import { Box, Button, InputLabel, Modal, Select, TextField, Typography, MenuItem
 import MuiAlert from '@mui/material/Alert';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
@@ -53,16 +53,18 @@ const validationSchema = yup.object({
 const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
   
   const [openAlert, setOpenAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("Event created successfully");
+  const [alertMessage, setAlertMessage] = useState("");
 
   const [oneOnOne, setOneOnOne] = useState(false);
   const [conference, setConference] = useState(false);
-  const [allUsers, setAllUsers] = useState([]);
+  //const [allUsers, setAllUsers] = useState([]);
   const [usersValue, setUsersValue] = useState([]);
   const [usersValueSingle, setUsersValueSingle] = useState("");
   const [size, setSize] = useState(1);
   const [anyoneCanJoin, setAnyoneCanJoin] = useState(false);
   const [status, setStatus] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const { allUsers } = useSelector(state => state.user)
 
   const handleClose = () => {
     setOpen(false);
@@ -104,7 +106,7 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
 
       setStatus(meeting.status)
 
-      fetchUsers()
+      //fetchUsers()
     }
    }, [open, meeting])
 
@@ -112,10 +114,17 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
      await instance.patch(`meetings/${id}`, body)
      .then((res) => {
       setOpenAlert(true);
+      setAlertMessage("Meeting updated")
+      setSeverity("success")
       dispatch(setUpdateMeeting({meeting: res.data.meeting}))
       dispatch(updateEvent({event: res.data.meeting.event}))
       handleClose()
       formik.resetForm();
+     })
+     .catch(() => {
+      setOpenAlert(true);
+      setAlertMessage("Oops an error was encountered")
+      setSeverity("error")
      })
    }
 
@@ -159,13 +168,12 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
     formik.setFieldValue('meetingDate', e)
   }
 
-  const fetchUsers = async () => {
-    await instance.get(`users`)
-    .then((res) => {
-      console.log(res);
-      setAllUsers(res.data.users)
-    })
-  }
+  // const fetchUsers = async () => {
+  //   await instance.get(`users`)
+  //   .then((res) => {
+  //     setAllUsers(res.data.users)
+  //   })
+  // }
 
   const handleChangeValueSingle =  (event) => {
    
@@ -398,7 +406,7 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

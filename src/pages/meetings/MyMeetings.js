@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Snackbar, Tab, Tabs, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import instance from '../../services/fetchApi';
 import { setInvitedMeetings, setMeetings } from '../../features/MeetingSlice';
@@ -8,6 +8,12 @@ import MeetingsTable from './MeetingsTable';
 import EditMeetingModal from './EditMeetingModal';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 function TabPanel(props) {
@@ -47,6 +53,17 @@ const MyMeetings = () => {
   const [meeting, setMeeting] = useState()
   const token = getToken()
   const navigate = useNavigate()
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
 
   React.useEffect(() => {
     if (!token) {
@@ -60,6 +77,11 @@ const MyMeetings = () => {
       .then((res) => {
         dispatch(setMeetings({meetings: res.data.meetings}))
         dispatch(setInvitedMeetings({invitedMeetings: res.data.invitedMeetings}))
+      })
+      .catch(() => {
+        setAlertMessage("Ooops an error was encountered")
+        setSeverity("error")
+        setOpenAlert(true)
       })
     }
 
@@ -106,6 +128,12 @@ const MyMeetings = () => {
             user={user}
           />
         }
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
  
   );

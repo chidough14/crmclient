@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { addInvoiceToActivity } from '../../features/ActivitySlice';
-import { setInvoice } from '../../features/InvoiceSlice';
+import { setInvoice, updateInvoice } from '../../features/InvoiceSlice';
 import instance from '../../services/fetchApi';
 
 
@@ -53,6 +53,7 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
   const user = useSelector((state) => state.user)
   const [openAlert, setOpenAlert] = useState(false)
   const [message, setMessage] = useState("")
+  const [severity, setSeverity] = useState("")
   const dispatch = useDispatch()
 
 
@@ -65,6 +66,12 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
       formik.setValues(invoice)
     }
   }, [editMode])
+
+  const showAlert = (msg, sev) => {
+    setMessage(msg)
+    setSeverity(sev)
+    setOpenAlert(true)
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -87,10 +94,12 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
 
         await instance.patch(`invoices/${invoice.id}`, body)
         .then((res) => {
-          setOpenAlert(true)
-          setMessage("Invoice updated")
-          //resetForm()
+          showAlert("Invoice updated", "success")
           dispatch(setInvoice({invoice: res.data.invoice}))
+          dispatch(updateInvoice({invoice: res.data.invoice}))
+        })
+        .catch(() => {
+          showAlert("Oops an error was encountered", "error")
         })
       } else {
         let body = {
@@ -104,10 +113,12 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
   
         await instance.post(`invoices`, body)
         .then((res) => {
-          setMessage("Invoice created successfully")
-          setOpenAlert(true)
+          showAlert("Invoice created successfully", "success")
           resetForm()
           dispatch(addInvoiceToActivity({invoice: res.data.invoice}))
+        })
+        .catch(() => {
+          showAlert("Oops an error was encountered", "error")
         })
       }
    
@@ -266,7 +277,7 @@ const InvoiceForm = ({activityId, invoice, editMode}) => {
       </Box>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {message}
         </Alert>
       </Snackbar>

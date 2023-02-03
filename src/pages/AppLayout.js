@@ -158,7 +158,7 @@ export default function AppLayout() {
   const [inboxData, setInboxData] = React.useState([])
   const [invitedMeetingsData, setInvitedMeetingsData] = React.useState([])
   const { invitedMeetings } = useSelector((state) => state.meeting) 
-  const {inbox} = useSelector(state => state.message)
+  const {fetchNotifications} = useSelector(state => state.message)
   const navigate = useNavigate()
 
   const isListPage = matchPath("/listsview/*", pathname)
@@ -204,7 +204,7 @@ export default function AppLayout() {
     }
 
     getNotifications()
-  }, [inbox, invitedMeetings, loggedIn])
+  }, [loggedIn, fetchNotifications])
 
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)

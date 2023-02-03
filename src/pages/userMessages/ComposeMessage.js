@@ -65,7 +65,7 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, {resetForm}) => {
-      if (checked){
+      if (checked && usersValue.length){
         let ids = usersValue.map((a) => {
           return user?.allUsers?.find((b) => b.email === a)?.id
         })
@@ -89,6 +89,11 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
           resetForm()
           setUsersValue([])
         })
+        .catch(() => {
+          setAlertType("error")
+          setOpenAlert(true)
+          setText("Ooops an error was encountered")
+        })
       } else {
         let receiverId = user?.allUsers?.find((a) => a.email === values.email)?.id
 
@@ -107,6 +112,11 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
             setOpenAlert(true)
             setText("Message sent")
             resetForm()
+          })
+          .catch(() => {
+            setAlertType("error")
+            setOpenAlert(true)
+            setText("Ooops an error was encountered")
           })
         } else {
           setAlertType("error")

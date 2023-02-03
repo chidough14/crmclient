@@ -100,17 +100,25 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
   const [messageId, setMessageId] = React.useState();
   const dispatch = useDispatch()
   const [openAlert, setOpenAlert] = React.useState(false)
+  const [severity, setSeverity] = React.useState("")
+  const [text, setText] = React.useState("")
 
   // React.useEffect(() => {
   //   setPage(messages?.current_page)
   // }, [messages?.current_page])
 
   React.useEffect(() => {
-    if(isInbox){
+     if(isInbox){
       getInboxMessages(page)
     } else {
       getOutboxMessages(page)
     }
+    // if(isInbox === "inbox"){
+    //   getInboxMessages(page)
+    // } 
+    // if (isInbox === "outbox") {
+    //   getOutboxMessages(page)
+    // }
   }, [page])
 
 
@@ -127,12 +135,22 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
     setMessageId(message?.id)
   };
 
+  const showAlert = (message, severity) => {
+    setOpenAlert(true)
+    setSeverity(severity)
+    setText(message)
+  };
+
   const handleDelete = async () => {
     await instance.delete(`messages/${messageId}`)
     .then(() => {
-      setOpenAlert(true)
+     
+      showAlert("Message deleted","success")
       dispatch(removeMessage({messageId: messageId}))
       setOpenDialog(false)
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered","error")
     })
   };
 
@@ -312,8 +330,8 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
     />
 
     <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-      <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-        Message Deleted
+      <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+        { text }
       </Alert>
     </Snackbar>
     </>
