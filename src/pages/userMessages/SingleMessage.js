@@ -1,15 +1,18 @@
 import { ArrowBack } from '@mui/icons-material'
-import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Snackbar, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
-import React from 'react'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { readInboxMessages, setSingleMessage } from '../../features/MessagesSlice'
+import { readInboxMessages, reloadNotifications, setSingleMessage } from '../../features/MessagesSlice'
 import instance from '../../services/fetchApi'
 import { getToken } from '../../services/LocalStorageService'
 import ComposeMessage from './ComposeMessage'
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const SingleMessage = () => {
   const params = useParams()
@@ -21,8 +24,15 @@ const SingleMessage = () => {
   const [loading, setLoading] = useState(false)
   const [activityId, setActivityId] = useState()
   const navigate = useNavigate()
+  const [openAlert, setOpenAlert] = useState(false)
+  const [severity, setSeverity] = useState("")
+  const [text, setText] = useState("")
 
   const token = getToken()
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false)
+  }
 
   useEffect(() => {
     if (!token) {
@@ -39,12 +49,18 @@ const SingleMessage = () => {
         dispatch(setSingleMessage({message: res.data.messageDetails}))
         setLoading(false)
       })
+      .catch(() => {
+        setOpenAlert(true)
+        setSeverity("error")
+        setText("Ooops an error was encountered")
+      })
     }
 
     const readMessage = async () => {
       await instance.patch(`messages/${params.id}/read`, {isRead: true})
       .then((res) => {
         dispatch(readInboxMessages({messageId: res.data.messageDetails.id}))
+        dispatch(reloadNotifications())
       })
     }
 
@@ -239,6 +255,12 @@ const SingleMessage = () => {
           </>
         )
       }
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          { text }
+        </Alert>
+      </Snackbar>
     </>
   )
 }

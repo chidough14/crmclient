@@ -47,6 +47,7 @@ const validationSchema = yup.object({
 const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashboard }) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [severity, setSeverity] = useState("");
   const [showActivitySelect, setShowActivitySelect] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -71,6 +72,12 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
     setOpenDialog(false);
   };
 
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -91,12 +98,15 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
         if (showForm) {
           dispatch(updateActivityEvent({event: res.data.event}))
         }
-        setOpenAlert(true)
-        setAlertMessage("Event updated successfully")
+
+        showAlert("Event updated successfully", "success")
         dispatch(updateEvent({event: res.data.event}))
         handleClose()
         resetForm();
-      });
+      })
+      .catch(() => {
+        showAlert("Ooops an error was encountered", "error")
+      })
     },
   });
 
@@ -124,16 +134,16 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
 
   const removeEvent = async (event) => {
 
-    const res = await instance.delete(`events/${event.id}`)
-
-    if (res.data.status === "success"){
-      //dispatch(showAlert())
-      setOpenAlert(true)
-      setAlertMessage("Event deleted successfully")
+    await instance.delete(`events/${event.id}`)
+    .then((res)=> {
+      showAlert("Event deleted successfully", "success")
       dispatch(deleteEvent({eventId: event.id}))
       setOpenDialog(false)
       handleClose()
-    }
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered", "error")
+    })
   };
 
   return (
@@ -344,7 +354,7 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
       </Modal>
 
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
           {alertMessage}
         </Alert>
       </Snackbar>

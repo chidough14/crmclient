@@ -4,9 +4,10 @@ const initialState = {
   users: [],
   hide: true,
   chatMessages: [],
-  inbox: [],
-  outbox: [],
-  singleMessage: undefined
+  inbox: undefined,
+  outbox: undefined,
+  singleMessage: undefined,
+  fetchNotifications: undefined
 }
 
 export const MessageSlice = createSlice({
@@ -29,7 +30,8 @@ export const MessageSlice = createSlice({
       state.inbox = action.payload.inbox
     },
     readInboxMessages: (state, action) => {
-      state.inbox.data = state.inbox.data.filter((a) => a.id !== action.payload.messageId)
+      let idx = state.inbox.data.findIndex((a) => a.id === action.payload.messageId)
+      state.inbox.data[idx].isRead = true 
     },
     setOutboxMessages: (state, action) => {
       state.outbox = action.payload.outbox
@@ -42,6 +44,9 @@ export const MessageSlice = createSlice({
     },
     removeMessage: (state, action) => {
       state.outbox.data = state.outbox.data.filter((a) => a.id !== action.payload.messageId)
+    },
+    reloadNotifications: (state, action) => {
+      state.fetchNotifications = !state.fetchNotifications
     }
   },
 })
@@ -57,7 +62,8 @@ export const {
   setSingleMessage,
   addNewMessage,
   removeMessage,
-  readInboxMessages
+  readInboxMessages,
+  reloadNotifications
 } = MessageSlice.actions
 
 export default MessageSlice.reducer

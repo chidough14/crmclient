@@ -67,6 +67,13 @@ const Settings = () => {
     setOpenSnackAlert(false);
   };
 
+  const showAlert = () => {
+    setAlertMessage("Ooops an error was encountered")
+    setSeverity("error")
+    setOpenSnackAlert(true)
+  }
+  
+
   React.useEffect(() => {
     if (!token) {
       navigate('/login')
@@ -82,6 +89,7 @@ const Settings = () => {
       return Promise.resolve(true);
     })
     .catch((e)=>{
+      showAlert()
       return Promise.resolve(false);
     })
   }
@@ -95,6 +103,7 @@ const Settings = () => {
       return Promise.resolve(true);
     })
     .catch((e)=>{
+      showAlert()
       return Promise.resolve(false);
     })
   }
@@ -115,9 +124,7 @@ const Settings = () => {
         //setLoading(false)
       })
       .catch((err)=> {
-        setAlertMessage("Ooops an error was encountered")
-        setSeverity("error")
-        setOpenSnackAlert(true)
+        showAlert()
       })
     }
 

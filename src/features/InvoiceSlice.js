@@ -33,6 +33,10 @@ export const InvoiceSlice = createSlice({
     setSortOptionValue: (state, action) => {
       state.sortOption = action.payload.option
     },
+    updateInvoice: (state, action) => {
+      let idx = state.invoices.data.findIndex((a) => a.id === action.payload.invoice.id)
+      state.invoices.data[idx] = action.payload.invoice
+    },
   },
 })
 
@@ -43,7 +47,8 @@ export const {
   updateInvoiceProduct,
   removeInvoiceProductItem,
   setAllInvoices,
-  setSortOptionValue
+  setSortOptionValue,
+  updateInvoice
 } = InvoiceSlice.actions
 
 export default InvoiceSlice.reducer

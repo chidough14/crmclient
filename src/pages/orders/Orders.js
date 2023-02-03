@@ -1,5 +1,5 @@
 import {  SortOutlined } from '@mui/icons-material'
-import {  Button, Toolbar, Tooltip, Typography } from '@mui/material'
+import {  Button, Snackbar, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal'
@@ -7,6 +7,11 @@ import { setAllInvoices, setOpenViewInvoiceModal, setSortOptionValue } from '../
 import instance from '../../services/fetchApi'
 import OrdersTable from './OrdersTable'
 import SortButton from './SortButton'
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Orders = () => {
   const dispatch = useDispatch()
@@ -15,6 +20,19 @@ const Orders = () => {
   const { invoices, sortOption } = useSelector(state => state.invoice)
   const user = useSelector(state => state.user)
   const [company, setCompany] = useState()
+  const [openAlert, setOpenAlert] = useState(false)
+  const [severity, setSeverity] = useState("")
+  const [text, setText] = useState("")
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false)
+  }
+
+  const showAlert = (txt) => {
+    setOpenAlert(true)
+    setSeverity("error")
+    setText(txt)
+  }
 
   const getInvoices = async (page = 1) => {
     setLoading(true)
@@ -22,6 +40,9 @@ const Orders = () => {
     .then((res) => {
       dispatch(setAllInvoices({invoices: res.data.invoices}))
       setLoading(false)
+    })
+    .catch(()=> {
+      showAlert("Ooops an error was encountered")
     })
   }
 
@@ -32,6 +53,9 @@ const Orders = () => {
       dispatch(setAllInvoices({invoices: res.data.invoices}))
       setLoading(false)
     })
+    .catch(()=> {
+      showAlert("Ooops an error was encountered")
+    })
   }
 
   const viewInvoice = async (value) => {
@@ -41,6 +65,9 @@ const Orders = () => {
     await instance.get(`companies/${value.activity.company_id}`)
     .then((res) => {
       setCompany(res.data.company)
+    })
+    .catch(()=> {
+      showAlert("Ooops an error was encountered")
     })
   }
 
@@ -82,6 +109,13 @@ const Orders = () => {
         activity={invoiceDetails?.activity}
         user={user}
       />
+
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          { text }
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

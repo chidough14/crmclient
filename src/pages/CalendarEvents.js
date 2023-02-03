@@ -43,6 +43,12 @@ const CalendarEvents = () => {
   const token = getToken()
   const navigate = useNavigate()
 
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertMessage(msg)
+    setSeverity(sev)
+  }
+
   useEffect(() => {
     if (!token) {
       navigate('/login')
@@ -73,6 +79,9 @@ const CalendarEvents = () => {
       await instance.get(`events`)
       .then((res)=> {
         dispatch(setEvents({events: res.data.events}))
+      })
+      .catch((err)=> {
+        showAlert("An error was encountered", "error")
       })
     }
 
@@ -121,14 +130,10 @@ const CalendarEvents = () => {
 
     await instance.patch(`events/${e.event.id}`, body)
     .then(() => {
-       setOpenAlert(true)
-       setAlertMessage("Event updated successfully")
-       setSeverity("success")
+       showAlert("Event updated successfully", "success")
     })
     .catch((err)=> {
-      setOpenAlert(true)
-      setAlertMessage("An error was encountered")
-      setSeverity("warning")
+      showAlert("An error was encountered", "error")
     })
   }
 

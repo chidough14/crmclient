@@ -107,6 +107,7 @@ const ProductsTable = ({rows, getProducts, loading, user}) => {
 
   }, [rows?.current_page])
 
+
   const deleteProduct = async () => {
     await instance.delete(`products/${productObj.id}`)
     .then(() => {

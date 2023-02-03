@@ -13,7 +13,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
 import { CreateOutlined, InboxOutlined, OutboxOutlined, PhoneOutlined, SendOutlined } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { Snackbar, Tooltip } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -57,6 +62,10 @@ const UserMessages = () => {
   const token = getToken()
   const navigate = useNavigate()
   const {inbox, outbox}  = useSelector(state => state.message)
+  const [openAlert, setOpenAlert] = React.useState(false)
+  const [severity, setSeverity] = React.useState("")
+  const [text, setText] = React.useState("")
+  const [isInbox, setIsInbox] = React.useState("")
 
   useEffect(() => {
     if (!token) {
@@ -64,8 +73,25 @@ const UserMessages = () => {
     }
   }, [token])
 
+  const handleCloseAlert = () => {
+    setOpenAlert(false)
+  }
+
+  const showAlert = () => {
+    setOpenAlert(true)
+    setSeverity("error")
+    setText("Ooops an error was encountered")
+  }
+
+
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    // if (newValue === 0) {
+    //   setIsInbox("inbox")
+    // } else {
+    //   setIsInbox("outbox")
+    // }
   };
 
   const getInboxMessages = async (page = 1) => {
@@ -76,6 +102,9 @@ const UserMessages = () => {
       dispatch(setInboxMessages({inbox: res.data.inbox}))
       setInboxLoading(false)
     })
+    .catch(() => {
+      showAlert()
+    })
   }
 
   const getOutboxMessages = async (page = 1) => {
@@ -85,12 +114,22 @@ const UserMessages = () => {
       dispatch(setOutboxMessages({outbox: res.data.outbox}))
       setOutboxLoading(false)
     })
+    .catch(() => {
+      showAlert()
+    })
   }
 
   useEffect(()=> {
-    getInboxMessages()
-    getOutboxMessages()
-  }, [])
+    if (!outbox?.data){
+      getOutboxMessages()
+    }
+   
+    if (!inbox?.data) {
+      getInboxMessages()
+    }
+    
+   
+  }, [inbox?.data, outbox?.data])
 
   return (
     <>
@@ -120,6 +159,12 @@ const UserMessages = () => {
           <ComposeMessage />
         </TabPanel>
       </Box>
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          { text }
+        </Alert>
+      </Snackbar>
     </>
   );
 }

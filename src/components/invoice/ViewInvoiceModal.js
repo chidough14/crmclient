@@ -21,9 +21,14 @@ import instance from '../../services/fetchApi';
 import InvoiceForm from '../../pages/activities/InvoiceForm';
 import InvoiceProductsTable from './InvoiceProductsTable';
 import AddProductToInvoiceModal from './AddProductToInvoiceModal';
-import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@mui/material';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,11 +45,23 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
   const [quantity, setQuantity] = useState(0)
   const [editMode, setEditMode] = useState(false)
   const [open, setOpen] = useState(false)
+  const [openAlert, setOpenAlert] = useState(false)
+  const [severity, setSeverity] = useState("")
+  const [text, setText] = useState("")
   // const [open, setOpen] = React.useState(false);
 
   // const handleClickOpen = () => {
   //   setOpen(true);
   // };
+  const handleCloseAlert = () => {
+    setOpenAlert(false)
+  }
+
+  const showAlert = (txt, sev) => {
+    setOpenAlert(true)
+    setSeverity(sev)
+    setText(txt)
+  }
 
   useEffect(() => {
     const fetchInvoiceDetails = async () => {
@@ -58,6 +75,9 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
         })
         dispatch(setInvoice({invoice: res.data.invoice}))
         setTotal(arr.reduce((a, b) => a + b, 0))
+      })
+      .catch(() => {
+        showAlert("Ooops an error was encountered", "error")
       })
     }
 
@@ -96,11 +116,15 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
   const removeItem = async () => {
     await instance.delete(`invoices/${invoice?.id}/deleteProduct`, { data: {productId: productId}})
     .then((res) => {
-   
+
+      showAlert("Product deleted", "success")
       dispatch(removeInvoiceProductItem({id: productId}))
       setOpen(false)
       setProductId(undefined)
     
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered")
     })
   };
 
@@ -117,12 +141,15 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
       } else {
         dispatch(addProductItemToInvoice({product: res.data.product}))
       }
-
+      showAlert("Product added", "success")
       setOpenAddModal(false)
       setEditMode(false)
       setQuantity(0)
       setProductId(undefined)
     
+    })
+    .catch(() => {
+      showAlert("Ooops an error was encountered", "error")
     })
   };
 
@@ -141,6 +168,7 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
   }
 
   return (
+    <>
       <Dialog
         fullScreen
         open={openViewInvoiceModal}
@@ -332,6 +360,14 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
        
      
       </Dialog>
+
+      
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+          { text }
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 

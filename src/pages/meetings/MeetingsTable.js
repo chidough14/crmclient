@@ -30,6 +30,8 @@ const MeetingsTable = ({meetings, showModal, user, own}) => {
   const [recordId, setRecordId] = React.useState();
   const dispatch = useDispatch()
   const [openAlert, setOpenAlert] = React.useState(false)
+  const [severity, setSeverity] = React.useState("");
+  const [alertMessage, setAlertMessage] = React.useState("");
   const navigate = useNavigate()
 
   //popover//////
@@ -72,8 +74,15 @@ const MeetingsTable = ({meetings, showModal, user, own}) => {
     await instance.delete(`meetings/${recordId}`)
     .then(() => {
       setOpenAlert(true)
+      setSeverity("success")
+      setAlertMessage("Meeting Deleted")
       dispatch(removeMeeting({meetingId: recordId}))
       setOpenDialog(false)
+    })
+    .catch(()=> {
+      setOpenAlert(true)
+      setSeverity("error")
+      setAlertMessage("Ooops an error was encountered")
     })
   };
 
@@ -304,8 +313,8 @@ const MeetingsTable = ({meetings, showModal, user, own}) => {
       />
 
     <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
-      <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-        Meeting Deleted
+      <Alert onClose={handleCloseAlert} severity={severity} sx={{ width: '100%' }}>
+        {alertMessage}
       </Alert>
     </Snackbar>
     </>
