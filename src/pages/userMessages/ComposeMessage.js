@@ -57,6 +57,12 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
     setOpenAlert(false)
   }
 
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertType(sev)
+    setText(msg)
+  }
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -82,17 +88,12 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
           for (let i = 0; i < res.data.createdMessages.length; i++) {
              dispatch(addNewMessage({message: res.data.createdMessages[i]}))
           }
-        
-          setAlertType("success")
-          setOpenAlert(true)
-          setText("Messages sent")
+          showAlert("Messages sent", "success")
           resetForm()
           setUsersValue([])
         })
         .catch(() => {
-          setAlertType("error")
-          setOpenAlert(true)
-          setText("Ooops an error was encountered")
+          showAlert("Ooops an error was encountered", "error")
         })
       } else {
         let receiverId = user?.allUsers?.find((a) => a.email === values.email)?.id
@@ -108,20 +109,14 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
           await instance.post(`messages`, body)
           .then((res) => {
             dispatch(addNewMessage({message: res.data.createdMessage}))
-            setAlertType("success")
-            setOpenAlert(true)
-            setText("Message sent")
+            showAlert("Message sent", "success")
             resetForm()
           })
           .catch(() => {
-            setAlertType("error")
-            setOpenAlert(true)
-            setText("Ooops an error was encountered")
+            showAlert("Ooops an error was encountered", "error")
           })
         } else {
-          setAlertType("error")
-          setOpenAlert(true)
-          setText("The email does not exist")
+          showAlert("The email does not exist", "error")
         }
       }
      

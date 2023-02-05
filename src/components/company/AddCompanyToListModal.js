@@ -1,10 +1,7 @@
-import { Box, Button,  Modal,  Typography, Snackbar, List,ListItemButton, Paper } from '@mui/material'
+import { Box, Button,  Modal,  Typography, Snackbar,Paper, FormControl, Select, MenuItem, InputLabel } from '@mui/material'
 import MuiAlert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
-import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import * as yup from 'yup';
 import instance from '../../services/fetchApi';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -32,20 +29,12 @@ const style = {
   p: 4,
 };
 
-// const validationSchema = yup.object({
-//   name: yup
-//     .string('Enter your name')
-//     .required('Name is required'),
-// });
-
 const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [severity, setSeverity] = useState("");
   const [listId, setListId] = useState(undefined);
   const [listWithCompanies, setListWithCompanies] = useState([]);
-  // const {lists} = useSelector((state) => state.list)
-  // const user = useSelector((state) => state.user)
 
   const showAlert = (msg, sev) => {
     setOpenAlert(true)
@@ -53,7 +42,7 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
     setSeverity(sev)
   }
 
-  const dispatch = useDispatch()
+ 
 
   const handleCloseAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -68,8 +57,8 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
     setListId(undefined)
   }
 
-  const selectList = (list) => {
-    setListId(list.id)
+  const selectList = (id) => {
+    setListId(id)
     
   }
 
@@ -116,32 +105,36 @@ const AddCompanyToListModal = ({ open, setOpen, companyId}) => {
               Add Company To List
             </Typography>
           
-            <List>
-              {
-                listWithCompanies?.map((list, i) => {
-                  let ids = list.companies.map((a) => a.id)
-                
-                  if (ids.includes(parseInt(companyId))){
 
-                  } else {
-                    return (
-                      <ListItemButton 
-                        key={i} 
-                        disablepadding="true"
-                        style={{marginBottom: "10px", cursor: "pointer"}}
-                        onClick={() => selectList(list)}
-                        disabled={list.id === listId}
-                      >
-                        <Item elevation={4} style={{border: list.id === listId ? "4px solid green" : null}}>
-                          {list.name}
-                        </Item>
-                      </ListItemButton>
-                    )
-                  }
-                 
-                })
-              }
-            </List>
+            <FormControl fullWidth  style={{marginBottom: "10px"}}>
+              <InputLabel id="demo-select-small">Select List</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={listId}
+                onChange={(e)=> selectList(e.target.value)}
+                size="medium"
+                sx={{borderRadius: "30px"}}
+              >
+
+                {
+                  listWithCompanies?.map((list, i) => {
+                    let ids = list.companies.map((a) => a.id)
+                  
+                    if (ids.includes(parseInt(companyId))){
+
+                    } else {
+                      return (
+                        <MenuItem value={list.id}>{list.name}</MenuItem>
+                      )
+                    }
+                  
+                  })
+                }
+              </Select>
+            </FormControl>
+            
+
             <p></p>
             <div style={{display: "flex", justifyContent: "space-between"}}>
               <Button 

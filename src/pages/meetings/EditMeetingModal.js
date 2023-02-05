@@ -4,12 +4,13 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
-import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import instance from '../../services/fetchApi';
 import { updateEvent } from '../../features/EventSlice';
 import { setUpdateMeeting } from '../../features/MeetingSlice';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -202,27 +203,23 @@ const EditMeetingModal = ({ open, setOpen, meeting, user }) => {
           Edit Meeting
             </Typography>
 
-            <MuiPickersUtilsProvider utils={MomentUtils}>
+            <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
+                renderInput={(props) => (
+                  <TextField
+                    label="Date"
+                    size='small'
+                    margin="normal"
+                    name="meetingDate"
+                    variant="standard"
+                    fullWidth
+                    {...props}
+                    />
+                )}
                 value={formik.values.meetingDate}
                 onChange={handleDateChange}
-                TextFieldComponent={
-                  (params) => (
-                    <TextField
-                      // error={Boolean(formik.touched.meetingDate && formik.errors.meetingDate)}
-                      // helperText={formik.touched.meetingDate && formik.errors.meetingDate}
-                      label="Date"
-                      size='small'
-                      margin="normal"
-                      name="meetingDate"
-                      variant="standard"
-                      fullWidth
-                      {...params}
-                      />
-                  )
-                }
               />
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
 
             <div style={{display: "flex", justifyContent: "space-between"}}>
               <Button 
