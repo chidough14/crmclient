@@ -4,14 +4,15 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
-import { MuiPickersUtilsProvider, DateTimePicker, KeyboardDateTimePicker, DatePicker } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import instance from '../../services/fetchApi';
 import { deleteEvent, updateEvent } from '../../features/EventSlice';
 import { CloseOutlined, DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import { updateActivityEvent } from '../../features/ActivitySlice';
 import { Link } from 'react-router-dom';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -187,48 +188,47 @@ const ViewEventModal = ({ open, setOpen, event, relatedActivity, showForm, dashb
                   error={formik.touched.description && Boolean(formik.errors.description)}
                   helperText={formik.touched.description && formik.errors.description}
                 />
-    
-                <MuiPickersUtilsProvider utils={MomentUtils}>
+
+
+                <LocalizationProvider dateAdapter={AdapterMoment}>
                   <DateTimePicker
+                    renderInput={(props) => (
+                      <TextField
+                        error={Boolean(formik.touched.start && formik.errors.start)}
+                        helperText={formik.touched.start && formik.errors.start}
+                        label="Start"
+                        size='small'
+                        margin="normal"
+                        name="start"
+                        variant="standard"
+                        fullWidth
+                        {...props}
+                        />
+                    )}
+                    label="Start"
                     value={formik.values.start}
                     onChange={handleDateChange}
-                    TextFieldComponent={
-                      (params) => (
-                        <TextField
-                          error={Boolean(formik.touched.start && formik.errors.start)}
-                          helperText={formik.touched.start && formik.errors.start}
-                          label="Start"
-                          size='small'
-                          margin="normal"
-                          name="start"
-                          variant="standard"
-                          fullWidth
-                          {...params}
-                          />
-                      )
-                    }
                   />
-    
+
                   <DateTimePicker
+                    renderInput={(props) => (
+                      <TextField
+                        error={Boolean(formik.touched.end && formik.errors.end)}
+                        helperText={formik.touched.end && formik.errors.end}
+                        label="End"
+                        margin="normal"
+                        size='small'
+                        name="end"
+                        variant="standard"
+                        fullWidth
+                        {...props}
+                        />
+                    )}
+                    label="End"
                     value={formik.values.end}
                     onChange={handleEndDateChange}
-                    TextFieldComponent={
-                      (params) => (
-                        <TextField
-                          error={Boolean(formik.touched.end && formik.errors.end)}
-                          helperText={formik.touched.end && formik.errors.end}
-                          label="End"
-                          margin="normal"
-                          size='small'
-                          name="end"
-                          variant="standard"
-                          fullWidth
-                          {...params}
-                          />
-                      )
-                    }
                   />
-                </MuiPickersUtilsProvider>
+                </LocalizationProvider>
                 
                 <div style={{display: "flex", justifyContent: "space-between"}}>
                   <Button size='small' color="primary" variant="contained"  type="submit" style={{borderRadius: "30px"}}>

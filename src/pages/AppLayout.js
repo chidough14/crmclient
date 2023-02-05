@@ -22,13 +22,19 @@ import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOu
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Button, CircularProgress, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Snackbar, Tooltip } from '@mui/material';
 import BellNotification from '../components/BellNotification';
 import UserAccountsCircle from '../components/UserAccountsCircle';
 import SearchBar from '../components/SearchBar';
 import instance from '../services/fetchApi';
 import { setSearchResults } from '../features/companySlice';
 import { setSelectedCompanyId } from '../features/listSlice';
+import MuiAlert from '@mui/material/Alert';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const drawerWidth = 240;
 
@@ -159,10 +165,23 @@ export default function AppLayout() {
   const [invitedMeetingsData, setInvitedMeetingsData] = React.useState([])
   const { invitedMeetings } = useSelector((state) => state.meeting) 
   const {fetchNotifications} = useSelector(state => state.message)
+  const [openAlert, setOpenAlert] = React.useState(false)
+  const [text, setText] = React.useState("")
+  const [alertType, setAlertType] = React.useState("")
   const navigate = useNavigate()
 
   const isListPage = matchPath("/listsview/*", pathname)
   const isJoinPage = matchPath("/join/*", pathname)
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false)
+  }
+
+  const showAlert = (msg, sev) => {
+    setOpenAlert(true)
+    setAlertType(sev)
+    setText(msg)
+  }
 
   React.useEffect(() => {
     if (!token || name === "") {
@@ -180,7 +199,10 @@ export default function AppLayout() {
       }).then((res) => {
 
         dispatch(setSearchResults({companies: res.data.companies}))
-      });
+      })
+      .catch(()=> {
+        showAlert("Ooops an error was encountered", "error")
+      })
     }
 
     if (searchQuery.length === 3){
@@ -215,183 +237,192 @@ export default function AppLayout() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+    <>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
 
-      <AppBar position='fixed'  open={open} color="secondary" sx={{ width: "100%" }}>
-        <Toolbar>
-          <Typography variant='h5' component="div" sx={{ flexGrow: 1 }} >
-            <DensitySmallOutlined onClick={handleDrawerOpen} style={{cursor: "pointer"}} /> &nbsp;&nbsp;&nbsp;
-            <Link to="/" style={{textDecoration: "none", color: "white"}}>
-              <span>CRM</span>
-            </Link>
-          </Typography>
+        <AppBar position='fixed'  open={open} color="secondary" sx={{ width: "100%" }}>
+          <Toolbar>
+            <Typography variant='h5' component="div" sx={{ flexGrow: 1 }} >
+              <DensitySmallOutlined onClick={handleDrawerOpen} style={{cursor: "pointer"}} /> &nbsp;&nbsp;&nbsp;
+              <Link to="/" style={{textDecoration: "none", color: "white"}}>
+                <span>CRM</span>
+              </Link>
+            </Typography>
 
-          {
-            loggedIn && (
-                <SearchBar  
-                  data={searchResults} 
-                  setSearchQuery={setSearchQuery} 
-                  navigate={navigate}
-                />
-            )
-          }&nbsp;&nbsp;&nbsp;&nbsp;
-
-          {
+            {
               loggedIn && (
-                <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
+                  <SearchBar  
+                    data={searchResults} 
+                    setSearchQuery={setSearchQuery} 
+                    navigate={navigate}
+                  />
               )
-          }&nbsp;&nbsp;&nbsp;&nbsp;
-        
+            }&nbsp;&nbsp;&nbsp;&nbsp;
+
+            {
+                loggedIn && (
+                  <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
+                )
+            }&nbsp;&nbsp;&nbsp;&nbsp;
           
-{/* 
-          <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
+            
+  {/* 
+            <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>About</Button>
 
-          <Button component={NavLink} to='/contact' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>Contact</Button> */}
+            <Button component={NavLink} to='/contact' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>Contact</Button> */}
 
-          {
-            loggedIn ? 
-            <UserAccountsCircle name={name} profile_pic={profile_pic} /> : 
-            <Button 
-              component={NavLink} 
-              to='/login' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} 
-              sx={{ color: 'white', textTransform: 'none' }}
-            >
-                Login/Registration
-            </Button>
-          }
+            {
+              loggedIn ? 
+              <UserAccountsCircle name={name} profile_pic={profile_pic} /> : 
+              <Button 
+                component={NavLink} 
+                to='/login' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} 
+                sx={{ color: 'white', textTransform: 'none' }}
+              >
+                  Login/Registration
+              </Button>
+            }
 
-        </Toolbar>  
-        
-      </AppBar>
-      {
-          ( loggedIn && isJoinPage?.pathnameBase !== "/join" ) ? (
-              <>
-                <Drawer variant="permanent" open={open} backgroundColor="red">
-                  <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                      {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                  </DrawerHeader>
-                  <Divider />
-                  <List>
-                    {
-                       isListPage?.pathnameBase === "/listsview" ? (
-                         <>
-                         {
-                            loadingCompanies ? (
-                              <Box sx={{ display: 'flex', marginLeft: "35%" }}>
-                                <Typography variant='h6'>Loading...</Typography>
-                              </Box>
-                            ) : (
-                              <>
-                                <div style={{display: "flex", justifyContent: "space-between"}}>
-                                  {
-                                    list?.name.length > 10 ? (
-                                       <Tooltip title={list?.name}>
-                                          <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
-                                            <b>{`${list?.name.substring(0,10)}...`}</b>
-                                          </Typography>
-                                       </Tooltip>
-                                    ) : (
-                                    
-                                      <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
-                                        <b>{list?.name}</b>
-                                      </Typography>
-                                    )
-                                  }
+          </Toolbar>  
+          
+        </AppBar>
+        {
+            ( loggedIn && isJoinPage?.pathnameBase !== "/join" ) ? (
+                <>
+                  <Drawer variant="permanent" open={open} backgroundColor="red">
+                    <DrawerHeader>
+                      <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                      </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+                    <List>
+                      {
+                        isListPage?.pathnameBase === "/listsview" ? (
+                          <>
+                          {
+                              loadingCompanies ? (
+                                <Box sx={{ display: 'flex', marginLeft: "35%" }}>
+                                  <Typography variant='h6'>Loading...</Typography>
+                                </Box>
+                              ) : (
+                                <>
+                                  <div style={{display: "flex", justifyContent: "space-between"}}>
+                                    {
+                                      list?.name.length > 10 ? (
+                                        <Tooltip title={list?.name}>
+                                            <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
+                                              <b>{`${list?.name.substring(0,10)}...`}</b>
+                                            </Typography>
+                                        </Tooltip>
+                                      ) : (
+                                      
+                                        <Typography variant="h6" style={{marginLeft: "10px", opacity: open ? 1 : 0 }}>
+                                          <b>{list?.name}</b>
+                                        </Typography>
+                                      )
+                                    }
 
 
-                                  <ListIcon style={{cursor: "pointer", opacity: open ? 1 : 0 }} onClick={() => navigate("/lists")} />
+                                    <ListIcon style={{cursor: "pointer", opacity: open ? 1 : 0 }} onClick={() => navigate("/lists")} />
 
-                                </div>
-                               
-                                { 
-                                  open &&
-                                  list?.companies.map((a) => (
-                                  <ListItem  
-                                      disablePadding 
-                                      sx={{ 
-                                        display: 'block', 
-                                        borderRadius: "30px", 
-                                        backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" ,
-                                        borderRadius: selectedCompanyId === a.id ? "15px" : "" 
-                                      }}
-                                      onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
-                                    >
-                                      <ListItemButton
-                                        sx={{
-                                          minHeight: 48,
-                                          justifyContent: open ? 'initial' : 'center',
-                                          px: 2.5,
+                                  </div>
+                                
+                                  { 
+                                    open &&
+                                    list?.companies.map((a) => (
+                                    <ListItem  
+                                        disablePadding 
+                                        sx={{ 
+                                          display: 'block', 
+                                          borderRadius: "30px", 
+                                          backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" ,
+                                          borderRadius: selectedCompanyId === a.id ? "15px" : "" 
                                         }}
+                                        onClick={() => dispatch(setSelectedCompanyId({id: a.id}))}
                                       >
-                                        <ListItemText 
-                                          primary={a.name} 
-                                          sx={{ opacity: open ? 1 : 0 }} 
-                                        />
-                                      </ListItemButton>
-                                    </ListItem>
-                                  ))
-                                }
-                              </>
-                            )
-                         }
-                         
-                         </>
-                       ) : 
-                      sideBarItems.map((a, i) => (
-                        <Tooltip title={a.name}>
-                          <ListItem 
-                            key={i} 
-                            disablePadding 
-                            sx={{ 
-                              display: 'block', 
-                              backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
-                              borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
-                            }}
-                            onClick={()=> navigate(`${a.link}`)}
-                          >
-                            <ListItemButton
-                              sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
+                                        <ListItemButton
+                                          sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                          }}
+                                        >
+                                          <ListItemText 
+                                            primary={a.name} 
+                                            sx={{ opacity: open ? 1 : 0 }} 
+                                          />
+                                        </ListItemButton>
+                                      </ListItem>
+                                    ))
+                                  }
+                                </>
+                              )
+                          }
+                          
+                          </>
+                        ) : 
+                        sideBarItems.map((a, i) => (
+                          <Tooltip title={a.name}>
+                            <ListItem 
+                              key={i} 
+                              disablePadding 
+                              sx={{ 
+                                display: 'block', 
+                                backgroundColor: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "#DDA0DD" : null ,
+                                borderRadius: matchPath(`${a.link}/*`, pathname)?.pathnameBase === `${a.link}` ? "15px" : "" 
                               }}
+                              onClick={()=> navigate(`${a.link}`)}
                             >
-                              <ListItemIcon
+                              <ListItemButton
                                 sx={{
-                                  minWidth: 0,
-                                  mr: open ? 3 : 'auto',
-                                  justifyContent: 'center',
+                                  minHeight: 48,
+                                  justifyContent: open ? 'initial' : 'center',
+                                  px: 2.5,
                                 }}
                               >
-                                {a.icon}
-                              </ListItemIcon>
-                              <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
-                          </ListItem>
-                        </Tooltip>
-                      ))
-                    }
-                  
-                  </List>
-                </Drawer>
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                  <main style={{width: "100%", marginTop: "50px"}}>
-                    <Outlet />
-                  </main>
-                </Box>
-              </>
-          ) : (
-            <Box component="main" sx={{ flexGrow: 1, p:3 }}>
-              <main style={{width: "100%", marginTop: "50px"}}>
-                <Outlet />
-              </main>
-            </Box>
-          )
-      }
-    
-    </Box>
+                                <ListItemIcon
+                                  sx={{
+                                    minWidth: 0,
+                                    mr: open ? 3 : 'auto',
+                                    justifyContent: 'center',
+                                  }}
+                                >
+                                  {a.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={a.name} sx={{ opacity: open ? 1 : 0 }} />
+                              </ListItemButton>
+                            </ListItem>
+                          </Tooltip>
+                        ))
+                      }
+                    
+                    </List>
+                  </Drawer>
+                  <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                    <main style={{width: "100%", marginTop: "50px"}}>
+                      <Outlet />
+                    </main>
+                  </Box>
+                </>
+            ) : (
+              <Box component="main" sx={{ flexGrow: 1, p:3 }}>
+                <main style={{width: "100%", marginTop: "50px"}}>
+                  <Outlet />
+                </main>
+              </Box>
+            )
+        }
+      
+      </Box>
+
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={alertType} sx={{ width: '100%' }}>
+          {text}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
