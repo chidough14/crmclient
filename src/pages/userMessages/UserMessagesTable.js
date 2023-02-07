@@ -227,7 +227,7 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
 
               {isInbox && <TableCell >Sent By</TableCell>}
               {!isInbox && <TableCell >Recipient</TableCell>}
-              {isInbox && <TableCell >Read</TableCell>}
+              {isInbox && <TableCell >Message</TableCell>}
               <TableCell >Date Sent</TableCell>
               <TableCell >Actions</TableCell>
             </TableRow>
@@ -250,7 +250,7 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
                       </div>
                     ) :
                     messages?.data?.map((row) => (
-                      <TableRow key={row.name}>
+                      <TableRow key={row.name} sx={{backgroundColor: (isInbox && row.isRead) ? "lightgrey" : null}}>
                         <TableCell component="th" scope="row">
                           {row.subject}
                         </TableCell>
@@ -274,7 +274,11 @@ const UserMessagesTable = ({messages, isInbox, getInboxMessages, getOutboxMessag
 
                         { isInbox &&
                           <TableCell style={{ width: 160 }} >
-                            {row.isRead ?  <Chip  size="small" label="Read" color="secondary" /> :  <Chip  size="small" label="Not Read" color="primary" />}
+                            {
+                              row.message.length > 15 ?
+                              `${row.message.substring(0, 15)}.....` :
+                              row.message
+                            }
                           </TableCell>
                         }
                       

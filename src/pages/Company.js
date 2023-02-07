@@ -28,8 +28,7 @@ const Company = ({companyObj}) => {
   const handleOpen = () => setOpen(true);
   const handleOpenActivityModal = () => setOpenActivityModal(true);
   const {pathname} = useLocation()
-  const {selectedCompanyId} = useSelector(state => state.list)
-  const {list} = useSelector(state => state.list)
+  const {selectedCompanyId, list} = useSelector(state => state.list)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -112,7 +111,7 @@ const Company = ({companyObj}) => {
         ) : (
           <div>
             {
-              !list ? (
+              (isListPage && !list) ? (
                     <p>List has been deleted</p>
               ) : (
                 <>

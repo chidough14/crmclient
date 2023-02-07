@@ -1,4 +1,4 @@
-import { Avatar, Badge, Divider, Menu, MenuItem } from '@mui/material'
+import { Avatar, Badge, Divider, Menu, MenuItem, Tooltip } from '@mui/material'
 import { Notifications, NotificationsActive } from '@mui/icons-material';
 import React, { useState } from 'react'
 import moment from 'moment';
@@ -17,7 +17,67 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
     setAnchorEl(null);
   };
   const navigate = useNavigate()
-  //console.log(inbox, inbox?.filter((a) => !a.isRead)?.length );
+
+  const getInitials = (string) => {
+    let names = string?.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  }
+
+  const getImage = (row) => {
+
+    let image_src = allUsers?.find((a)=> a.id === row.sender_id)?.profile_pic
+
+    if ( image_src === ""  || image_src === null) {
+      return (
+        <div 
+          style={{
+            display: "inline-block",
+            backgroundColor: "gray" ,
+            borderRadius: "50%",
+          }}
+          // onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.sender_id)?.id}`)}
+        >
+          <p 
+            style={{
+              color: "white",
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              textDecoration: "none",
+              height: "30px",
+              width: "30px",
+              fontSize: "15px"
+            }}
+          >
+            {getInitials(allUsers?.find((a)=> a.id === row.sender_id)?.name)}
+          </p>
+        </div>
+      )
+    } else {
+      if (!image_src) {
+         return (
+          <span>Auto Generated</span>
+         )
+      } else {
+        return (
+          <img 
+            width="30px" 
+            height="30px" 
+            src={image_src}  
+            alt='profile_pic' 
+            style={{borderRadius: "50%"}} 
+            // onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === row.sender_id)?.id}`)}
+          />
+        )
+      }
+    }
+  }
+
 
   return (
     <div>
@@ -65,8 +125,8 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
       >
          <Divider>Inbox</Divider>
         {
-          inbox?.filter((a) => !a.isRead).length ? 
-          inbox?.filter((a) => !a.isRead).map((a) => {
+          inbox?.filter((b) => !b.isRead).length ? 
+          inbox?.filter((b) => !b.isRead).map((a) => {
             let username
             if (!a.sender_id) {
               username = "Auto Generated"
@@ -74,10 +134,20 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
                username = allUsers?.find((b)=> b.id === a.sender_id)?.name
             }
             return <MenuItem onClick={()=>navigate(`/messages/${a.id}`, {state: {isInbox: true, isRead: a.isRead, auto: !a.sender_id ? true : false}})}>
-                    <p><b>{a.subject} </b>sent from <b>{username}</b></p><br></br>
-                    <p><b>Date:</b> {moment(a.created_at).format("MMMM Do YYYY, h:mm a")}</p>
+                    <p>
+                      <b>{a.subject} </b>sent by &nbsp;
+                      <Tooltip title={username}>
+                        <b>
+                          {
+                            getImage(a)
+                          }
+                        </b>
+                      </Tooltip>
+                     
+                    </p>&nbsp;&nbsp;
+                    <p><b>Date:</b> {moment(a.created_at).format("MMM Do YYYY, h:mm a")}</p>
                   </MenuItem>
-          }) :   <p style={{marginLeft: "130px"}}>You have no new messages</p>
+          }) :   <p style={{margin: "auto", padding: "10px"}}>You have no new messages</p>
          
         }
          <Divider>Meetings</Divider>
@@ -88,7 +158,7 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
               <p><b>Name :</b> <b>{a.meetingName}</b></p><br></br>
               <p><b>Date:</b> {moment(a.event.start).format("MMMM Do YYYY, h:mm a")}</p>
             </MenuItem>
-          )) : <p style={{marginLeft: "130px"}}>You have no meetings</p>
+          )) : <p style={{margin: "auto", padding: "10px"}}>You have no meetings</p>
         }
         
       </Menu>
