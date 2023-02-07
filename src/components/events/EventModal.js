@@ -118,8 +118,8 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
   useEffect(() => {
     if (activityId) {
       formik.setFieldValue('activity', activityId)
-      formik.setFieldValue('start', "")
-      formik.setFieldValue('end', "")
+      // formik.setFieldValue('start', "")
+      // formik.setFieldValue('end', "")
     }
    }, [open, activityId])
 
@@ -141,8 +141,8 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
     initialValues: {
       title: '',
       description: '',
-      start: "",
-      end: "",
+      start: moment().format(),
+      end: moment().add(30, 'minutes').format(),
       activity: undefined,
       meetingName: '',
       maxUsers: 1
