@@ -33,14 +33,22 @@ import { setUserToken } from "./features/authSlice";
 import Orders from "./pages/orders/Orders";
 import MyAccount from "./pages/auth/MyAccount";
 
-// import socketIO from 'socket.io-client';
-// const socket = socketIO.connect('http://localhost:4000');
+import socketIO from 'socket.io-client';
+
+const socket = socketIO('http://localhost:4000');
 
 function App() {
   const token =  getToken()
   const auth = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const { data, isSuccess } = useGetLoggedUserQuery(token)
+  
+  useEffect(() => {
+   
+    if(data?.user?.id) {
+      socket.emit('userId', data?.user?.id);
+    }
+  }, [data])
 
 
   useEffect(() => {
@@ -147,7 +155,7 @@ function App() {
       <BrowserRouter>
         <Routes>
         {/* <Route path="/" element={<Layout />}> */}
-          <Route path="/" element={<AppLayout />}>
+          <Route path="/" element={<AppLayout  socket={socket} />}>
             <Route index element={<Home />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<LoginReg />} />
@@ -157,16 +165,16 @@ function App() {
             <Route path="/lists" element={<Lists />} />
             <Route path="/listsview/:id" element={<SingleList />} />
             <Route path="/companies/:id" element={<Company />} />
-            <Route path="/activities" element={<Activities />} />
+            <Route path="/activities" element={<Activities socket={socket}  />} />
             <Route path="/activities/:id" element={<ActivityDetails />} />
             <Route path="/profile/:id" element={<MyAccount />} />
-            <Route path="/events" element={<CalendarEvents />} />
+            <Route path="/events" element={<CalendarEvents socket={socket} />} />
             {/* <Route path="/messages" element={<Messages socket={socket} />} /> */}
             <Route path="/settings" element={<Settings />} />
             <Route path="/mymeetings" element={<MyMeetings />} />
             <Route path="/join/:id" element={<JoinMeeting />} />
-            <Route path="/messages" element={<UserMessages  />} /> 
-            <Route path="/messages/:id" element={<SingleMessage   />} /> 
+            <Route path="/messages" element={<UserMessages socket={socket} />} /> 
+            <Route path="/messages/:id" element={<SingleMessage  socket={socket} />} /> 
             <Route path="/orders" element={<Orders  />} /> 
           </Route>
           <Route path="*" element={<h1>Error 404 Page not found !!</h1>} />

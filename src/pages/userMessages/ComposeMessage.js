@@ -44,7 +44,7 @@ const validationSchema = yup.object({
 });
 
 
-const ComposeMessage = ({replyMode, singleMessage}) => {
+const ComposeMessage = ({replyMode, singleMessage, socket}) => {
   const user = useSelector((state) => state.user)
   const [openAlert, setOpenAlert] = useState(false)
   const [text, setText] = useState("")
@@ -62,6 +62,12 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
     setAlertType(sev)
     setText(msg)
   }
+
+  // useEffect(() => {
+  //   socket.on('receiveNotification', (message) => {
+  //     console.log(`received notification: ${message}`);
+  //   });
+  // }, [socket])
 
   const formik = useFormik({
     initialValues: {
@@ -87,10 +93,14 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
         .then((res) => {
           for (let i = 0; i < res.data.createdMessages.length; i++) {
              dispatch(addNewMessage({message: res.data.createdMessages[i]}))
+
+             socket.emit('sendNotification', { recipientId: res.data.createdMessages[i].receiver_id, message: values.message });
           }
           showAlert("Messages sent", "success")
           resetForm()
           setUsersValue([])
+
+          // socket.emit('sendNotification', { recipientId, message });
         })
         .catch(() => {
           showAlert("Ooops an error was encountered", "error")
@@ -111,6 +121,8 @@ const ComposeMessage = ({replyMode, singleMessage}) => {
             dispatch(addNewMessage({message: res.data.createdMessage}))
             showAlert("Message sent", "success")
             resetForm()
+
+            socket.emit('sendNotification', { recipientId: receiverId, message: values.message });
           })
           .catch(() => {
             showAlert("Ooops an error was encountered", "error")

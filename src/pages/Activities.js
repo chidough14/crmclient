@@ -17,7 +17,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const Activities = () => {
+const Activities = ({socket}) => {
   const [columns, setColumns] = useState([])
   const [activityId, setActivityId] = useState()
   const dispatch = useDispatch()
@@ -311,7 +311,7 @@ const Activities = () => {
           }}
         >
           {Object.values(columns).map((col, i) => (
-            <ActivityColumn col={col} key={i} loading={loading}  />
+            <ActivityColumn col={col} key={i} loading={loading} socket={socket}   />
           ))}
         </div>
       </DragDropContext>
