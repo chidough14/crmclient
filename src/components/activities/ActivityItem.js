@@ -32,7 +32,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const ActivityItem = ({activity, index}) => {
+const ActivityItem = ({activity, index, socket}) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [openModal, setOpenModal] = useState(false);
@@ -216,6 +216,7 @@ const ActivityItem = ({activity, index}) => {
         open={openTransferModal}
         setOpen={setOpenTransferModal}
         activity={activityObj}
+        socket={socket} 
       />
 
       <Dialog

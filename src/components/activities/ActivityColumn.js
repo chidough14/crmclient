@@ -4,7 +4,7 @@ import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import ActivityItem from './ActivityItem'
 
-const ActivityColumn = ({ col: { list, id, total }, loading }) => {
+const ActivityColumn = ({ col: { list, id, total }, loading, socket }) => {
 
   const getInfo = (id) => {
     let text
@@ -69,7 +69,7 @@ const ActivityColumn = ({ col: { list, id, total }, loading }) => {
                 ref={provided.innerRef}
               >
                 {list.map((item, index) => (
-                    <ActivityItem  activity={item} index={index} />
+                    <ActivityItem  activity={item} index={index} socket={socket} />
                 ))}
                 {provided.placeholder}
               </div>

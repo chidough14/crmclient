@@ -148,7 +148,7 @@ const sideBarItems = [
 ]
 
 
-export default function AppLayout() {
+export default function AppLayout({socket}) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -216,17 +216,24 @@ export default function AppLayout() {
     }
   }, [isListPage?.pathnameBase])
 
-  React.useEffect(()=> {
-    const getNotifications = async () => {
-      await instance.get(`notifications`)
-      .then((res) => {
-         setInboxData(res.data.inbox)
-         setInvitedMeetingsData(res.data.invitedMeetings)
-      })
-    }
+  const getNotifications = async () => {
+    await instance.get(`notifications`)
+    .then((res) => {
+       setInboxData(res.data.inbox)
+       setInvitedMeetingsData(res.data.invitedMeetings)
+    })
+  }
 
-    getNotifications()
+  React.useEffect(()=> {
+     getNotifications()
   }, [loggedIn, fetchNotifications])
+
+  React.useEffect(()=> {
+    socket.on('receiveNotification', (message) => {
+      console.log(message);
+      getNotifications()
+    });
+  }, [socket])
 
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)

@@ -25,7 +25,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const DnDCalendar = withDragAndDrop(Calendar)
 const localizer = momentLocalizer(moment);
 
-const CalendarEvents = () => {
+const CalendarEvents = ({socket}) => {
   const {events} = useSelector(state => state.event)
   const [myEvents, setMyEvents] = useState([])
   const [open, setOpen] = useState(false);
@@ -180,6 +180,7 @@ const CalendarEvents = () => {
         endTime={endTime}
         activities={activities.filter((a) => a.user_id === user.id)}
         user={user}
+        socket={socket} 
       />
 
       <ViewEventModal

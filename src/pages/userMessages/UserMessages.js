@@ -53,7 +53,7 @@ function a11yProps(index) {
   };
 }
 
-const UserMessages = () => {
+const UserMessages = ({socket}) => {
   const [value, setValue] = React.useState(0);
   const [inboxLoading, setInboxLoading] = React.useState(false);
   const [outboxLoading, setOutboxLoading] = React.useState(false);
@@ -66,6 +66,12 @@ const UserMessages = () => {
   const [severity, setSeverity] = React.useState("")
   const [text, setText] = React.useState("")
   const [isInbox, setIsInbox] = React.useState("")
+
+  // useEffect(() => {
+  //   socket.on('receiveNotification', (message) => {
+  //     console.log(`received notification: ${message}`);
+  //   });
+  // }, [socket])
 
   useEffect(() => {
     if (!token) {
@@ -156,7 +162,7 @@ const UserMessages = () => {
           <UserMessagesTable messages={outbox} isInbox={false} getOutboxMessages={getOutboxMessages} loading={outboxLoading} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <ComposeMessage />
+          <ComposeMessage socket={socket} />
         </TabPanel>
       </Box>
 

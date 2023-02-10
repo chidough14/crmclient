@@ -29,12 +29,12 @@ const validationSchema = yup.object({
     .required('Email is required'),
 });
 
-const ActivityTransferModal = ({ open, setOpen, activity}) => {
+const ActivityTransferModal = ({ open, setOpen, activity, socket}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [severity, setSeverity] = useState("");
   const [showEmailError, setShowEmailError] = useState(false);
-  const user = useSelector((state) => state.user)
+  const {allUsers} = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
   const showAlert = (msg, sev) => {
@@ -67,6 +67,10 @@ const ActivityTransferModal = ({ open, setOpen, activity}) => {
        
         if (res.data.status === "success") {
           showAlert("Activity Transfered", "success")
+
+          let xx = allUsers.find((a) => a.email === values.email)
+          socket.emit('sendNotification', { recipientId: xx.id, message: "Activity transfer" });
+
           handleClose()
           resetForm()
         }

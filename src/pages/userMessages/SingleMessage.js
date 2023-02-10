@@ -14,7 +14,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const SingleMessage = () => {
+const SingleMessage = ({socket}) => {
   const params = useParams()
   const location = useLocation()
   const dispatch = useDispatch()
@@ -59,7 +59,7 @@ const SingleMessage = () => {
     const readMessage = async () => {
       await instance.patch(`messages/${params.id}/read`, {isRead: true})
       .then((res) => {
-        dispatch(readInboxMessages({messageId: res.data.messageDetails.id}))
+       // dispatch(readInboxMessages({messageId: res.data.messageDetails.id}))
         dispatch(reloadNotifications())
       })
     }
@@ -179,7 +179,7 @@ const SingleMessage = () => {
           
           {
             replyMode ? (
-              <ComposeMessage replyMode={replyMode} singleMessage={singleMessage}/>
+              <ComposeMessage replyMode={replyMode} singleMessage={singleMessage} socket={socket}/>
             ) : (
               <Box
                 sx={{  bgcolor: 'background.paper', height: 224, marginTop: "20px" }}

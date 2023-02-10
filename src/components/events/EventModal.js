@@ -69,7 +69,7 @@ const generateMeetingId = () => {
   return meetingID;
 }
 
-const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activityId}) => {
+const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activityId, socket}) => {
   const [openAlert, setOpenAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [severity, setSeverity] = useState("");
@@ -129,6 +129,17 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
      .then((res) => {
        dispatch(addMeeting({meeting: res.data.meeting}))
        response = res.data.meeting
+
+       if (body.invitedUsers.length) {
+          for (let i=0; i<body.invitedUsers.length; i++) {
+            let xx = allUsers.find((a) => a.email === body.invitedUsers[i])
+            socket.emit('sendNotification', { recipientId: xx.id, message: "You have been invited to a meeting" });
+          }
+       } else {
+         socket.emit('sendConferenceNotification', { message: "You have been invited to a meeting" });
+       }
+
+      
      })
      .catch(()=> {
       showAlert("Ooops an error was encountered", "error")
@@ -178,6 +189,8 @@ const EventModal = ({ open, setOpen, startTime, endTime, activities, user, activ
           }
 
           createMeeting(meetingBody)
+
+          //  socket.emit('sendNotification', { recipientId: receiverId, message: values.message });
 
           showAlert("Event created successfully", "success")
           dispatch(addEvent({event: res.data.event}))
