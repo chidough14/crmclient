@@ -154,7 +154,6 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-        {/* <Route path="/" element={<Layout />}> */}
           <Route path="/" element={<AppLayout  socket={socket} />}>
             <Route index element={<Home />} />
             <Route path="/contact" element={<Contact />} />
@@ -162,7 +161,7 @@ function App() {
             <Route path="sendpasswordresetemail" element={<SendPasswordResetEmail />} />
             <Route path="api/reset/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/lists" element={<Lists />} />
+            <Route path="/lists" element={<Lists socket={socket}/>} />
             <Route path="/listsview/:id" element={<SingleList />} />
             <Route path="/companies/:id" element={<Company />} />
             <Route path="/activities" element={<Activities socket={socket}  />} />

@@ -31,7 +31,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 
-const ListCard = ({list}) => {
+const ListCard = ({list, socket}) => {
 
   const dispatch = useDispatch()
   const token = getToken()
@@ -198,6 +198,7 @@ const ListCard = ({list}) => {
         list={listObj}
         open={openTransferModal}
         setOpen={setOpenTransferModal}
+        socket={socket}
       />
 
 

@@ -3,6 +3,7 @@ import { Notifications, NotificationsActive } from '@mui/icons-material';
 import React, { useState } from 'react'
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
+import "./bell.css"
 
 
 
@@ -123,43 +124,45 @@ const BellNotification = ({inbox, allUsers, invitedMeetings}) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-         <Divider>Inbox</Divider>
-        {
-          inbox?.filter((b) => !b.isRead).length ? 
-          inbox?.filter((b) => !b.isRead).map((a) => {
-            let username
-            if (!a.sender_id) {
-              username = "Auto Generated"
-            } else {
-               username = allUsers?.find((b)=> b.id === a.sender_id)?.name
-            }
-            return <MenuItem onClick={()=>navigate(`/messages/${a.id}`, {state: {isInbox: true, isRead: a.isRead, auto: !a.sender_id ? true : false}})}>
-                    <p>
-                      <b>{a.subject} </b>sent by &nbsp;
-                      <Tooltip title={username}>
-                        <b>
-                          {
-                            getImage(a)
-                          }
-                        </b>
-                      </Tooltip>
-                     
-                    </p>&nbsp;&nbsp;
-                    <p><b>Date:</b> {moment(a.created_at).format("MMM Do YYYY, h:mm a")}</p>
-                  </MenuItem>
-          }) :   <p style={{margin: "auto", padding: "10px"}}>You have no new messages</p>
-         
-        }
-         <Divider>Meetings</Divider>
-        {
-          invitedMeetings?.filter((b)=> !moment(b.event.end).isBefore(moment())).length ?
-          invitedMeetings?.filter((b)=> !moment(b.event.end).isBefore(moment())).map((a) => (
-            <MenuItem>
-              <p><b>Name :</b> <b>{a.meetingName}</b></p><br></br>
-              <p><b>Date:</b> {moment(a.event.start).format("MMMM Do YYYY, h:mm a")}</p>
-            </MenuItem>
-          )) : <p style={{margin: "auto", padding: "10px"}}>You have no meetings</p>
-        }
+        <div className='hide-scroll' style={{maxHeight: "400px", overflow: "scroll"}}>
+          <Divider>Inbox</Divider>
+          {
+            inbox?.filter((b) => !b.isRead).length ? 
+            inbox?.filter((b) => !b.isRead).map((a) => {
+              let username
+              if (!a.sender_id) {
+                username = "Auto Generated"
+              } else {
+                username = allUsers?.find((b)=> b.id === a.sender_id)?.name
+              }
+              return <MenuItem onClick={()=>navigate(`/messages/${a.id}`, {state: {isInbox: true, isRead: a.isRead, auto: !a.sender_id ? true : false}})}>
+                      <p>
+                        <b>{a.subject} </b>sent by &nbsp;
+                        <Tooltip title={username}>
+                          <b>
+                            {
+                              getImage(a)
+                            }
+                          </b>
+                        </Tooltip>
+                      
+                      </p>&nbsp;&nbsp;
+                      <p><b>Date:</b> {moment(a.created_at).format("MMM Do YYYY, h:mm a")}</p>
+                    </MenuItem>
+            }) :   <p style={{margin: "auto", padding: "10px"}}>You have no new messages</p>
+          
+          }
+          <Divider>Meetings</Divider>
+          {
+            invitedMeetings?.filter((b)=> !moment(b.event.end).isBefore(moment())).length ?
+            invitedMeetings?.filter((b)=> !moment(b.event.end).isBefore(moment())).map((a) => (
+              <MenuItem>
+                <p><b>Name :</b> <b>{a.meetingName}</b></p><br></br>
+                <p><b>Date:</b> {moment(a.event.start).format("MMMM Do YYYY, h:mm a")}</p>
+              </MenuItem>
+            )) : <p style={{margin: "auto", padding: "10px"}}>You have no meetings</p>
+          }
+        </div>
         
       </Menu>
     </div>
