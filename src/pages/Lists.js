@@ -34,7 +34,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 
-export default function Lists() {
+export default function Lists({socket}) {
   const token = getToken()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -201,7 +201,7 @@ export default function Lists() {
                 ) :
                 lists?.data?.map((list, idx) => (
                   <Grid item key={idx} >
-                    <ListCard list={list} />
+                    <ListCard list={list} socket={socket}/>
                   </Grid>
                 ))
               }  

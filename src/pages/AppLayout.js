@@ -170,6 +170,17 @@ export default function AppLayout({socket}) {
   const [alertType, setAlertType] = React.useState("")
   const navigate = useNavigate()
 
+  const [state, setState] = React.useState({
+    openNotification: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+  const { vertical, horizontal, openNotification } = state;
+
+  const handleCloseNotification = () => {
+    setState({ ...state, openNotification: false });
+  };
+
   const isListPage = matchPath("/listsview/*", pathname)
   const isJoinPage = matchPath("/join/*", pathname)
 
@@ -216,22 +227,26 @@ export default function AppLayout({socket}) {
     }
   }, [isListPage?.pathnameBase])
 
-  const getNotifications = async () => {
+  const getNotifications = async (value) => {
     await instance.get(`notifications`)
     .then((res) => {
        setInboxData(res.data.inbox)
        setInvitedMeetingsData(res.data.invitedMeetings)
+
+       if (value === "showNotification") {
+        setState({ ...state, openNotification: true });
+       }
     })
   }
 
   React.useEffect(()=> {
-     getNotifications()
+     getNotifications("none")
   }, [loggedIn, fetchNotifications])
 
   React.useEffect(()=> {
     socket.on('receiveNotification', (message) => {
-      console.log(message);
-      getNotifications()
+      getNotifications("showNotification")
+      
     });
   }, [socket])
 
@@ -269,7 +284,7 @@ export default function AppLayout({socket}) {
 
             {
                 loggedIn && (
-                  <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} />
+                  <BellNotification inbox={inboxData} allUsers={allUsers} invitedMeetings={invitedMeetingsData} setState={setState} />
                 )
             }&nbsp;&nbsp;&nbsp;&nbsp;
           
@@ -430,6 +445,17 @@ export default function AppLayout({socket}) {
           {text}
         </Alert>
       </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openNotification}
+        onClose={handleCloseNotification}
+        key={vertical + horizontal}
+      >
+      <Alert onClose={handleCloseNotification} severity="success" sx={{ width: '100%' }}>
+        You have a new notification
+      </Alert>
+    </Snackbar>
     </>
   );
 }
