@@ -181,8 +181,8 @@ export default function UploadModal({open, setOpen}) {
             multiFile={false}
             onFilesChange={handleFilesChange}
             onContextReady={(context) => {}}
-            title="File types: .csv, .json"
-            allowedExtensions={['csv', 'json']}
+            title="File types: .csv, .json, .vnd.ms-excel"
+            allowedExtensions={['csv', 'json', 'vnd.ms-excel']}
             maxUploadFiles={1}
           />
         </DialogContent>
