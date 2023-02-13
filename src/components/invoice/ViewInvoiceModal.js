@@ -1,19 +1,13 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import ListItemText from '@mui/material/ListItemText';
-import ListItem from '@mui/material/ListItem';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProductItemToInvoice, removeInvoiceProductItem, setInvoice, setOpenViewInvoiceModal, updateInvoiceProduct } from '../../features/InvoiceSlice';
-import { DeleteOutlined, EditOutlined, PrintOutlined } from '@mui/icons-material';
+import { EditOutlined, PrintOutlined } from '@mui/icons-material';
 import "./index.css"
 import moment from 'moment';
 import { useEffect, useState } from 'react';
@@ -25,6 +19,7 @@ import { DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar 
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 import MuiAlert from '@mui/material/Alert';
+import logo from '../../assets/logo.jpg'
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -161,7 +156,6 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF();
         pdf.addImage(imgData, 'JPEG', 0, 0);
-        // pdf.output('dataurlnewwindow');
         pdf.save("download.pdf");
       })
     ;
@@ -220,7 +214,7 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
                   <table>
                     <tr>
                       <td className="title">
-                        <img src="https://www.sparksuite.com/images/logo.png"  style={{width: "100%", maxWidth: "300px"}}/>
+                        <img src={logo} style={{width: "100%", maxWidth: "300px"}}/>
                       </td>
 
                       <td>
