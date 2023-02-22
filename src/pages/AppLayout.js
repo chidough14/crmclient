@@ -18,11 +18,11 @@ import ListItemText from '@mui/material/ListItemText';
 import { Link, matchPath, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getToken } from "../services/LocalStorageService";
-import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, SettingsOutlined, ShoppingCartOutlined } from '@mui/icons-material';
+import { DashboardOutlined, DensitySmallOutlined, MeetingRoomOutlined, MessageOutlined, PeopleOutline, SettingsOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import CalendarMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import { Button, CircularProgress, Snackbar, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Collapse, Snackbar, Tooltip } from '@mui/material';
 import BellNotification from '../components/BellNotification';
 import UserAccountsCircle from '../components/UserAccountsCircle';
 import SearchBar from '../components/SearchBar';
@@ -30,6 +30,12 @@ import instance from '../services/fetchApi';
 import { setSearchResults } from '../features/companySlice';
 import { setSelectedCompanyId } from '../features/listSlice';
 import MuiAlert from '@mui/material/Alert';
+
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
+import { setOnlineUsers } from '../features/userSlice';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -153,7 +159,7 @@ export default function AppLayout({socket}) {
   const [open, setOpen] = React.useState(false);
 
   const token = getToken()
-  const {name, allUsers, profile_pic} = useSelector(state => state.user)
+  const {id, name, allUsers, profile_pic, onlineUsers} = useSelector(state => state.user)
   const {list, loadingCompanies} = useSelector(state => state.list)
   const [loggedIn, setLoggedIn] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -169,6 +175,12 @@ export default function AppLayout({socket}) {
   const [text, setText] = React.useState("")
   const [alertType, setAlertType] = React.useState("")
   const navigate = useNavigate()
+
+  const [openUsersMenu, setOpenUsersMenu] = React.useState(true);
+
+  const handleOpenUsersMenu = () => {
+    setOpenUsersMenu(!openUsersMenu);
+  };
 
   const [state, setState] = React.useState({
     openNotification: false,
@@ -248,7 +260,21 @@ export default function AppLayout({socket}) {
       getNotifications("showNotification")
       
     });
+    
+    socket.on('newUserResponse', (arr) => {
+      dispatch(setOnlineUsers({onlineUsers: arr}))
+      
+    });
+
+    socket.on('userLogoutResponse', (arr) => {
+      dispatch(setOnlineUsers({onlineUsers: arr}))
+      
+    });
   }, [socket])
+
+  // React.useEffect(()=> {
+  //  console.log(onlineUsers);
+  // }, [onlineUsers])
 
   const handleDrawerOpen = () => {
     setOpen(prev => !prev)
@@ -257,6 +283,61 @@ export default function AppLayout({socket}) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const getInitials = (string) => {
+    let names = string?.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase();
+    
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    }
+    return initials;
+  }
+
+  const getImage = (userId) => {
+
+    let image_src = allUsers?.find((a)=> a.id === userId)?.profile_pic
+
+    if ( image_src === ""  || image_src === null) {
+      return (
+        <div 
+          style={{
+            display: "inline-block",
+            backgroundColor: "gray" ,
+            borderRadius: "50%",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === userId)?.id}`)}
+        >
+          <p 
+            style={{
+              color: "white",
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              textDecoration: "none",
+              height: "30px",
+              width: "30px",
+              fontSize: "15px"
+            }}
+          >
+            {getInitials(allUsers?.find((a)=> a.id === userId)?.name)}
+          </p>
+        </div>
+      )
+    } else {
+      return (
+        <img 
+          width="30px" 
+          height="30px" 
+          src={image_src}  
+          alt='profile_pic' 
+          style={{borderRadius: "50%", cursor: "pointer"}} 
+          onClick={() => navigate(`/profile/${allUsers?.find((a)=> a.id === userId)?.id}`)}
+        />
+      )
+    }
+  }
 
   return (
     <>
@@ -357,8 +438,7 @@ export default function AppLayout({socket}) {
                                     <ListItem  
                                         disablePadding 
                                         sx={{ 
-                                          display: 'block', 
-                                          borderRadius: "30px", 
+                                          display: 'block',
                                           backgroundColor: selectedCompanyId === a.id ? "#DDA0DD" : "" ,
                                           borderRadius: selectedCompanyId === a.id ? "15px" : "" 
                                         }}
@@ -419,6 +499,39 @@ export default function AppLayout({socket}) {
                           </Tooltip>
                         ))
                       }
+
+                      {
+                         isListPage?.pathnameBase !== "/listsview" &&  (
+                          <ListItem 
+                            disablePadding 
+                            sx={{ 
+                              display: 'block',
+                            }}
+                          >
+                            <ListItemButton onClick={handleOpenUsersMenu}>
+                              <ListItemIcon>
+                                <PeopleOutline />
+                              </ListItemIcon>
+                              <ListItemText primary="Online Users" />
+                              {openUsersMenu ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={openUsersMenu} timeout="auto" unmountOnExit>
+                              <List component="div" disablePadding>
+    
+                                {
+                                  onlineUsers.filter((b) => b.userId !== id).map((a) => (
+                                    <ListItemButton sx={{ pl: 4 }}  onClick={() => navigate(`/profile/${allUsers?.find((c)=> c.id === a.userId)?.id}`)}>
+                                    {getImage(a.userId)}
+                                      <ListItemText primary={allUsers?.find((c) => c.id === a.userId)?.name} />
+                                    </ListItemButton>
+                                  ))
+                                }
+                              </List>
+                            </Collapse>
+                          </ListItem>
+                         )
+                      }
+                     
                     
                     </List>
                   </Drawer>

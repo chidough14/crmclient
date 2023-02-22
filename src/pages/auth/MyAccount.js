@@ -3,14 +3,14 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { getToken } from '../../services/LocalStorageService';
 import { useChangeUserPasswordMutation } from '../../services/userAuthApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { ChangeCircleOutlined, PersonOutlineOutlined, SaveOutlined} from '@mui/icons-material';
+import { ChangeCircleOutlined, MessageOutlined, PersonOutlineOutlined, SaveOutlined} from '@mui/icons-material';
 import moment from 'moment';
 import UploadWidget from './UploadWidget';
 import instance from '../../services/fetchApi';
 import { setUserInfo, updateAllUsers } from '../../features/userSlice';
 import avatar from '../../assets/avtar9.jpg';
 import MuiAlert from '@mui/material/Alert';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -37,6 +37,7 @@ const MyAccount = () => {
   const [showUpdateProfileForm, setShowUpdateProfileForm] = useState(false);
   const [profile, setProfile] = useState();
   const params = useParams()
+  const navigate = useNavigate()
 
   const showAlert = (msg, sev) => {
     setOpenAlert(true)
@@ -223,6 +224,18 @@ const MyAccount = () => {
                 </Button>
               </Tooltip>
             </div>
+          }
+
+
+          {
+            (params.id !== "mine") && (
+              <Tooltip title="Send Message">
+                <Button onClick={() => navigate(`/messages`, { state: {id: params?.id, populateEmail: true}})}>
+                  <MessageOutlined />
+                </Button>
+              </Tooltip>
+            
+            )
           }
         </div>
         
