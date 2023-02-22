@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import instance from '../../services/fetchApi';
 import { setInboxMessages, setOutboxMessages } from '../../features/MessagesSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getToken } from '../../services/LocalStorageService';
 import { CreateOutlined, InboxOutlined, OutboxOutlined, PhoneOutlined, SendOutlined } from '@mui/icons-material';
 import { Snackbar, Tooltip } from '@mui/material';
@@ -66,6 +66,8 @@ const UserMessages = ({socket}) => {
   const [severity, setSeverity] = React.useState("")
   const [text, setText] = React.useState("")
   const [isInbox, setIsInbox] = React.useState("")
+  
+  const {state} = useLocation();
 
   // useEffect(() => {
   //   socket.on('receiveNotification', (message) => {
@@ -78,6 +80,13 @@ const UserMessages = ({socket}) => {
       navigate('/login')
     }
   }, [token])
+
+
+  useEffect(() => {
+    if (state) {
+      setValue(2)
+    }
+  }, [state])
 
   const handleCloseAlert = () => {
     setOpenAlert(false)
@@ -93,11 +102,6 @@ const UserMessages = ({socket}) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    // if (newValue === 0) {
-    //   setIsInbox("inbox")
-    // } else {
-    //   setIsInbox("outbox")
-    // }
   };
 
   const getInboxMessages = async (page = 1) => {
@@ -162,7 +166,7 @@ const UserMessages = ({socket}) => {
           <UserMessagesTable messages={outbox} isInbox={false} getOutboxMessages={getOutboxMessages} loading={outboxLoading} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <ComposeMessage socket={socket} />
+          <ComposeMessage socket={socket} state={state} />
         </TabPanel>
       </Box>
 

@@ -44,7 +44,7 @@ const validationSchema = yup.object({
 });
 
 
-const ComposeMessage = ({replyMode, singleMessage, socket}) => {
+const ComposeMessage = ({replyMode, singleMessage, socket, state}) => {
   const user = useSelector((state) => state.user)
   const [openAlert, setOpenAlert] = useState(false)
   const [text, setText] = useState("")
@@ -157,6 +157,14 @@ const ComposeMessage = ({replyMode, singleMessage, socket}) => {
     }
 
   }, [replyMode])
+
+  useEffect(() => {
+    if (state?.populateEmail) {
+      let userEmail = user?.allUsers?.find((a)=> a.id === parseInt(state?.id))?.email
+      formik.setFieldValue("email", userEmail)
+    }
+    
+  }, [state?.populateEmail])
 
   return (
     <div>

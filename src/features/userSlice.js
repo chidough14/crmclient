@@ -9,6 +9,7 @@ const initialState = {
   setting: undefined,
   role: "",
   allUsers: [],
+  onlineUsers: [],
   loadingDashboard: false
 }
 
@@ -53,9 +54,12 @@ export const userSlice = createSlice({
     removeUser: (state, action) => {
       state.allUsers = state.allUsers.filter((a) => a.id !== action.payload.id)
     },
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload.onlineUsers
+    },
   },
 })
 
-export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard, updateAllUsers, removeUser } = userSlice.actions
+export const { setUserInfo, unsetUserInfo, setAllUsersData, updateUserSettings, setLoadingDashboard, updateAllUsers, removeUser, setOnlineUsers } = userSlice.actions
 
 export default userSlice.reducer
