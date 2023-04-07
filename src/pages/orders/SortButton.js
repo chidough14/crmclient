@@ -35,7 +35,11 @@ const SortButton = ({ setSortOption, sortOption, title, closeSearch }) => {
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    closeSearch()
+    
+    if (closeSearch) {
+      closeSearch()
+    }
+  
   };
   const handleClose = () => {
     setAnchorEl(null);
