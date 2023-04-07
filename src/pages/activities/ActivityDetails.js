@@ -21,6 +21,8 @@ import ViewInvoiceModal from '../../components/invoice/ViewInvoiceModal';
 import { setOpenViewInvoiceModal } from '../../features/InvoiceSlice';
 import { getToken } from '../../services/LocalStorageService';
 import MuiAlert from '@mui/material/Alert';
+import { loadStripe } from "@stripe/stripe-js"; 
+import axios from "axios"
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -286,6 +288,32 @@ const ActivityDetails = () => {
     setEditingInvoice(true)
   }
 
+  const makePayment = async () => {
+
+    let items = activity.products.map((a) => {
+      return {
+        id: a.id,
+        name: a.name,
+        price: a.price,
+        qty: a.pivot.quantity
+      }
+    })
+
+    axios.post(`http://localhost:4000/api/create-checkout-session`, {
+      userId: activity?.user_id,
+      items,
+      activityId: activity?.id,
+      token
+    })
+    .then((res) => {
+      if (res.data.url) {
+        window.location.href = res.data.url
+      }
+    })
+    .catch((err) => console.log(err))
+  }
+
+
   return (
     <div>
       {/* <Toolbar>
@@ -389,14 +417,14 @@ const ActivityDetails = () => {
                   activity?.probability !== "Closed" ? (
                     <Tooltip title="Close the deal to create an invoice">
                       <div>
-                      <Button 
-                        variant="contained" 
-                        disableElevation 
-                        style={{borderRadius: "30px"}} 
-                        disabled
-                      >
-                        Create Invoice
-                      </Button>
+                        <Button 
+                          variant="contained" 
+                          disableElevation 
+                          style={{borderRadius: "30px"}} 
+                          disabled
+                        >
+                          Create Invoice
+                        </Button>
                       </div>
                     </Tooltip>
                   ) : (
@@ -409,6 +437,16 @@ const ActivityDetails = () => {
                         disabled={activity?.user_id !== user?.id}
                       >
                         Create Invoice
+                      </Button>
+
+                      <Button 
+                        variant="contained" 
+                        disableElevation 
+                        style={{borderRadius: "30px"}} 
+                        onClick={() => makePayment()}
+                        disabled={activity?.user_id !== user?.id}
+                      >
+                        Pay with Stripe
                       </Button>
                     </div>
                   )

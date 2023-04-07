@@ -7,13 +7,13 @@ const UploadWidget = ({setImageUrl, imageUrl, setImageLoaded}) => {
   const widgetRef = useRef()
   //const [imageUrl, setImageUrl] = useState("")
 
-  const uploadImage = () => {
-    console.log(imageUrl);
-  }
+  // const uploadImage = () => {
+  //   console.log(imageUrl);
+  // }
 
   useEffect(() => {
     cloudinaryRef.current = window.cloudinary
-    widgetRef.current = cloudinaryRef.current.createUploadWidget({
+    widgetRef.current = cloudinaryRef.current?.createUploadWidget({
       cloudName:'dhqx47dut',
       uploadPreset: 'crmclient',
       maxImageHeight: '30px',

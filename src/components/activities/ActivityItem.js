@@ -1,6 +1,6 @@
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
-import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar, Tooltip } from '@mui/material';
+import { IconButton, Menu, Typography, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Snackbar, Tooltip, Chip } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import moment from 'moment';
@@ -175,7 +175,9 @@ const ActivityItem = ({activity, index, socket}) => {
                     display: "flex", 
                     justifyContent: "space-between", 
                     marginBottom: Boolean(activity.decreased_probability) ||  
-                                  ( activity.decreased_probability !== null && !Boolean(activity.decreased_probability) )  ? "-18px" : null}}
+                                  ( activity.decreased_probability !== null && !Boolean(activity.decreased_probability) ) ||
+                                  (activity.decreased_probability === null && activity.probability !== "Closed")
+                                   ? "-18px" : null}}
                 >
                   <Typography sx={{ fontSize: 14, mb: -2, color: "blue" }} >
                       ${activity.total}
@@ -190,11 +192,17 @@ const ActivityItem = ({activity, index, socket}) => {
                   }
 
                   {
-                  ( activity.decreased_probability !== null && !Boolean(activity.decreased_probability) ) && (
+                    (activity.decreased_probability !== null && !Boolean(activity.decreased_probability) ) && (
                       <Tooltip title='Increadsed Probability'>
                         <ArrowUpwardOutlined sx={{color: "green"}} />
                       </Tooltip>
                     )
+                  }
+
+                  {
+                     (activity.decreased_probability === null && activity.probability !== "Closed") && (
+                        <Chip label="New" color="primary"  size="small"/>
+                     )
                   }
                 
                 </div>

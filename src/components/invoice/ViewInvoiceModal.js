@@ -82,6 +82,17 @@ const ViewInvoiceModal = ({invoice, companyName, activity, user}) => {
     }
   }, [invoice])
 
+  useEffect(() => {
+    let arr = []
+    singleInvoice?.products?.map((a) => {
+       let tot = a.price * a.pivot.quantity
+       arr.push(tot)
+    })
+   
+    setTotal(arr.reduce((a, b) => a + b, 0))
+
+  }, [singleInvoice])
+
   const handleClose = () => {
     setShowEditForm(false)
     dispatch(setOpenViewInvoiceModal({value: false}))
